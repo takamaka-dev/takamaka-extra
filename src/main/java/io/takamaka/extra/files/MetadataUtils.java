@@ -7,14 +7,17 @@ package io.takamaka.extra.files;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.takamaka.extra.beans.TkmMetadata;
+import io.takamaka.wallet.utils.TkmSignUtils;
 import io.takamaka.wallet.utils.TkmTextUtils;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -25,6 +28,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
@@ -39,9 +43,13 @@ import org.xml.sax.SAXException;
 @Slf4j
 public class MetadataUtils {
 
+    public static final String getOsIdentifyingString() {
+        return System.getProperty("os.name");
+    }
+
     public static final TkmMetadata collectMetadata(FileInputStream fileIn, String[] tags) throws IOException, SAXException, TikaException {
         TkmMetadata tkmMetadata = new TkmMetadata();
-        Metadata extractMetadatatUsingParser = extractMetadatatUsingParser(fileIn);
+        Metadata extractMetadatatUsingParser = extractMetadatatUsingParser(fileIn, tkmMetadata);
 
         String[] names = extractMetadatatUsingParser.names();
 
@@ -75,7 +83,7 @@ public class MetadataUtils {
             //gen.writeEndArray();
         }
         tkmMetadata.setTags(tagsArray.toArray(String[]::new));
-        tkmMetadata.setXParsedBy("");
+        //tkmMetadata.setXParsedBy("");
         ConcurrentSkipListMap<String, String> extraMetadata = new ConcurrentSkipListMap<>();
         mappedMetaData.entrySet().forEach((single) -> {
             try {
@@ -115,7 +123,8 @@ public class MetadataUtils {
 //            }
         });
         tkmMetadata.setExtraMetadata(extraMetadata);
-
+        tkmMetadata.setPlatform(getOsIdentifyingString());
+        tkmMetadata.setType("raw");
 //        if (!TkmTextUtils.isNullOrBlank(filename)) {
 //            //gen.writeStringField("resourceName", filename);
 //
@@ -134,7 +143,12 @@ public class MetadataUtils {
         return tkmMetadata;
     }
 
-    public static final Metadata extractMetadatatUsingParser(InputStream stream)
+    public static final String fromFileToB64String(File selectedFile) throws IOException {
+        byte[] byteFile = FileUtils.readFileToByteArray(selectedFile);
+        return TkmSignUtils.fromByteArrayToB64URL(byteFile);
+    }
+
+    public static final Metadata extractMetadatatUsingParser(InputStream stream, TkmMetadata tkmMetadata)
             throws IOException, SAXException, TikaException {
 
         Parser parser = new AutoDetectParser();
@@ -143,6 +157,10 @@ public class MetadataUtils {
         ParseContext context = new ParseContext();
 
         parser.parse(stream, handler, metadata, context);
+//        MediaType[] toArray = parser.getSupportedTypes(context).toArray(MediaType[]::new);
+
+        tkmMetadata.setXParsedBy(parser.getClass().getName());
+//tkmMetadata.setXParsedBy(Arrays.toString(toArray));
         return metadata;
     }
 
