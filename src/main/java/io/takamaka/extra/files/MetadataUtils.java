@@ -17,6 +17,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,7 @@ import org.xml.sax.SAXException;
 @Slf4j
 public class MetadataUtils {
 
-    public static final TkmMetadata collectMetadata(FileInputStream fileIn, String[] tags, String filename) throws IOException, SAXException, TikaException {
+    public static final TkmMetadata collectMetadata(FileInputStream fileIn, String[] tags) throws IOException, SAXException, TikaException {
         TkmMetadata tkmMetadata = new TkmMetadata();
         Metadata extractMetadatatUsingParser = extractMetadatatUsingParser(fileIn);
 
@@ -75,7 +76,7 @@ public class MetadataUtils {
         }
         tkmMetadata.setTags(tagsArray.toArray(String[]::new));
         tkmMetadata.setXParsedBy("");
-        ArrayList<Map.Entry<String, String>> extraMetadata = new ArrayList<>();
+        ConcurrentSkipListMap<String, String> extraMetadata = new ConcurrentSkipListMap<>();
         mappedMetaData.entrySet().forEach((single) -> {
             try {
                 switch (single.getKey()) {
@@ -91,8 +92,10 @@ public class MetadataUtils {
 //                        tkmMetadata.setPlatform(single.getValue());
 //                        break;
                     default:
-                        extraMetadata.add(
-                                new AbstractMap.SimpleEntry<String, String>(single.getKey(), single.getValue()));
+                        extraMetadata.put(
+                                single.getKey(), single.getValue()
+                        //new AbstractMap.SimpleEntry<String, String>(single.getKey(), single.getValue())
+                        );
                     //throw new AssertionError();
                 }
             } catch (Exception ex) {
@@ -113,13 +116,12 @@ public class MetadataUtils {
         });
         tkmMetadata.setExtraMetadata(extraMetadata);
 
-        if (!TkmTextUtils.isNullOrBlank(filename)) {
-            //gen.writeStringField("resourceName", filename);
-
-        }
+//        if (!TkmTextUtils.isNullOrBlank(filename)) {
+//            //gen.writeStringField("resourceName", filename);
+//
+//        }
 //        gen.writeStringField("mime", mappedMetaData.get("Content-Type"));
         //gen.writeObjectField("extraMetadata", mappedExtraMetadata);
-
         //to optimize indexing leave data as last element
 //        byte[] byteFile = FileUtils.readFileToByteArray(selectedFile);
 //        String base64file = TkmSignUtils.fromByteArrayToB64URL(byteFile);

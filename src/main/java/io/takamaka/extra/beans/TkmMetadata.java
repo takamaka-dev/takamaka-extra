@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.lang.annotation.Native;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -40,7 +41,7 @@ public class TkmMetadata {
     @JsonProperty("type")
     private String type;
     @JsonProperty("extraMetadata")
-    private ArrayList<Map.Entry<String, String>> extraMetadata;
+    private ConcurrentSkipListMap<String, String> extraMetadata;
     //mandatory
     @JsonProperty("data")
     private String data;
