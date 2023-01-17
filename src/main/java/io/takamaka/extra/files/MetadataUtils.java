@@ -6,12 +6,15 @@ package io.takamaka.extra.files;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.takamaka.extra.beans.TkmMetadata;
 import io.takamaka.wallet.utils.TkmTextUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -35,7 +38,8 @@ import org.xml.sax.SAXException;
 @Slf4j
 public class MetadataUtils {
 
-    public static final void collectMetadata(FileInputStream fileIn, String[] tags, String filename) throws IOException, SAXException, TikaException {
+    public static final TkmMetadata collectMetadata(FileInputStream fileIn, String[] tags, String filename) throws IOException, SAXException, TikaException {
+        TkmMetadata tkmMetadata = new TkmMetadata();
         Metadata extractMetadatatUsingParser = extractMetadatatUsingParser(fileIn);
 
         String[] names = extractMetadatatUsingParser.names();
@@ -47,59 +51,85 @@ public class MetadataUtils {
             mappedMetaData.put(name, extractMetadatatUsingParser.get(name));
         }
 
-        ObjectMapper jacksonMapper = TkmTextUtils.getJacksonMapper();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JsonGenerator gen = jacksonMapper.createGenerator(baos);
-
-        gen.writeStartObject();
-
+        //ObjectMapper jacksonMapper = TkmTextUtils.getJacksonMapper();
+        //ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        //JsonGenerator gen = jacksonMapper.createGenerator(baos);
+        //gen.writeStartObject();
+        ArrayList<String> tagsArray = new ArrayList<>();
         if (tags != null && tags.length != 0) {
 
             /*
             Another method could be the following
             String[] tags = "tag1,tag2,tag3".split(",");
              */
-            gen.writeFieldName("tags");
-            gen.writeStartArray();
+            //gen.writeFieldName("tags");
+            //gen.writeStartArray();
             for (String tag : tags) {
                 String trimmedTag = StringUtils.trimToNull(tag);
                 if (!TkmTextUtils.isNullOrBlank(trimmedTag)) {
-                    gen.writeObject(trimmedTag);
+                    tagsArray.add(trimmedTag);
+//                    gen.writeObject(trimmedTag);
                 }
             }
-            gen.writeEndArray();
+            //gen.writeEndArray();
         }
-
+        tkmMetadata.setTags(tagsArray.toArray(String[]::new));
+        tkmMetadata.setXParsedBy("");
+        ArrayList<Map.Entry<String, String>> extraMetadata = new ArrayList<>();
         mappedMetaData.entrySet().forEach((single) -> {
-            if (single.getKey().equals("Content-Type")
-                    || single.getKey().equals("X-Parsed-By")) {
-                try {
-                    gen.writeStringField(single.getKey(), single.getValue());
-                } catch (IOException ex) {
-                    log.warn("Unreadable metadata", ex);
+            try {
+                switch (single.getKey()) {
+                    case "Content-Type":
+                    case "mime":
+                        tkmMetadata.setContentType(single.getValue());
+                        tkmMetadata.setMime(single.getValue());
+                        break;
+                    case "X-Parsed-By":
+                        tkmMetadata.setContentType(single.getValue());
+                        break;
+//                    case "platform":
+//                        tkmMetadata.setPlatform(single.getValue());
+//                        break;
+                    default:
+                        extraMetadata.add(
+                                new AbstractMap.SimpleEntry<String, String>(single.getKey(), single.getValue()));
+                    //throw new AssertionError();
                 }
-            } else {
-                mappedExtraMetadata.put(single.getKey(), single.getValue());
+            } catch (Exception ex) {
+                log.warn("Unreadable metadata", ex);
             }
+//            if (single.getKey().equals("Content-Type")
+//                    ) {
+//                try {
+//                    tkmMetadata.setContentType(single.getValue());
+//                    //gen.writeStringField(single.getKey(), single.getValue());
+//                    
+//                } catch (IOException ex) {
+//                    log.warn("Unreadable metadata", ex);
+//                }
+//            } else {
+//                mappedExtraMetadata.put(single.getKey(), single.getValue());
+//            }
         });
+        tkmMetadata.setExtraMetadata(extraMetadata);
+
         if (!TkmTextUtils.isNullOrBlank(filename)) {
-            gen.writeStringField("resourceName", filename);
+            //gen.writeStringField("resourceName", filename);
+
         }
-        gen.writeStringField("mime", mappedMetaData.get("Content-Type"));
-        gen.writeObjectField("extraMetadata", mappedExtraMetadata);
+//        gen.writeStringField("mime", mappedMetaData.get("Content-Type"));
+        //gen.writeObjectField("extraMetadata", mappedExtraMetadata);
 
         //to optimize indexing leave data as last element
 //        byte[] byteFile = FileUtils.readFileToByteArray(selectedFile);
 //        String base64file = TkmSignUtils.fromByteArrayToB64URL(byteFile);
 //        gen.writeStringField("data", base64file);
-
-        gen.writeEndObject();
-        gen.flush();
-
-        String generatedMap = baos.toString(StandardCharsets.UTF_8);
-
-        gen.close();
-        baos.close();
+        //gen.writeEndObject();
+        //gen.flush();
+        //String generatedMap = baos.toString(StandardCharsets.UTF_8);
+        //gen.close();
+        //baos.close();
+        return tkmMetadata;
     }
 
     public static final Metadata extractMetadatatUsingParser(InputStream stream)
