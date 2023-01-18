@@ -5,9 +5,6 @@
 package io.takamaka.extra.beans;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.lang.annotation.Native;
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 import lombok.AllArgsConstructor;
 import lombok.Data;
