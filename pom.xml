@@ -1,10 +1,155 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <name>Takamaka Extra</name>
+    <description>This package contains utilities to extract information regarding metadata and also to support creation of a blob transaction in takamaka wallet. </description>
+    <url>https://github.com/takamaka-dev/takamaka-extra.git</url>
+    <inceptionYear>2023</inceptionYear>
+    <organization>
+        <name>AiliA SA</name>
+        <url>https://takamaka.io</url>
+    </organization>
+    
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.takamaka.extra</groupId>
     <artifactId>takamaka-extra</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>gio-ant</id>
+            <name>Giovanni Antino</name>
+            <email>giovanni.antino@takamaka.io</email>
+        </developer>
+        <developer>
+            <id>zaikeneim</id>
+            <name>Alessandro Pasi</name>
+            <email>alessandro.pasi@takamaka.io</email>
+        </developer>
+        <developer>
+            <id>isacco-borsani-takamaka</id>
+            <name>Isacco Borsani</name>
+            <email>isacco.borsani@takamaka.io</email>
+        </developer>
+        <developer>
+            <id>iris-dimni</id>
+            <name>Iris Dimni</name>
+            <email>iris.dimni@takamaka.io</email>
+        </developer>
+        <developer>
+            <id>eltonkasmi</id>
+            <name>Elton Kasmi</name>
+            <email>elton.kasmi@takamaka.io</email>
+        </developer>
+        <developer>
+            <id>takamaka-dev</id>
+            <name>Takamaka Dev</name>
+            <email>tech@takamaka.io</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git@github.com:takamaka-dev/takamaka-extra.git</connection>
+        <developerConnection>scm:git@github.com:takamaka-dev/takamaka-extra.git</developerConnection>
+        <url>https://github.com/takamaka-dev/takamaka-extra/tree/master</url>
+    </scm>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/resources</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <showDeprecation>true</showDeprecation>
+                    <archive>
+                        <manifest>
+                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                            
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <!--                <version>3.2.1</version>-->
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <!--                <version>3.2.0</version>-->
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                
+            </plugin>
+            
+        </plugins>
+    </build>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -31,6 +176,39 @@
             <type>jar</type>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>ci-cd</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <keyname>${gpg.keyname}</keyname>
+                                    <passphrase>${gpg.passphrase}</passphrase>
+                                    <!-- Prevent gpg from using pinentry programs. Fixes: gpg: signing 
+                                    failed: Inappropriate ioctl for device -->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
