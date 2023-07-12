@@ -34,6 +34,6 @@ public class BlockRequestBean {
     private ShellRequestBean srb;
     private Integer epoch;
     private Integer slot;
-    private String blockchash;
+    private String blockhash;
 
 }
