@@ -32,28 +32,17 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class BlockResponseBean extends ErrorBean {
+public class BlockResponseBeanLight extends ErrorBean {
 
-    public BlockResponseBean(ShellRequestBean srb, boolean error, String errorMessage, List<Exception> ex, Level level) {
+    public BlockResponseBeanLight(ShellRequestBean srb, boolean error, String errorMessage, List<Exception> ex, Level level) {
         super(error, errorMessage, ex, level);
         this.srb = srb;
-    }
-
-    public BlockResponseBean(ShellRequestBean srb, String singleInclusionBlockHash, String transactionJson, boolean error, String errorMessage, List<Exception> ex, Level level) {
-        super(error, errorMessage, ex, level);
-        this.srb = srb;
-        this.singleInclusionBlockHash = singleInclusionBlockHash;
-        this.transactionJson = transactionJson;
     }
 
     private ShellRequestBean srb;
-    /**
-     * @return single inclusion block hash
-     */
+
+    private Integer epoch;
+    private Integer slot;
     private String singleInclusionBlockHash;
-    /**
-     * json of the TransactionBean
-     */
-    private String transactionJson;
 
 }
