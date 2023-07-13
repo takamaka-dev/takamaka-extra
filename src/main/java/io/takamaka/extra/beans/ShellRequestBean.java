@@ -32,6 +32,6 @@ public class ShellRequestBean {
 
     private String shellName;
     private String shellId;
-    private Integer requestId;
+    private Long requestId;
 
 }
