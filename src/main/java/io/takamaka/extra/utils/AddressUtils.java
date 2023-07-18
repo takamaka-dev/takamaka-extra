@@ -35,20 +35,20 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class AddressUtils {
-
+    
     public static enum TypeOfAddress {
         ed25519,
         qTesla,
         undefined
     }
-
+    
     public static final String getBookmarkAddress(CompactAddressBean cab) throws UnsupportedAddressFunctionException {
         if (TkmTextUtils.isNullOrBlank(cab.getDefaultShort())) {
             throw new UnsupportedAddressFunctionException("missing default short");
         }
         return TkmSignUtils.fromB64UrlToHEX(cab.getDefaultShort());
     }
-
+    
     public static final CompactAddressBean toCompactAddress(String address) throws AddressNotRecognizedException {
         byte[] addrBytes;
         if (TkmTextUtils.isNullOrBlank(address)) {
@@ -56,13 +56,16 @@ public class AddressUtils {
         }
         CompactAddressBean compactAddressBean = new CompactAddressBean();
         compactAddressBean.setOriginal(address.trim());
+        if (address.length() != address.trim().length()) {
+            log.error("In-depth analysis needed. Trimmed length does not match original string length." + "trimed: " + address.trim() + " orig: \"" + address + "\"");
+        }
         compactAddressBean.setType(TypeOfAddress.undefined);
         addrBytes = TkmSignUtils.fromB64URLToByteArray(address);
         if (addrBytes == null) {
             compactAddressBean.setType(TypeOfAddress.undefined);
             setDefaultShort(compactAddressBean);
         } else {
-            switch (address.length()) {
+            switch (compactAddressBean.getOriginal().length()) {
                 case 44:
                     log.info("ed25519");
                     if (addrBytes.length != 32) {
@@ -91,7 +94,7 @@ public class AddressUtils {
         }
         return compactAddressBean;
     }
-
+    
     private static void setDefaultShort(CompactAddressBean compactAddressBean) throws AddressNotRecognizedException {
         try {
             compactAddressBean.setDefaultShort(TkmSignUtils.Hash384B64URL(compactAddressBean.getOriginal()));
@@ -100,5 +103,5 @@ public class AddressUtils {
             throw new AddressNotRecognizedException(ex);
         }
     }
-
+    
 }

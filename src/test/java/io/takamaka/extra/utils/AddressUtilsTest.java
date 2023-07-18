@@ -19,6 +19,7 @@ import io.takamaka.extra.beans.CompactAddressBean;
 import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
 import io.takamaka.extra.identicon.exceptions.NullAddressException;
 import io.takamaka.extra.identicon.exceptions.UnsupportedAddressFunctionException;
+import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -97,6 +98,16 @@ public class AddressUtilsTest {
                 assertEquals(TestEnvObjects.DEFAULT_SHORT_HEX.get(originalAddr), AddressUtils.getBookmarkAddress(AddressUtils.toCompactAddress(originalAddr)));
             }
 
+        }
+    }
+
+    @Test
+    public void testNullAddress() {
+        for (String originalAddr : TestEnvObjects.REF_ADDR_ARRAY_EMPTY) {
+            AddressNotRecognizedException assertThrows = assertThrows("null or zero char", AddressNotRecognizedException.class, () -> {
+                AddressUtils.toCompactAddress(originalAddr);
+            });
+            assertEquals("null or zero char", assertThrows.getMessage());
         }
     }
 
