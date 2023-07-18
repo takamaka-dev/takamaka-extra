@@ -111,4 +111,17 @@ public class AddressUtilsTest {
         }
     }
 
+    @Test
+    public void testUndefinedAddress() throws AddressNotRecognizedException, UnsupportedAddressFunctionException {
+        for (String originalAddr : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
+            CompactAddressBean compactAddress = AddressUtils.toCompactAddress(originalAddr);
+            assertEquals(AddressUtils.TypeOfAddress.undefined, compactAddress.getType());
+            assertEquals(TestEnvObjects.DEFAULT_UNDEFINED_SHORT.get(originalAddr), compactAddress.getDefaultShort());
+            //bookmark
+            String bookmarkAddress = AddressUtils.getBookmarkAddress(compactAddress);
+            assertEquals(bookmarkAddress.length(), 96);
+            assertEquals(TestEnvObjects.DEFAULT_UNDEFINED_SHORT_HEX.get(originalAddr), bookmarkAddress);
+        }
+    }
+
 }
