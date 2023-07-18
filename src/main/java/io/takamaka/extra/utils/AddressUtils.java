@@ -18,6 +18,7 @@ package io.takamaka.extra.utils;
 import io.takamaka.extra.beans.CompactAddressBean;
 import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
 import io.takamaka.extra.identicon.exceptions.NullAddressException;
+import io.takamaka.extra.identicon.exceptions.UnsupportedAddressFunctionException;
 import io.takamaka.wallet.exceptions.HashAlgorithmNotFoundException;
 import io.takamaka.wallet.exceptions.HashEncodeException;
 import io.takamaka.wallet.exceptions.HashProviderNotFoundException;
@@ -39,6 +40,13 @@ public class AddressUtils {
         ed25519,
         qTesla,
         undefined
+    }
+
+    public static final String getBookmarkAddress(CompactAddressBean cab) throws UnsupportedAddressFunctionException {
+        if (TkmTextUtils.isNullOrBlank(cab.getDefaultShort())) {
+            throw new UnsupportedAddressFunctionException("missing default short");
+        }
+        return TkmSignUtils.fromB64UrlToHEX(cab.getDefaultShort());
     }
 
     public static final CompactAddressBean toCompactAddress(String address) throws AddressNotRecognizedException {

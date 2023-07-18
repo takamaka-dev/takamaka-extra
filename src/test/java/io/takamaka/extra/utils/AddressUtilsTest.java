@@ -18,6 +18,7 @@ package io.takamaka.extra.utils;
 import io.takamaka.extra.beans.CompactAddressBean;
 import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
 import io.takamaka.extra.identicon.exceptions.NullAddressException;
+import io.takamaka.extra.identicon.exceptions.UnsupportedAddressFunctionException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -37,27 +38,27 @@ import static org.junit.Assert.*;
  */
 @Slf4j
 public class AddressUtilsTest {
-    
+
     public AddressUtilsTest() {
         Configurator.setLevel("io.takamaka.extra.utils.AddressUtilsTest", Level.DEBUG);
         log.info("test constructor");
     }
-    
+
     @BeforeAll
     public static void setUpClass() {
         log.info("test BeforeClass");
     }
-    
+
     @AfterAll
     public static void tearDownClass() {
         log.info("test AfterClass");
     }
-    
+
     @BeforeEach
     public void setUp() {
         log.info("test Before");
     }
-    
+
     @AfterEach
     public void tearDown() {
         log.info("test After");
@@ -67,7 +68,7 @@ public class AddressUtilsTest {
      * Test of toCompactAddress method, of class AddressUtils.
      */
     @Test
-    public void testToCompactAddress() throws NullAddressException, AddressNotRecognizedException {
+    public void testToCompactAddress() throws NullAddressException, AddressNotRecognizedException, UnsupportedAddressFunctionException {
         log.info("toCompactAddress");
         for (String addr : TestEnvObjects.REF_ADDR_ARRAY) {
             CompactAddressBean result = AddressUtils.toCompactAddress(addr);
@@ -79,6 +80,7 @@ public class AddressUtilsTest {
                 case qTesla:
                     assertNotNull(result.getDefaultShort());
                     assertEquals(TestEnvObjects.DEFAULT_SHORT.get(addr), result.getDefaultShort());
+                    assertEquals(TestEnvObjects.DEFAULT_SHORT_HEX.get(addr), AddressUtils.getBookmarkAddress(result));
                     break;
                 case undefined:
                     assertNotNull(result.getDefaultShort());
@@ -88,5 +90,15 @@ public class AddressUtilsTest {
             }
         }
     }
-    
+
+    @Test
+    public void testToHexBookmarksAddress() throws AddressNotRecognizedException, UnsupportedAddressFunctionException {
+        for (String originalAddr : TestEnvObjects.REF_ADDR_ARRAY) {
+            if (originalAddr.length() == 19840) {
+                assertEquals(TestEnvObjects.DEFAULT_SHORT_HEX.get(originalAddr), AddressUtils.getBookmarkAddress(AddressUtils.toCompactAddress(originalAddr)));
+            }
+
+        }
+    }
+
 }

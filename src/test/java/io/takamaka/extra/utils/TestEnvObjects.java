@@ -36,6 +36,13 @@ public class TestEnvObjects {
         }
     };
 
+    public static final ConcurrentSkipListMap<String, String> DEFAULT_SHORT_HEX = new ConcurrentSkipListMap<>() {
+        {
+            put(REF_ADDR01_QTESLA_R1_DEFAULT, "80801905f861fe11ebe093ca79366be99f88c387759a3867b4bd05ee2d12db0fbc9692f9126e7a913764c291f2374d47");
+            put(REF_ADDR01_QTESLA_R2_DEFAULT, "7f761aa5b33c868229f9617e633187e3d86e9b9c67964b83cb3363bc88937ff6f2843a6f39fd415788167fef5827fa04");
+        }
+    };
+
     public static final String[] REF_ADDR_ARRAY = new String[]{
         REF_ADDR01_ED25519BC_DEFAULT,
         REF_ADDR02_ED25519BC_DEFAULT,
