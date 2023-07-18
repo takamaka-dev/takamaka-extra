@@ -17,8 +17,9 @@ package io.takamaka.extra.utils;
 
 import io.takamaka.extra.beans.CompactAddressBean;
 import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
-import io.takamaka.extra.identicon.exceptions.NullAddressException;
-import io.takamaka.extra.identicon.exceptions.UnsupportedAddressFunctionException;
+import io.takamaka.extra.identicon.exceptions.AddressNullException;
+import io.takamaka.extra.identicon.exceptions.AddressFunctionUnsupportedException;
+import io.takamaka.extra.identicon.exceptions.AddressTooLongException;
 import io.takamaka.wallet.exceptions.HashAlgorithmNotFoundException;
 import io.takamaka.wallet.exceptions.HashEncodeException;
 import io.takamaka.wallet.exceptions.HashProviderNotFoundException;
@@ -35,27 +36,30 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class AddressUtils {
-    
+
     public static enum TypeOfAddress {
         ed25519,
         qTesla,
         undefined
     }
-    
-    public static final String getBookmarkAddress(CompactAddressBean cab) throws UnsupportedAddressFunctionException {
+
+    public static final String getBookmarkAddress(CompactAddressBean cab) throws AddressFunctionUnsupportedException {
         if (TkmTextUtils.isNullOrBlank(cab.getDefaultShort())) {
-            throw new UnsupportedAddressFunctionException("missing default short");
+            throw new AddressFunctionUnsupportedException("missing default short");
         }
         return TkmSignUtils.fromB64UrlToHEX(cab.getDefaultShort());
     }
-    
-    public static final CompactAddressBean toCompactAddress(String address) throws AddressNotRecognizedException {
+
+    public static final CompactAddressBean toCompactAddress(String address) throws AddressNotRecognizedException, AddressTooLongException {
         byte[] addrBytes;
         if (TkmTextUtils.isNullOrBlank(address)) {
             throw new AddressNotRecognizedException("null or zero char");
         }
         CompactAddressBean compactAddressBean = new CompactAddressBean();
         compactAddressBean.setOriginal(address.trim());
+        if (compactAddressBean.getOriginal().length() > 19840) {
+            throw new AddressTooLongException("expected 19840 or less, found " + compactAddressBean.getOriginal().length());
+        }
         if (address.length() != address.trim().length()) {
             log.error("In-depth analysis needed. Trimmed length does not match original string length." + "trimed: " + address.trim() + " orig: \"" + address + "\"");
         }
@@ -94,7 +98,7 @@ public class AddressUtils {
         }
         return compactAddressBean;
     }
-    
+
     private static void setDefaultShort(CompactAddressBean compactAddressBean) throws AddressNotRecognizedException {
         try {
             compactAddressBean.setDefaultShort(TkmSignUtils.Hash384B64URL(compactAddressBean.getOriginal()));
@@ -103,5 +107,5 @@ public class AddressUtils {
             throw new AddressNotRecognizedException(ex);
         }
     }
-    
+
 }

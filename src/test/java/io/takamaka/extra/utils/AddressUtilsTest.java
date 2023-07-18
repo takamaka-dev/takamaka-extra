@@ -17,8 +17,9 @@ package io.takamaka.extra.utils;
 
 import io.takamaka.extra.beans.CompactAddressBean;
 import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
-import io.takamaka.extra.identicon.exceptions.NullAddressException;
-import io.takamaka.extra.identicon.exceptions.UnsupportedAddressFunctionException;
+import io.takamaka.extra.identicon.exceptions.AddressNullException;
+import io.takamaka.extra.identicon.exceptions.AddressFunctionUnsupportedException;
+import io.takamaka.extra.identicon.exceptions.AddressTooLongException;
 import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Level;
@@ -68,7 +69,7 @@ public class AddressUtilsTest {
      * Test of toCompactAddress method, of class AddressUtils.
      */
     @Test
-    public void testToCompactAddress() throws NullAddressException, AddressNotRecognizedException, UnsupportedAddressFunctionException {
+    public void testToCompactAddress() throws AddressNullException, AddressNotRecognizedException, AddressFunctionUnsupportedException, AddressTooLongException {
         log.info("toCompactAddress");
         for (String addr : TestEnvObjects.REF_ADDR_ARRAY) {
             CompactAddressBean result = AddressUtils.toCompactAddress(addr);
@@ -92,7 +93,7 @@ public class AddressUtilsTest {
     }
 
     @Test
-    public void testToHexBookmarksAddress() throws AddressNotRecognizedException, UnsupportedAddressFunctionException {
+    public void testToHexBookmarksAddress() throws AddressNotRecognizedException, AddressFunctionUnsupportedException, AddressTooLongException {
         for (String originalAddr : TestEnvObjects.REF_ADDR_ARRAY) {
             if (originalAddr.length() == 19840) {
                 assertEquals(TestEnvObjects.DEFAULT_SHORT_HEX.get(originalAddr), AddressUtils.getBookmarkAddress(AddressUtils.toCompactAddress(originalAddr)));
@@ -112,7 +113,16 @@ public class AddressUtilsTest {
     }
 
     @Test
-    public void testUndefinedAddress() throws AddressNotRecognizedException, UnsupportedAddressFunctionException {
+    public void testTooLongAddress() {
+        AddressTooLongException assertThrows = assertThrows("expected 19840 or less, found 19862", AddressTooLongException.class, () -> {
+            AddressUtils.toCompactAddress(TestEnvObjects.REF_ADDR01_TOO_LONG);
+        });
+        assertEquals("expected 19840 or less, found 19862", assertThrows.getMessage());
+
+    }
+
+    @Test
+    public void testUndefinedAddress() throws AddressNotRecognizedException, AddressFunctionUnsupportedException, AddressTooLongException {
         for (String originalAddr : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
             CompactAddressBean compactAddress = AddressUtils.toCompactAddress(originalAddr);
             assertEquals(AddressUtils.TypeOfAddress.undefined, compactAddress.getType());

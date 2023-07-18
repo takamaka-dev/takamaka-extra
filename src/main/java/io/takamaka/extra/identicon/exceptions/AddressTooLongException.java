@@ -8,23 +8,23 @@ package io.takamaka.extra.identicon.exceptions;
  *
  * @author Giovanni Antino giovanni.antino@takamaka.io
  */
-public class UnsupportedAddressFunctionException extends AddressException {
+public class AddressTooLongException extends AddressException {
 
     private static final long serialVersionUID = 1L;
 
-    public UnsupportedAddressFunctionException() {
+    public AddressTooLongException() {
         super();
     }
 
-    public UnsupportedAddressFunctionException(String msg) {
+    public AddressTooLongException(String msg) {
         super(msg);
     }
 
-    public UnsupportedAddressFunctionException(Throwable er) {
+    public AddressTooLongException(Throwable er) {
         super(er);
     }
 
-    public UnsupportedAddressFunctionException(String msg, Throwable er) {
+    public AddressTooLongException(String msg, Throwable er) {
         super(msg, er);
     }
 }
