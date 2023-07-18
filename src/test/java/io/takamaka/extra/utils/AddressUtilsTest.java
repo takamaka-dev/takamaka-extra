@@ -16,6 +16,8 @@
 package io.takamaka.extra.utils;
 
 import io.takamaka.extra.beans.CompactAddressBean;
+import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
+import io.takamaka.extra.identicon.exceptions.NullAddressException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -65,15 +67,26 @@ public class AddressUtilsTest {
      * Test of toCompactAddress method, of class AddressUtils.
      */
     @Test
-    public void testToCompactAddress() {
+    public void testToCompactAddress() throws NullAddressException, AddressNotRecognizedException {
         log.info("toCompactAddress");
-        String address = "";
-        CompactAddressBean expResult = null;
-        CompactAddressBean result = AddressUtils.toCompactAddress(address);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
-        assert(true);
+        for (String addr : TestEnvObjects.REF_ADDR_ARRAY) {
+            CompactAddressBean result = AddressUtils.toCompactAddress(addr);
+            assertEquals(addr, result.getOriginal());
+            switch (result.getType()) {
+                case ed25519:
+                    assertNull(result.getDefaultShort());
+                    break;
+                case qTesla:
+                    assertNotNull(result.getDefaultShort());
+                    assertEquals(TestEnvObjects.DEFAULT_SHORT.get(addr), result.getDefaultShort());
+                    break;
+                case undefined:
+                    assertNotNull(result.getDefaultShort());
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+        }
     }
     
 }

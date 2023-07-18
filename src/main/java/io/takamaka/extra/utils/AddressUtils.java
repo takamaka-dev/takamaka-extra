@@ -16,6 +16,16 @@
 package io.takamaka.extra.utils;
 
 import io.takamaka.extra.beans.CompactAddressBean;
+import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
+import io.takamaka.extra.identicon.exceptions.NullAddressException;
+import io.takamaka.wallet.exceptions.HashAlgorithmNotFoundException;
+import io.takamaka.wallet.exceptions.HashEncodeException;
+import io.takamaka.wallet.exceptions.HashProviderNotFoundException;
+import io.takamaka.wallet.utils.KeyContexts;
+import io.takamaka.wallet.utils.TkmSignUtils;
+import io.takamaka.wallet.utils.TkmTextUtils;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -25,7 +35,62 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AddressUtils {
 
-    public static final CompactAddressBean toCompactAddress(String address) {
-        return null;
+    public static enum TypeOfAddress {
+        ed25519,
+        qTesla,
+        undefined
     }
+
+    public static final CompactAddressBean toCompactAddress(String address) throws AddressNotRecognizedException {
+        byte[] addrBytes;
+        if (TkmTextUtils.isNullOrBlank(address)) {
+            throw new AddressNotRecognizedException("null or zero char");
+        }
+        CompactAddressBean compactAddressBean = new CompactAddressBean();
+        compactAddressBean.setOriginal(address.trim());
+        compactAddressBean.setType(TypeOfAddress.undefined);
+        addrBytes = TkmSignUtils.fromB64URLToByteArray(address);
+        if (addrBytes == null) {
+            compactAddressBean.setType(TypeOfAddress.undefined);
+            setDefaultShort(compactAddressBean);
+        } else {
+            switch (address.length()) {
+                case 44:
+                    log.info("ed25519");
+                    if (addrBytes.length != 32) {
+                        compactAddressBean.setType(TypeOfAddress.undefined);
+                        setDefaultShort(compactAddressBean);
+                    } else {
+                        compactAddressBean.setType(TypeOfAddress.ed25519);
+                        compactAddressBean.setOriginal(TkmSignUtils.fromByteArrayToB64URL(addrBytes));
+                    }
+                    break;
+                case 19840:
+                    log.info("qTesla");
+                    //addrBytes = TkmSignUtils.fromB64URLToByteArray(address);
+                    if (addrBytes.length != 14880) {
+                        compactAddressBean.setType(TypeOfAddress.undefined);
+                    } else {
+                        compactAddressBean.setType(TypeOfAddress.qTesla);
+                        compactAddressBean.setOriginal(TkmSignUtils.fromByteArrayToB64URL(addrBytes));
+                    }
+                    setDefaultShort(compactAddressBean);
+                    break;
+                default:
+                    compactAddressBean.setType(TypeOfAddress.undefined);
+                    setDefaultShort(compactAddressBean);
+            }
+        }
+        return compactAddressBean;
+    }
+
+    private static void setDefaultShort(CompactAddressBean compactAddressBean) throws AddressNotRecognizedException {
+        try {
+            compactAddressBean.setDefaultShort(TkmSignUtils.Hash384B64URL(compactAddressBean.getOriginal()));
+        } catch (HashEncodeException | HashAlgorithmNotFoundException | HashProviderNotFoundException ex) {
+            log.error("address can't be encoded " + compactAddressBean.getOriginal(), ex);
+            throw new AddressNotRecognizedException(ex);
+        }
+    }
+
 }

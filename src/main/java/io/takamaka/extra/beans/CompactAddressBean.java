@@ -15,6 +15,8 @@
  */
 package io.takamaka.extra.beans;
 
+import io.takamaka.extra.utils.AddressUtils;
+import io.takamaka.wallet.utils.KeyContexts;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,9 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 public class CompactAddressBean {
 
-    private String defaultAddrFull;
-    private String compactFull;
-    private boolean qTesla;
+    private String original;
     private String defaultShort;
-    private String compactShort;
+    private AddressUtils.TypeOfAddress type;
+    
 }
