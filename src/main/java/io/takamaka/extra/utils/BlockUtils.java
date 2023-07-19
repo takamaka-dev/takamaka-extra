@@ -18,6 +18,8 @@ package io.takamaka.extra.utils;
 import io.takamaka.extra.beans.BlockBox;
 import io.takamaka.extra.beans.CoinbaseMessageBean;
 import io.takamaka.extra.beans.HashBean;
+import io.takamaka.extra.identicon.exceptions.DecodeBlockException;
+import io.takamaka.extra.identicon.exceptions.DecodeTransactionException;
 import io.takamaka.wallet.beans.InternalBlockBean;
 import io.takamaka.wallet.beans.PrivateBlockTxBean;
 import io.takamaka.wallet.beans.TkmCypherBean;
@@ -36,6 +38,8 @@ import java.math.BigInteger;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -525,6 +529,45 @@ public class BlockUtils {
             //if(transactionBeanFromJson.getPublicKey()!=null)
             //return null;
         }
+    }
+
+    
+    public static final ConcurrentSkipListSet<String> collectLargeAddresses(BlockBox blockBox) throws DecodeBlockException {
+        ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<String>();
+        String[] blockHashAddresses;
+        String[] coinbaseAddresses;
+        String[] previousBlockAddresses;
+        String[] fwKeys;
+        String publicKey = blockBox.getTb().getPublicKey();
+        if (!blockBox.isValid()) {
+            log.error("addresses extraction requested on invalid block");
+            throw new DecodeBlockException("addresses extraction requested on invalid block");
+        }
+        try {
+            blockHashAddresses = AddressUtils.extractAddressesFromTransaction(blockBox.getBlockHash());
+        } catch (DecodeTransactionException ex) {
+            throw new DecodeBlockException("invalid blockhash transaction", ex);
+        }
+        try {
+            coinbaseAddresses = AddressUtils.extractAddressesFromTransaction(blockBox.getCoinbase());
+        } catch (DecodeTransactionException ex) {
+            throw new DecodeBlockException("invalid coinbase transaction", ex);
+        }
+        try {
+            previousBlockAddresses = AddressUtils.extractAddressesFromTransaction(blockBox.getPreviousBlock());
+        } catch (DecodeTransactionException ex) {
+            if (blockBox.getBlockHash().getItb().getEpoch() != 0 || blockBox.getBlockHash().getItb().getSlot() != 0) {
+                throw new DecodeBlockException("invalid coinbase transaction", ex);
+            } else {
+                log.info("block zero");
+            }
+        }
+        if (!blockBox.getForwardKeys().isEmpty()) {
+            fwKeys = blockBox.getForwardKeys().values().toArray(String[]::new);
+        }
+        //@Todo complete function
+//        blockBox.getIbb().
+        return res;
     }
 
 }

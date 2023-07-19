@@ -20,12 +20,17 @@ import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
 import io.takamaka.extra.identicon.exceptions.AddressNullException;
 import io.takamaka.extra.identicon.exceptions.AddressFunctionUnsupportedException;
 import io.takamaka.extra.identicon.exceptions.AddressTooLongException;
+import io.takamaka.extra.identicon.exceptions.DecodeBlockException;
+import io.takamaka.extra.identicon.exceptions.DecodeTransactionException;
+import io.takamaka.wallet.beans.TransactionBox;
 import io.takamaka.wallet.exceptions.HashAlgorithmNotFoundException;
 import io.takamaka.wallet.exceptions.HashEncodeException;
 import io.takamaka.wallet.exceptions.HashProviderNotFoundException;
 import io.takamaka.wallet.utils.KeyContexts;
 import io.takamaka.wallet.utils.TkmSignUtils;
 import io.takamaka.wallet.utils.TkmTextUtils;
+import io.takamaka.wallet.utils.TkmWallet;
+import io.takamaka.wallet.utils.WalletHelper;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
@@ -106,6 +111,21 @@ public class AddressUtils {
             log.error("address can't be encoded " + compactAddressBean.getOriginal(), ex);
             throw new AddressNotRecognizedException(ex);
         }
+    }
+
+    public static final String[] extractAddressesFromTransaction(TransactionBox tBox) throws DecodeTransactionException {
+        if (!tBox.isValid()) {
+            log.error("addresses extraction requested on invalid transaction box");
+            throw new DecodeTransactionException("addresses extraction requested on invalid transaction box");
+        }
+        String[] res = new String[2];
+        if (!TkmTextUtils.isNullOrBlank(tBox.from())) {
+            res[0] = tBox.from();
+        }
+        if (!TkmTextUtils.isNullOrBlank(tBox.to())) {
+            res[1] = tBox.to();
+        }
+        return res;
     }
 
 }
