@@ -17,7 +17,10 @@ package io.takamaka.extra.utils;
 
 import io.takamaka.extra.beans.BlockBox;
 import io.takamaka.extra.beans.CoinbaseMessageBean;
+import io.takamaka.extra.beans.CompactAddressBean;
 import io.takamaka.extra.beans.HashBean;
+import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
+import io.takamaka.extra.identicon.exceptions.AddressTooLongException;
 import io.takamaka.extra.identicon.exceptions.DecodeBlockException;
 import io.takamaka.extra.identicon.exceptions.DecodeTransactionException;
 import io.takamaka.wallet.beans.InternalBlockBean;
@@ -35,6 +38,8 @@ import io.takamaka.wallet.utils.TkmSignUtils;
 import io.takamaka.wallet.utils.TkmTextUtils;
 import io.takamaka.wallet.utils.TkmWallet;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -531,30 +536,38 @@ public class BlockUtils {
         }
     }
 
-    
-    public static final ConcurrentSkipListSet<String> collectLargeAddresses(BlockBox blockBox) throws DecodeBlockException {
+    public static final CompactAddressBean[] collectLargeAddresses(BlockBox blockBox) throws DecodeBlockException {
         ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<String>();
-        String[] blockHashAddresses;
-        String[] coinbaseAddresses;
-        String[] previousBlockAddresses;
-        String[] fwKeys;
+        String[] blockHashAddresses = null;
+        String[] coinbaseAddresses = null;
+        String[] previousBlockAddresses = null;
+        String[] fwKeys = null;
+        String[] rewardListAddresses = null;
         String publicKey = blockBox.getTb().getPublicKey();
+        ConcurrentSkipListSet<String> trxAddresses = new ConcurrentSkipListSet<>();
+        ConcurrentSkipListSet<String> allAddresses = new ConcurrentSkipListSet<>();
+        allAddresses.add(publicKey);
+
+        ConcurrentSkipListSet<Exception> tboxExc = new ConcurrentSkipListSet<>();
         if (!blockBox.isValid()) {
             log.error("addresses extraction requested on invalid block");
             throw new DecodeBlockException("addresses extraction requested on invalid block");
         }
         try {
             blockHashAddresses = AddressUtils.extractAddressesFromTransaction(blockBox.getBlockHash());
+            allAddresses.addAll(Arrays.asList(blockHashAddresses));
         } catch (DecodeTransactionException ex) {
             throw new DecodeBlockException("invalid blockhash transaction", ex);
         }
         try {
             coinbaseAddresses = AddressUtils.extractAddressesFromTransaction(blockBox.getCoinbase());
+            allAddresses.addAll(Arrays.asList(coinbaseAddresses));
         } catch (DecodeTransactionException ex) {
             throw new DecodeBlockException("invalid coinbase transaction", ex);
         }
         try {
             previousBlockAddresses = AddressUtils.extractAddressesFromTransaction(blockBox.getPreviousBlock());
+            allAddresses.addAll(Arrays.asList(previousBlockAddresses));
         } catch (DecodeTransactionException ex) {
             if (blockBox.getBlockHash().getItb().getEpoch() != 0 || blockBox.getBlockHash().getItb().getSlot() != 0) {
                 throw new DecodeBlockException("invalid coinbase transaction", ex);
@@ -564,10 +577,71 @@ public class BlockUtils {
         }
         if (!blockBox.getForwardKeys().isEmpty()) {
             fwKeys = blockBox.getForwardKeys().values().toArray(String[]::new);
+            allAddresses.addAll(Arrays.asList(fwKeys));
         }
+        if (!blockBox.getIbb().getRewardList().isEmpty()) {
+            rewardListAddresses = blockBox.getIbb().getRewardList().values().stream().map(b -> b.getUrl64Addr()).toArray(String[]::new);
+            allAddresses.addAll(Arrays.asList(rewardListAddresses));
+        }
+        if (!blockBox.getIbb().getTransactions().isEmpty()) {
+            blockBox.getIbb()
+                    .getTransactions().parallelStream()
+                    .map(t -> TkmWallet.verifyTransactionIntegrity(t.getTb())) //transaction box
+                    .map(tbox -> {
+                        if (!tbox.isValid()) {
+                            log.error("INVALID TRANSACTION IN BLOCK");
+                            tboxExc.add(new DecodeTransactionException("INVALID TRANSACTION IN BLOCK"));
+                        } else {
+                            try {
+                                return AddressUtils.extractAddressesFromTransaction(tbox);
+                            } catch (DecodeTransactionException ex) {
+                                tboxExc.add(new DecodeBlockException("invalid blockhash transaction", ex));
+                            }
+                        }
+                        return null;
+                    }).forEach(addrPairs -> {
+                if (addrPairs.length > 0) {
+                    if (!TkmTextUtils.isNullOrBlank(addrPairs[0])) {
+                        trxAddresses.add(addrPairs[0]);
+                    }
+                    if (!TkmTextUtils.isNullOrBlank(addrPairs[1])) {
+                        trxAddresses.add(addrPairs[1]);
+                    }
+                }
+
+            });
+            if (!tboxExc.isEmpty()) {
+                tboxExc.stream().forEach(ex -> {
+                    log.error("exception in transaction decoding inside transaction list", ex);
+                });
+                throw new DecodeBlockException("exception in transaction decoding inside transaction list", tboxExc.first());
+            }
+            allAddresses.addAll(trxAddresses);
+        }
+        CompactAddressBean[] nonEdAddrBeans = Arrays
+                .stream(allAddresses.toArray(String[]::new))
+                .parallel()
+                .map(addr -> {
+                    try {
+                        return AddressUtils.toCompactAddress(addr);
+                    } catch (AddressNotRecognizedException | AddressTooLongException ex) {
+                        log.info("invalid Address");
+                        tboxExc.add(ex);
+                        return null;
+                    }
+                })
+                .filter(caddr -> !caddr.getType().equals(AddressUtils.TypeOfAddress.ed25519))
+                .toArray(CompactAddressBean[]::new);
+        if (!tboxExc.isEmpty()) {
+            tboxExc.stream().forEach(ex -> {
+                log.error("exception in address casting inside block decoding", ex);
+            });
+            throw new DecodeBlockException("exception in address casting inside block decoding", tboxExc.first());
+        }
+        //blockBox.getIbb().getRewardList()
         //@Todo complete function
 //        blockBox.getIbb().
-        return res;
+        return nonEdAddrBeans;
     }
 
 }
