@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 public class TkmArrayUtils {
 
     public static final ConcurrentSkipListSet<String> filterNullToSet(String[]... strArr) {
-        ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<String>();
+        final ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<String>();
         Arrays.asList(strArr).parallelStream().map((arrWN) -> {
             if (arrWN != null) {
                 List<String> l = Arrays.asList(arrWN).parallelStream().filter(s -> !TkmTextUtils.isNullOrBlank(s)).toList();
