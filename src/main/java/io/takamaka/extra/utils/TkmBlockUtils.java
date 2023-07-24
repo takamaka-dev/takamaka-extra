@@ -570,7 +570,7 @@ public class TkmBlockUtils {
         try {
             previousBlockAddresses = TkmAddressUtils.extractAddressesFromTransaction(blockBox.getPreviousBlock());
             //allAddresses.addAll(Arrays.asList(previousBlockAddresses));
-        } catch (DecodeTransactionException ex) {
+        } catch (NullPointerException | DecodeTransactionException ex) {
             if (blockBox.getBlockHash().getItb().getEpoch() != 0 || blockBox.getBlockHash().getItb().getSlot() != 0) {
                 throw new DecodeBlockException("invalid coinbase transaction", ex);
             } else {
@@ -626,7 +626,7 @@ public class TkmBlockUtils {
                 });
                 throw new DecodeBlockException("exception in transaction decoding inside transaction list", tboxExc.first());
             }
-            
+
             allAddresses.addAll(trxAddresses);
         }
         CompactAddressBean[] nonEdAddrBeans = Arrays
@@ -641,7 +641,7 @@ public class TkmBlockUtils {
                         return null;
                     }
                 })
-                .filter(caddr-> caddr != null)
+                .filter(caddr -> caddr != null)
                 .filter(caddr -> !caddr.getType().equals(TkmAddressUtils.TypeOfAddress.ed25519))
                 .toArray(CompactAddressBean[]::new);
         if (!tboxExc.isEmpty()) {
