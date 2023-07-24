@@ -40,6 +40,7 @@ import io.takamaka.wallet.utils.TkmWallet;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -52,7 +53,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author Giovanni Antino giovanni.antino@takamaka.io
  */
 @Slf4j
-public class BlockUtils {
+public class TkmBlockUtils {
 
     /**
      * calculate the sith hash of transactions or return empty string (not null)
@@ -554,20 +555,21 @@ public class BlockUtils {
             throw new DecodeBlockException("addresses extraction requested on invalid block");
         }
         try {
-            blockHashAddresses = AddressUtils.extractAddressesFromTransaction(blockBox.getBlockHash());
-            allAddresses.addAll(Arrays.asList(blockHashAddresses));
+            blockHashAddresses = TkmAddressUtils.extractAddressesFromTransaction(blockBox.getBlockHash());
+            //List<String> asList = Arrays.asList(blockHashAddresses);
+            //allAddresses.addAll(asList);
         } catch (DecodeTransactionException ex) {
             throw new DecodeBlockException("invalid blockhash transaction", ex);
         }
         try {
-            coinbaseAddresses = AddressUtils.extractAddressesFromTransaction(blockBox.getCoinbase());
-            allAddresses.addAll(Arrays.asList(coinbaseAddresses));
+            coinbaseAddresses = TkmAddressUtils.extractAddressesFromTransaction(blockBox.getCoinbase());
+            //allAddresses.addAll(Arrays.asList(coinbaseAddresses));
         } catch (DecodeTransactionException ex) {
             throw new DecodeBlockException("invalid coinbase transaction", ex);
         }
         try {
-            previousBlockAddresses = AddressUtils.extractAddressesFromTransaction(blockBox.getPreviousBlock());
-            allAddresses.addAll(Arrays.asList(previousBlockAddresses));
+            previousBlockAddresses = TkmAddressUtils.extractAddressesFromTransaction(blockBox.getPreviousBlock());
+            //allAddresses.addAll(Arrays.asList(previousBlockAddresses));
         } catch (DecodeTransactionException ex) {
             if (blockBox.getBlockHash().getItb().getEpoch() != 0 || blockBox.getBlockHash().getItb().getSlot() != 0) {
                 throw new DecodeBlockException("invalid coinbase transaction", ex);
@@ -577,12 +579,20 @@ public class BlockUtils {
         }
         if (!blockBox.getForwardKeys().isEmpty()) {
             fwKeys = blockBox.getForwardKeys().values().toArray(String[]::new);
-            allAddresses.addAll(Arrays.asList(fwKeys));
+            //allAddresses.addAll(Arrays.asList(fwKeys));
         }
         if (!blockBox.getIbb().getRewardList().isEmpty()) {
             rewardListAddresses = blockBox.getIbb().getRewardList().values().stream().map(b -> b.getUrl64Addr()).toArray(String[]::new);
-            allAddresses.addAll(Arrays.asList(rewardListAddresses));
+            //allAddresses.addAll(Arrays.asList(rewardListAddresses));
         }
+
+        ConcurrentSkipListSet<String> filterNullToSet = TkmArrayUtils.filterNullToSet(
+                blockHashAddresses,
+                coinbaseAddresses,
+                previousBlockAddresses,
+                fwKeys,
+                rewardListAddresses);
+        allAddresses.addAll(filterNullToSet);
         if (!blockBox.getIbb().getTransactions().isEmpty()) {
             blockBox.getIbb()
                     .getTransactions().parallelStream()
@@ -593,7 +603,7 @@ public class BlockUtils {
                             tboxExc.add(new DecodeTransactionException("INVALID TRANSACTION IN BLOCK"));
                         } else {
                             try {
-                                return AddressUtils.extractAddressesFromTransaction(tbox);
+                                return TkmAddressUtils.extractAddressesFromTransaction(tbox);
                             } catch (DecodeTransactionException ex) {
                                 tboxExc.add(new DecodeBlockException("invalid blockhash transaction", ex));
                             }
@@ -616,6 +626,7 @@ public class BlockUtils {
                 });
                 throw new DecodeBlockException("exception in transaction decoding inside transaction list", tboxExc.first());
             }
+            
             allAddresses.addAll(trxAddresses);
         }
         CompactAddressBean[] nonEdAddrBeans = Arrays
@@ -623,14 +634,15 @@ public class BlockUtils {
                 .parallel()
                 .map(addr -> {
                     try {
-                        return AddressUtils.toCompactAddress(addr);
+                        return TkmAddressUtils.toCompactAddress(addr);
                     } catch (AddressNotRecognizedException | AddressTooLongException ex) {
                         log.info("invalid Address");
                         tboxExc.add(ex);
                         return null;
                     }
                 })
-                .filter(caddr -> !caddr.getType().equals(AddressUtils.TypeOfAddress.ed25519))
+                .filter(caddr-> caddr != null)
+                .filter(caddr -> !caddr.getType().equals(TkmAddressUtils.TypeOfAddress.ed25519))
                 .toArray(CompactAddressBean[]::new);
         if (!tboxExc.isEmpty()) {
             tboxExc.stream().forEach(ex -> {

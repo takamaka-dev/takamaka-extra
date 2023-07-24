@@ -38,9 +38,9 @@ import static org.junit.Assert.*;
  * @author Giovanni Antino giovanni.antino@takamaka.io
  */
 @Slf4j
-public class AddressUtilsTest {
+public class TkmAddressUtilsTest {
 
-    public AddressUtilsTest() {
+    public TkmAddressUtilsTest() {
         Configurator.setLevel("io.takamaka.extra.utils.AddressUtilsTest", Level.DEBUG);
         log.info("test constructor");
     }
@@ -72,7 +72,7 @@ public class AddressUtilsTest {
     public void testToCompactAddress() throws AddressNullException, AddressNotRecognizedException, AddressFunctionUnsupportedException, AddressTooLongException {
         log.info("toCompactAddress");
         for (String addr : TestEnvObjects.REF_ADDR_ARRAY) {
-            CompactAddressBean result = AddressUtils.toCompactAddress(addr);
+            CompactAddressBean result = TkmAddressUtils.toCompactAddress(addr);
             assertEquals(addr, result.getOriginal());
             switch (result.getType()) {
                 case ed25519:
@@ -81,7 +81,7 @@ public class AddressUtilsTest {
                 case qTesla:
                     assertNotNull(result.getDefaultShort());
                     assertEquals(TestEnvObjects.DEFAULT_SHORT.get(addr), result.getDefaultShort());
-                    assertEquals(TestEnvObjects.DEFAULT_SHORT_HEX.get(addr), AddressUtils.getBookmarkAddress(result));
+                    assertEquals(TestEnvObjects.DEFAULT_SHORT_HEX.get(addr), TkmAddressUtils.getBookmarkAddress(result));
                     break;
                 case undefined:
                     assertNotNull(result.getDefaultShort());
@@ -96,7 +96,7 @@ public class AddressUtilsTest {
     public void testToHexBookmarksAddress() throws AddressNotRecognizedException, AddressFunctionUnsupportedException, AddressTooLongException {
         for (String originalAddr : TestEnvObjects.REF_ADDR_ARRAY) {
             if (originalAddr.length() == 19840) {
-                assertEquals(TestEnvObjects.DEFAULT_SHORT_HEX.get(originalAddr), AddressUtils.getBookmarkAddress(AddressUtils.toCompactAddress(originalAddr)));
+                assertEquals(TestEnvObjects.DEFAULT_SHORT_HEX.get(originalAddr), TkmAddressUtils.getBookmarkAddress(TkmAddressUtils.toCompactAddress(originalAddr)));
             }
 
         }
@@ -106,7 +106,7 @@ public class AddressUtilsTest {
     public void testNullAddress() {
         for (String originalAddr : TestEnvObjects.REF_ADDR_ARRAY_EMPTY) {
             AddressNotRecognizedException assertThrows = assertThrows("null or zero char", AddressNotRecognizedException.class, () -> {
-                AddressUtils.toCompactAddress(originalAddr);
+                TkmAddressUtils.toCompactAddress(originalAddr);
             });
             assertEquals("null or zero char", assertThrows.getMessage());
         }
@@ -115,7 +115,7 @@ public class AddressUtilsTest {
     @Test
     public void testTooLongAddress() {
         AddressTooLongException assertThrows = assertThrows("expected 19840 or less, found 19862", AddressTooLongException.class, () -> {
-            AddressUtils.toCompactAddress(TestEnvObjects.REF_ADDR01_TOO_LONG);
+            TkmAddressUtils.toCompactAddress(TestEnvObjects.REF_ADDR01_TOO_LONG);
         });
         assertEquals("expected 19840 or less, found 19862", assertThrows.getMessage());
 
@@ -124,11 +124,11 @@ public class AddressUtilsTest {
     @Test
     public void testUndefinedAddress() throws AddressNotRecognizedException, AddressFunctionUnsupportedException, AddressTooLongException {
         for (String originalAddr : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
-            CompactAddressBean compactAddress = AddressUtils.toCompactAddress(originalAddr);
-            assertEquals(AddressUtils.TypeOfAddress.undefined, compactAddress.getType());
+            CompactAddressBean compactAddress = TkmAddressUtils.toCompactAddress(originalAddr);
+            assertEquals(TkmAddressUtils.TypeOfAddress.undefined, compactAddress.getType());
             assertEquals(TestEnvObjects.DEFAULT_UNDEFINED_SHORT.get(originalAddr), compactAddress.getDefaultShort());
             //bookmark
-            String bookmarkAddress = AddressUtils.getBookmarkAddress(compactAddress);
+            String bookmarkAddress = TkmAddressUtils.getBookmarkAddress(compactAddress);
             assertEquals(bookmarkAddress.length(), 96);
             assertEquals(TestEnvObjects.DEFAULT_UNDEFINED_SHORT_HEX.get(originalAddr), bookmarkAddress);
         }

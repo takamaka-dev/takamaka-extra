@@ -16,7 +16,7 @@
 package io.takamaka.extra.beans;
 
 import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
-import io.takamaka.extra.utils.AddressUtils;
+import io.takamaka.extra.utils.TkmAddressUtils;
 import io.takamaka.wallet.utils.KeyContexts;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,6 +43,6 @@ public class CompactAddressBean {
 
     private String original;
     private String defaultShort;
-    private AddressUtils.TypeOfAddress type;
+    private TkmAddressUtils.TypeOfAddress type;
 
 }

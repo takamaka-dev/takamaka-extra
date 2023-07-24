@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author Giovanni Antino giovanni.antino@takamaka.io
  */
 @Slf4j
-public class AddressUtils {
+public class TkmAddressUtils {
 
     public static enum TypeOfAddress {
         ed25519,
