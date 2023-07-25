@@ -16,10 +16,14 @@
 package io.takamaka.extra.utils;
 
 import io.takamaka.extra.beans.CompactAddressBean;
+import io.takamaka.extra.identicon.exceptions.AddressDecodeException;
+import io.takamaka.extra.identicon.exceptions.AddressEncodeException;
 import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
 import io.takamaka.extra.identicon.exceptions.AddressNullException;
 import io.takamaka.extra.identicon.exceptions.AddressFunctionUnsupportedException;
 import io.takamaka.extra.identicon.exceptions.AddressTooLongException;
+import io.takamaka.wallet.utils.TkmSignUtils;
+import java.util.Arrays;
 import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Level;
@@ -132,6 +136,41 @@ public class TkmAddressUtilsTest {
             assertEquals(bookmarkAddress.length(), 96);
             assertEquals(TestEnvObjects.DEFAULT_UNDEFINED_SHORT_HEX.get(originalAddr), bookmarkAddress);
         }
+    }
+
+    @Test
+    public void testSibhRetro() throws AddressNotRecognizedException, AddressFunctionUnsupportedException, AddressTooLongException, AddressDecodeException, AddressEncodeException {
+        //Configurator.setLevel("io.takamaka.extra.utils.AddressUtilsTest", Level.DEBUG);
+        String hexBH = "69b9619ea29021e5dee7978e789e6cb6369432e6e356176c906d40dfab1dd045aee023e3489946d7293ec7dd6689cd766d6a67b1d9af5a10045ab97133be0c9b";
+        testAddr(hexBH);
+    }
+
+    private void testAddr(String hexBH) throws AddressEncodeException, AddressDecodeException {
+        byte[] byteBH = TkmSignUtils.fromHexToByteArray(hexBH);
+        log.info("reference: " + Arrays.toString(byteBH));
+        String b64urlBH = TkmSignUtils.fromByteArrayToB64URL(byteBH);
+        log.info("byte to url: " + b64urlBH);
+        String fromB64UrlToHEX = TkmSignUtils.fromB64UrlToHEX(b64urlBH);
+        log.info("url to hex : " + fromB64UrlToHEX);
+        byte[] b64uToByte = TkmSignUtils.fromB64URLToByteArray(b64urlBH);
+        log.info("conv 1   : " + Arrays.toString(b64uToByte));
+        String hexBHfromByteBH = TkmSignUtils.fromByteArrayToHexString(b64uToByte);
+        log.info("byte to hex: " + fromB64UrlToHEX);
+        byte[] byFromHexTobyteToB64ToHex = TkmSignUtils.fromHexToByteArray(hexBHfromByteBH);
+        log.info("conv 1   : " + Arrays.toString(byFromHexTobyteToB64ToHex));
+        assertArrayEquals(byteBH, b64uToByte);
+        assertArrayEquals(byteBH, byFromHexTobyteToB64ToHex);
+        assertEquals(hexBH, hexBHfromByteBH);
+        assertEquals(hexBH, fromB64UrlToHEX);
+        log.info("address utils");
+        String fromHexToB64URL = TkmAddressUtils.fromHexToB64URL(hexBH);
+        log.info("b64url: " + fromHexToB64URL);
+        assertEquals(b64urlBH, fromHexToB64URL);
+        String fromB64URLToHex = TkmAddressUtils.fromB64URLToHex(fromHexToB64URL);
+        log.info("hex : " + fromB64URLToHex);
+        assertEquals(hexBH, fromB64URLToHex);
+        //69b9619ea29021e5dee7978e789e6cb6369432e6e356176c906d40dfab1dd045aee023e3489946d7293ec7dd6689cd766d6a67b1d9af5a10045ab97133be0c9b
+        //ablhnqKQIeXe55eOeJ5stjaUMubjVhdskG1A36sd0EWu4CPjSJlG1yk-x91mic12bWpnsdmvWhAEWrlxM74Mmw..
     }
 
 }

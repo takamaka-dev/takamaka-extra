@@ -16,6 +16,8 @@
 package io.takamaka.extra.utils;
 
 import io.takamaka.extra.beans.CompactAddressBean;
+import io.takamaka.extra.identicon.exceptions.AddressDecodeException;
+import io.takamaka.extra.identicon.exceptions.AddressEncodeException;
 import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
 import io.takamaka.extra.identicon.exceptions.AddressNullException;
 import io.takamaka.extra.identicon.exceptions.AddressFunctionUnsupportedException;
@@ -31,6 +33,7 @@ import io.takamaka.wallet.utils.TkmSignUtils;
 import io.takamaka.wallet.utils.TkmTextUtils;
 import io.takamaka.wallet.utils.TkmWallet;
 import io.takamaka.wallet.utils.WalletHelper;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
@@ -126,6 +129,30 @@ public class TkmAddressUtils {
             res[1] = tBox.to();
         }
         return res;
+    }
+
+    public static final String fromHexToB64URL(String hex) throws AddressDecodeException, AddressEncodeException {
+        byte[] fromHexToByteArray = TkmSignUtils.fromHexToByteArray(hex);
+        if (fromHexToByteArray == null) {
+            throw new AddressDecodeException("can not decode hex address " + hex);
+        }
+        String fromByteArrayToB64URL = TkmSignUtils.fromByteArrayToB64URL(fromHexToByteArray);
+        if (fromByteArrayToB64URL == null) {
+            throw new AddressEncodeException("can not encode hex address hex: " + hex + " byteArray " + Arrays.toString(fromHexToByteArray));
+        }
+        return fromByteArrayToB64URL;
+    }
+
+    public static final String fromB64URLToHex(String b64url) throws AddressDecodeException, AddressEncodeException {
+        byte[] fromB64URLToByteArray = TkmSignUtils.fromB64URLToByteArray(b64url);
+        if (fromB64URLToByteArray == null) {
+            throw new AddressDecodeException("can not decode b64url address " + b64url);
+        }
+        String fromByteArrayToHexString = TkmSignUtils.fromByteArrayToHexString(fromB64URLToByteArray);
+        if (fromByteArrayToHexString == null) {
+            throw new AddressEncodeException("can not encode byte address b64url: " + b64url + " byteArray " + Arrays.toString(fromB64URLToByteArray));
+        }
+        return fromByteArrayToHexString;
     }
 
 }
