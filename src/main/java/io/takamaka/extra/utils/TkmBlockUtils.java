@@ -537,6 +537,12 @@ public class TkmBlockUtils {
         }
     }
 
+    /**
+     *
+     * @param blockBox
+     * @return return all non null, non ed addresses
+     * @throws DecodeBlockException
+     */
     public static final CompactAddressBean[] collectLargeAddresses(BlockBox blockBox) throws DecodeBlockException {
         ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<String>();
         String[] blockHashAddresses = null;

@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CompactAddressBean {
+public class CompactAddressBean implements Comparable<CompactAddressBean> {
 
 //    public CompactAddressBean(String original) throws AddressNotRecognizedException {
 //        CompactAddressBean toCompactAddress = AddressUtils.toCompactAddress(original);
@@ -40,9 +40,13 @@ public class CompactAddressBean {
 //        this.type = toCompactAddress.getType();
 //
 //    }
-
     private String original;
     private String defaultShort;
     private TkmAddressUtils.TypeOfAddress type;
+
+    @Override
+    public int compareTo(CompactAddressBean o) {
+        return original.compareTo(o.original);
+    }
 
 }
