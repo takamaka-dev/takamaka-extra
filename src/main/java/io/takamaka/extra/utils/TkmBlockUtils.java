@@ -19,6 +19,7 @@ import io.takamaka.extra.beans.BlockBox;
 import io.takamaka.extra.beans.CoinbaseMessageBean;
 import io.takamaka.extra.beans.CompactAddressBean;
 import io.takamaka.extra.beans.HashBean;
+import io.takamaka.extra.identicon.exceptions.AddressDecodeException;
 import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
 import io.takamaka.extra.identicon.exceptions.AddressTooLongException;
 import io.takamaka.extra.identicon.exceptions.DecodeBlockException;
@@ -543,7 +544,7 @@ public class TkmBlockUtils {
      * @return return all non null, non ed addresses
      * @throws DecodeBlockException
      */
-    public static final CompactAddressBean[] collectLargeAddresses(BlockBox blockBox) throws DecodeBlockException {
+    public static final CompactAddressBean[] collectLargeAddresses(BlockBox blockBox) throws DecodeBlockException, AddressDecodeException {
         ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<String>();
         String[] blockHashAddresses = null;
         String[] coinbaseAddresses = null;
@@ -587,10 +588,11 @@ public class TkmBlockUtils {
             fwKeys = blockBox.getForwardKeys().values().toArray(String[]::new);
             //allAddresses.addAll(Arrays.asList(fwKeys));
         }
-        if (!blockBox.getIbb().getRewardList().isEmpty()) {
-            rewardListAddresses = blockBox.getIbb().getRewardList().values().stream().map(b -> b.getUrl64Addr()).toArray(String[]::new);
-            //allAddresses.addAll(Arrays.asList(rewardListAddresses));
-        }
+//        if (!blockBox.getIbb().getRewardList().isEmpty()) {
+//            rewardListAddresses = blockBox.getIbb().getRewardList().values().stream().map(b -> b.getUrl64Addr()).toArray(String[]::new);
+//            //allAddresses.addAll(Arrays.asList(rewardListAddresses));
+//        }
+        rewardListAddresses = TkmRewardUtils.extractRewardAddressesRaw(blockBox);
 
         ConcurrentSkipListSet<String> filterNullToSet = TkmArrayUtils.filterNullToSet(
                 blockHashAddresses,
