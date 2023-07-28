@@ -62,7 +62,6 @@ public class TkmAddressUtilsTest {
         for (Map.Entry<String, String> trx : REF_TRX_QTESLA.entrySet()) {
             String key = trx.getKey();
             //String val = trx.getValue();
-            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
             InputStream appProp = Thread.currentThread().getContextClassLoader().getResourceAsStream(key + ".json");
             REF_TRX_QTESLA.put(key, new String(appProp.readAllBytes(), StandardCharsets.UTF_8));
             log.info("loaded " + trx.getKey());
