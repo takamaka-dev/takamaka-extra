@@ -22,8 +22,13 @@ import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
 import io.takamaka.extra.identicon.exceptions.AddressNullException;
 import io.takamaka.extra.identicon.exceptions.AddressFunctionUnsupportedException;
 import io.takamaka.extra.identicon.exceptions.AddressTooLongException;
+import static io.takamaka.extra.utils.TestEnvObjects.REF_TRX_QTESLA;
 import io.takamaka.wallet.utils.TkmSignUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Level;
@@ -50,8 +55,19 @@ public class TkmAddressUtilsTest {
     }
 
     @BeforeAll
-    public static void setUpClass() {
+    public static void setUpClass() throws IOException {
         log.info("test BeforeClass");
+        log.info("load qtesla transactions");
+        //REF_TRX_QTESLA
+        for (Map.Entry<String, String> trx : REF_TRX_QTESLA.entrySet()) {
+            String key = trx.getKey();
+            //String val = trx.getValue();
+            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+            InputStream appProp = Thread.currentThread().getContextClassLoader().getResourceAsStream(key + ".json");
+            REF_TRX_QTESLA.put(key, new String(appProp.readAllBytes(), StandardCharsets.UTF_8));
+            log.info("loaded " + trx.getKey());
+        }
+        log.info("all loaded");
     }
 
     @AfterAll
