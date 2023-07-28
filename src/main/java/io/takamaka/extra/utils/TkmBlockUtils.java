@@ -586,12 +586,7 @@ public class TkmBlockUtils {
         }
         if (!blockBox.getForwardKeys().isEmpty()) {
             fwKeys = blockBox.getForwardKeys().values().toArray(String[]::new);
-            //allAddresses.addAll(Arrays.asList(fwKeys));
         }
-//        if (!blockBox.getIbb().getRewardList().isEmpty()) {
-//            rewardListAddresses = blockBox.getIbb().getRewardList().values().stream().map(b -> b.getUrl64Addr()).toArray(String[]::new);
-//            //allAddresses.addAll(Arrays.asList(rewardListAddresses));
-//        }
         rewardListAddresses = TkmRewardUtils.extractRewardAddressesRaw(blockBox);
 
         ConcurrentSkipListSet<String> filterNullToSet = TkmArrayUtils.filterNullToSet(
@@ -602,39 +597,7 @@ public class TkmBlockUtils {
                 rewardListAddresses);
         allAddresses.addAll(filterNullToSet);
         if (!blockBox.getIbb().getTransactions().isEmpty()) {
-            blockBox.getIbb()
-                    .getTransactions().parallelStream()
-                    .map(t -> TkmWallet.verifyTransactionIntegrity(t.getTb())) //transaction box
-                    .map(tbox -> {
-                        if (!tbox.isValid()) {
-                            log.error("INVALID TRANSACTION IN BLOCK");
-                            tboxExc.add(new DecodeTransactionException("INVALID TRANSACTION IN BLOCK"));
-                        } else {
-                            try {
-                                return TkmAddressUtils.extractAddressesFromTransaction(tbox);
-                            } catch (DecodeTransactionException ex) {
-                                tboxExc.add(new DecodeBlockException("invalid blockhash transaction", ex));
-                            }
-                        }
-                        return null;
-                    }).forEach(addrPairs -> {
-                if (addrPairs.length > 0) {
-                    if (!TkmTextUtils.isNullOrBlank(addrPairs[0])) {
-                        trxAddresses.add(addrPairs[0]);
-                    }
-                    if (!TkmTextUtils.isNullOrBlank(addrPairs[1])) {
-                        trxAddresses.add(addrPairs[1]);
-                    }
-                }
-
-            });
-            if (!tboxExc.isEmpty()) {
-                tboxExc.stream().forEach(ex -> {
-                    log.error("exception in transaction decoding inside transaction list", ex);
-                });
-                throw new DecodeBlockException("exception in transaction decoding inside transaction list", tboxExc.first());
-            }
-
+            trxAddresses = TkmTransactionUtils.extractAllTransactionAdresses(blockBox);
             allAddresses.addAll(trxAddresses);
         }
         CompactAddressBean[] nonEdAddrBeans = Arrays
@@ -658,9 +621,6 @@ public class TkmBlockUtils {
             });
             throw new DecodeBlockException("exception in address casting inside block decoding", tboxExc.first());
         }
-        //blockBox.getIbb().getRewardList()
-        //@Todo complete function
-//        blockBox.getIbb().
         return nonEdAddrBeans;
     }
 

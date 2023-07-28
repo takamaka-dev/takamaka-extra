@@ -15,14 +15,20 @@
  */
 package io.takamaka.extra.utils;
 
+import io.takamaka.extra.beans.BlockBox;
 import io.takamaka.extra.beans.FileMessageBean;
+import io.takamaka.extra.identicon.exceptions.DecodeBlockException;
+import io.takamaka.extra.identicon.exceptions.DecodeTransactionException;
 import io.takamaka.wallet.utils.TkmTextUtils;
+import io.takamaka.wallet.utils.TkmWallet;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -31,7 +37,43 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class TkmTransactionUtils {
-    
+
+    public static final ConcurrentSkipListSet<String> extractAllTransactionAdresses(BlockBox blockBox) throws DecodeBlockException {
+        ConcurrentSkipListMap<String, Exception> errorMapper = TkmErrorUtils.getErrorMapper();
+        ConcurrentSkipListSet<String> trxAddresses = new ConcurrentSkipListSet<>();
+        blockBox.getIbb()
+                .getTransactions().parallelStream()
+                .map(t -> TkmWallet.verifyTransactionIntegrity(t.getTb())) //transaction box
+                .map(tbox -> {
+                    if (!tbox.isValid()) {
+                        log.error("INVALID TRANSACTION IN BLOCK");
+                        TkmErrorUtils.appendException("INVALID TRANSACTION IN BLOCK", new DecodeTransactionException("INVALID TRANSACTION IN BLOCK"), errorMapper);
+                    } else {
+                        try {
+                            return TkmAddressUtils.extractAddressesFromTransaction(tbox);
+                        } catch (DecodeTransactionException ex) {
+                            TkmErrorUtils.appendException("invalid blockhash transaction", ex, errorMapper);
+                        }
+                    }
+                    return null;
+                }).forEach(addrPairs -> {
+            if (addrPairs.length > 0) {
+                if (!TkmTextUtils.isNullOrBlank(addrPairs[0])) {
+                    trxAddresses.add(addrPairs[0]);
+                }
+                if (!TkmTextUtils.isNullOrBlank(addrPairs[1])) {
+                    trxAddresses.add(addrPairs[1]);
+                }
+            }
+
+        });
+        TkmErrorUtils.logAllErrors(errorMapper);
+        if (!errorMapper.isEmpty()) {
+            throw new DecodeBlockException(errorMapper.firstKey(), errorMapper.firstEntry().getValue());
+        }
+        return trxAddresses;
+    }
+
     public static final String createMessageInternalIndexed(String message) {
         if (TkmTextUtils.isNullOrBlank(message)) {
             return null;
