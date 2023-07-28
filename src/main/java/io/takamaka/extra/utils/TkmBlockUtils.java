@@ -23,6 +23,7 @@ import io.takamaka.extra.identicon.exceptions.AddressDecodeException;
 import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
 import io.takamaka.extra.identicon.exceptions.AddressTooLongException;
 import io.takamaka.extra.identicon.exceptions.DecodeBlockException;
+import io.takamaka.extra.identicon.exceptions.DecodeForwardKeysException;
 import io.takamaka.extra.identicon.exceptions.DecodeTransactionException;
 import io.takamaka.wallet.beans.InternalBlockBean;
 import io.takamaka.wallet.beans.PrivateBlockTxBean;
@@ -544,7 +545,7 @@ public class TkmBlockUtils {
      * @return return all non null, non ed addresses
      * @throws DecodeBlockException
      */
-    public static final CompactAddressBean[] collectLargeAddresses(BlockBox blockBox) throws DecodeBlockException, AddressDecodeException {
+    public static final CompactAddressBean[] collectLargeAddresses(BlockBox blockBox) throws DecodeBlockException, AddressDecodeException, DecodeForwardKeysException {
         ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<String>();
         String[] blockHashAddresses = null;
         String[] coinbaseAddresses = null;
@@ -584,9 +585,10 @@ public class TkmBlockUtils {
                 log.info("block zero");
             }
         }
-        if (!blockBox.getForwardKeys().isEmpty()) {
-            fwKeys = blockBox.getForwardKeys().values().toArray(String[]::new);
-        }
+        fwKeys = TkmForwardKeys.extractAddresses(blockBox.getForwardKeys());
+//        if (!blockBox.getForwardKeys().isEmpty()) {
+//            fwKeys = blockBox.getForwardKeys().values().toArray(String[]::new);
+//        }
         rewardListAddresses = TkmRewardUtils.extractRewardAddressesRaw(blockBox);
 
         ConcurrentSkipListSet<String> filterNullToSet = TkmArrayUtils.filterNullToSet(
