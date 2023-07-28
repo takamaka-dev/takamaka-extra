@@ -85,6 +85,14 @@ public class TkmTransactionUtils {
         return trxAddresses;
     }
 
+    public static final String createTSVectorOrNull(String transactionMessage) {
+        if (transactionMessage == null) {
+            log.info("no message to be encoded");
+            return null;
+        }
+        return createMessageInternalIndexed(transactionMessage);
+    }
+
     public static final String createMessageInternalIndexed(String message) {
         if (TkmTextUtils.isNullOrBlank(message)) {
             return null;
