@@ -19,6 +19,10 @@ import io.takamaka.extra.beans.BlockBox;
 import io.takamaka.extra.beans.FileMessageBean;
 import io.takamaka.extra.identicon.exceptions.DecodeBlockException;
 import io.takamaka.extra.identicon.exceptions.DecodeTransactionException;
+import io.takamaka.wallet.exceptions.HashAlgorithmNotFoundException;
+import io.takamaka.wallet.exceptions.HashEncodeException;
+import io.takamaka.wallet.exceptions.HashProviderNotFoundException;
+import io.takamaka.wallet.utils.TkmSignUtils;
 import io.takamaka.wallet.utils.TkmTextUtils;
 import io.takamaka.wallet.utils.TkmWallet;
 import java.nio.charset.StandardCharsets;
@@ -37,6 +41,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class TkmTransactionUtils {
+
+    public static final String getMessageHashOrNull(String message) throws HashEncodeException, HashAlgorithmNotFoundException, HashProviderNotFoundException {
+        if (message == null) {
+            return null;
+        }
+        return TkmSignUtils.Hash256B64URL(message);
+    }
 
     public static final ConcurrentSkipListSet<String> extractAllTransactionAdresses(BlockBox blockBox) throws DecodeBlockException {
         ConcurrentSkipListMap<String, Exception> errorMapper = TkmErrorUtils.getErrorMapper();
