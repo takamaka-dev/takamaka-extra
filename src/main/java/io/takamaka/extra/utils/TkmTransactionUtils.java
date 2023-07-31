@@ -15,16 +15,23 @@
  */
 package io.takamaka.extra.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.takamaka.extra.beans.BlockBox;
 import io.takamaka.extra.beans.FileMessageBean;
+import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
+import io.takamaka.extra.identicon.exceptions.AddressTooLongException;
 import io.takamaka.extra.identicon.exceptions.DecodeBlockException;
 import io.takamaka.extra.identicon.exceptions.DecodeTransactionException;
+import io.takamaka.wallet.beans.FeeBean;
+import io.takamaka.wallet.beans.TransactionBox;
 import io.takamaka.wallet.exceptions.HashAlgorithmNotFoundException;
 import io.takamaka.wallet.exceptions.HashEncodeException;
 import io.takamaka.wallet.exceptions.HashProviderNotFoundException;
 import io.takamaka.wallet.utils.TkmSignUtils;
 import io.takamaka.wallet.utils.TkmTextUtils;
 import io.takamaka.wallet.utils.TkmWallet;
+import io.takamaka.wallet.utils.TransactionFeeCalculator;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +41,7 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.util.encoders.Hex;
 
 /**
  *
@@ -279,4 +287,89 @@ public class TkmTransactionUtils {
         }
         return null;
     }
+    
+    public static final String getSibhSith(String sibh, String sith) {
+        if (sibh.length() != 128) {
+            throw new RuntimeException("wrong sibh");
+        }
+        if (sith.length() != 44) {
+            throw new RuntimeException("wrong sith");
+        }
+        return sibh + "-" + sith;
+    }
+
+    public static final String getSibhAddr(String sibh, String address) throws AddressNotRecognizedException, AddressTooLongException {
+        if (sibh.length() != 128) {
+            throw new RuntimeException("wrong sibh");
+        }
+//        if (!metaAddressBean.isValid()) {
+//            throw new RuntimeException("wrong address");
+//        }
+        return sibh + "-" + TkmAddressUtils.toCompactAddress(address);
+    }
+
+//    TODO
+//    public static final String verify(String transaction) {
+//        //String response = "{\"TxIsVerified\":\"false\"}";
+//        ObjectMapper mapper = new ObjectMapper();
+//        ObjectNode response = mapper.createObjectNode();
+//        response.put("TxIsVerified", false);
+//        try {
+//            log.debug("message content");
+//            log.debug(transaction);
+//        } catch (Exception e) {
+//            log.info("no object in validation");
+//            response.put("error-message", "invalid entity");
+//            return response.toPrettyString();
+//        }
+//        if (TkmTextUtils.isNullOrBlank(transaction) || transaction.length() < 3) {
+//            log.info("no object in validation");
+//            response.put("error-message", "no object in validation");
+//            return response.toPrettyString();
+//        }
+////        String[] splitTx = transaction.split("=");
+////        if (splitTx.length != 2) {
+////            // malformed
+////            response.put("error-message", "invalid transmission format");
+////            log.info("invalid transmission format");
+////            return response.toPrettyString();
+////        }
+////        if (!"tx".equalsIgnoreCase(splitTx[0].trim())) {
+////            // malformed
+////            response.put("error-message", "invalid field in transaction transmission");
+////            log.info("invalid field in transaction transmission");
+////            return response.toPrettyString();
+////        }
+//        try {
+//            log.debug(transaction);
+//            byte[] txJsonByteArray = Hex.decode(transaction);
+//            String utf8TxVal = new String(txJsonByteArray, StandardCharsets.UTF_8);
+//            log.debug(utf8TxVal);
+//            TransactionBox tBox = TkmWallet.verifyTransactionIntegrity(utf8TxVal);
+//            if (!tBox.isValid()) {
+//                log.info("invalid transaction - can not be decoded");
+//                response.put("error-message", "invalid transaction - can not be decoded");
+//                return response.toPrettyString();
+//            }
+//            FeeBean feeBean = TransactionFeeCalculator.getFeeBean(tBox);
+//            if (feeBean == null) {
+//                log.info("invalid transaction - undefined value");
+//                response.put("error-message", "invalid transaction - undefined value");
+//                return response.toPrettyString();
+//            }
+////            TODO
+////            String jFeeBean = TkmTextUtils.toJson(feeBean);
+////            if (jFeeBean == null) {
+////                log.info("invalid transaction - unserializable value");
+////                response.put("error-message", "invalid transaction - fee error");
+////                return response.toPrettyString();
+////            }
+//            return jFeeBean;
+//        } catch (Exception e) {
+//            response.put("error-message", "malformed value");
+//            log.info("hex transaction value can not be decoded");
+//            return response.toPrettyString();
+//        }
+//
+//    }
 }
