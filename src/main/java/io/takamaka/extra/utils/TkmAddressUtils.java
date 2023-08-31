@@ -155,4 +155,10 @@ public class TkmAddressUtils {
         return fromByteArrayToHexString;
     }
 
+    public static String get5ZeroPaddedNumberWithPrefix(String prefix, int number) {
+        StringBuilder sb = new StringBuilder(prefix);
+        sb.append(String.format("%05d", number));
+        return sb.toString();
+    }
+
 }

@@ -15,6 +15,7 @@
  */
 package io.takamaka.extra.beans;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MintResponseBean {
 
     private ShellRequestBean srb;
+    private String resp;
     private ErrorBean error;
 
 }
