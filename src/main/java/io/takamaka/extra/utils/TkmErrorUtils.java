@@ -15,6 +15,8 @@
  */
 package io.takamaka.extra.utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentSkipListMap;
 import lombok.extern.slf4j.Slf4j;
@@ -25,23 +27,32 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class TkmErrorUtils {
-
+    
     public static final ConcurrentSkipListMap<String, Exception> getErrorMapper() {
         return new ConcurrentSkipListMap<String, Exception>();
     }
-
+    
     public static final void logAllErrors(ConcurrentSkipListMap<String, Exception> errorMap) {
         errorMap.forEach((s, e) -> {
             log.error(s, e);
+            String stackTrace = getStackTrace(e);
+            log.error(stackTrace);
         });
     }
-
+    
     public static final void appendException(String message, Exception ex, ConcurrentSkipListMap<String, Exception> errorMapper) {
         errorMapper.put(message, ex);
     }
-
+    
     public static final void appendException(Exception ex, ConcurrentSkipListMap<String, Exception> errorMapper) {
         errorMapper.put(ex.getMessage() + "- rnd uid: " + UUID.randomUUID().toString(), ex);
     }
-
+    
+    public static final String getStackTrace(final Throwable throwable) {
+        final StringWriter sw = new StringWriter();
+        final PrintWriter pw = new PrintWriter(sw, true);
+        throwable.printStackTrace(pw);
+        return sw.getBuffer().toString();
+    }
+    
 }
