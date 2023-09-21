@@ -58,6 +58,13 @@ public class TkmAddressUtils {
         return TkmSignUtils.fromB64UrlToHEX(cab.getDefaultShort());
     }
 
+    /**
+     *
+     * @param address base64 URL representation of a qTesla or ed25519 address.
+     * @return Returns a new bean initialized to the address passed.
+     * @throws AddressNotRecognizedException
+     * @throws AddressTooLongException
+     */
     public static final CompactAddressBean toCompactAddress(String address) throws AddressNotRecognizedException, AddressTooLongException {
         byte[] addrBytes;
         if (TkmTextUtils.isNullOrBlank(address)) {

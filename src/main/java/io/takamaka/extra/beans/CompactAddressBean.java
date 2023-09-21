@@ -17,13 +17,15 @@ package io.takamaka.extra.beans;
 
 import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
 import io.takamaka.extra.utils.TkmAddressUtils;
-import io.takamaka.wallet.utils.KeyContexts;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ *
+ * To correctly create a new object use @see
+ * io.takamaka.extra.utils.TkmAddressUtils#toCompactAddress(java.lang.String)
  *
  * @author Giovanni Antino giovanni.antino@takamaka.io
  */
@@ -33,13 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 public class CompactAddressBean implements Comparable<CompactAddressBean> {
 
-//    public CompactAddressBean(String original) throws AddressNotRecognizedException {
-//        CompactAddressBean toCompactAddress = AddressUtils.toCompactAddress(original);
-//        this.original = original;
-//        this.defaultShort = toCompactAddress.defaultShort;
-//        this.type = toCompactAddress.getType();
-//
-//    }
+    
     private String original;
     private String defaultShort;
     private TkmAddressUtils.TypeOfAddress type;
@@ -47,6 +43,31 @@ public class CompactAddressBean implements Comparable<CompactAddressBean> {
     @Override
     public int compareTo(CompactAddressBean o) {
         return original.compareTo(o.original);
+    }
+
+    /**
+     *
+     * @return Returns the internal application representation of the address.
+     * If it is an ed25519 the base64 URL encoding, if it is a qTesla the
+     * sha3-384 encoded base64 URL. If it is an unrecognized object (e.g., an
+     * incorrect "to" field in which a string has been entered that does not
+     * fall into the previous cases) the sha3-384 encoded base64 URL of the
+     * same.
+     * @throws AddressNotRecognizedException If the object has not been properly
+     * initialized
+     */
+    public String getInternalAddress() throws AddressNotRecognizedException {
+        switch (type) {
+            case ed25519:
+                return original;
+            case qTesla:
+                return defaultShort;
+            case undefined:
+                return defaultShort;
+            default:
+                throw new AddressNotRecognizedException("no valid option or "
+                        + "address not initialized");
+        }
     }
 
 }
