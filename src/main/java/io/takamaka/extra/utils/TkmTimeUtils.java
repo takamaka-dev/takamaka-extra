@@ -16,6 +16,7 @@
 package io.takamaka.extra.utils;
 
 import io.takamaka.extra.identicon.exceptions.InvalidEpochException;
+import io.takamaka.extra.identicon.exceptions.InvalidSlotException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -25,21 +26,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TkmTimeUtils {
 
-    public static final long getAbsoluteBlockNumber(int epoch, int slot, int slotPerEpoch) throws InvalidEpochException {
+    public static final long getAbsoluteBlockNumber(int epoch, int slot, int slotPerEpoch) throws InvalidEpochException, InvalidSlotException {
         if (epoch < 0) {
             throw new InvalidEpochException(epoch + " is not a valid value for epoch");
         }
         if (slot < 0 | slot >= 24000) {
-            throw new InvalidEpochException(slot + " is not a valid value for slot");
+            throw new InvalidSlotException(slot + " is not a valid value for slot");
         }
         return (slotPerEpoch * epoch) + slot;
     }
 
-    public static final boolean isInRangeInclusive(int initialEpoch, int initialSlot, int endingEpoch, int endingSlot, int targetEpoch, int targetSlot, int slotPerEpoch) throws InvalidEpochException {
+    public static final boolean isInRangeInclusive(int initialEpoch, int initialSlot, int endingEpoch, int endingSlot, int targetEpoch, int targetSlot, int slotPerEpoch) throws InvalidEpochException, InvalidSlotException {
         return isInRange(initialEpoch, initialSlot, endingEpoch, endingSlot, targetEpoch, targetSlot, slotPerEpoch, true, true);
     }
 
-    public static final boolean isInRange(int initialEpoch, int initialSlot, int endingEpoch, int endingSlot, int targetEpoch, int targetSlot, int slotPerEpoch, boolean leftInclusive, boolean rightInclusive) throws InvalidEpochException {
+    public static final boolean isInRange(int initialEpoch, int initialSlot, int endingEpoch, int endingSlot, int targetEpoch, int targetSlot, int slotPerEpoch, boolean leftInclusive, boolean rightInclusive) throws InvalidEpochException, InvalidSlotException {
         long rangeInit = getAbsoluteBlockNumber(initialEpoch, initialSlot, slotPerEpoch);
         long rangeEnding = getAbsoluteBlockNumber(endingEpoch, endingSlot, slotPerEpoch);
         long target = getAbsoluteBlockNumber(targetEpoch, targetSlot, slotPerEpoch);
