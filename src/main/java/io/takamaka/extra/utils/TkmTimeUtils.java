@@ -39,6 +39,18 @@ public class TkmTimeUtils {
     public static final boolean isInRangeInclusive(int initialEpoch, int initialSlot, int endingEpoch, int endingSlot, int targetEpoch, int targetSlot, int slotPerEpoch) throws InvalidEpochException, InvalidSlotException {
         return isInRange(initialEpoch, initialSlot, endingEpoch, endingSlot, targetEpoch, targetSlot, slotPerEpoch, true, true);
     }
+    
+    public static final boolean isInRangeExclusive(int initialEpoch, int initialSlot, int endingEpoch, int endingSlot, int targetEpoch, int targetSlot, int slotPerEpoch) throws InvalidEpochException, InvalidSlotException {
+        return isInRange(initialEpoch, initialSlot, endingEpoch, endingSlot, targetEpoch, targetSlot, slotPerEpoch, false, false);
+    }
+    
+    public static final boolean isInRangeLeftInclusive(int initialEpoch, int initialSlot, int endingEpoch, int endingSlot, int targetEpoch, int targetSlot, int slotPerEpoch) throws InvalidEpochException, InvalidSlotException {
+        return isInRange(initialEpoch, initialSlot, endingEpoch, endingSlot, targetEpoch, targetSlot, slotPerEpoch, true, false);
+    }
+    
+    public static final boolean isInRangeRightInclusive(int initialEpoch, int initialSlot, int endingEpoch, int endingSlot, int targetEpoch, int targetSlot, int slotPerEpoch) throws InvalidEpochException, InvalidSlotException {
+        return isInRange(initialEpoch, initialSlot, endingEpoch, endingSlot, targetEpoch, targetSlot, slotPerEpoch, false, true);
+    }
 
     public static final boolean isInRange(int initialEpoch, int initialSlot, int endingEpoch, int endingSlot, int targetEpoch, int targetSlot, int slotPerEpoch, boolean leftInclusive, boolean rightInclusive) throws InvalidEpochException, InvalidSlotException {
         long rangeInit = getAbsoluteBlockNumber(initialEpoch, initialSlot, slotPerEpoch);
