@@ -55,4 +55,8 @@ public class TkmErrorUtils {
         return sw.getBuffer().toString();
     }
     
+    public static final <T extends Exception> void logExceptionAndContinue(T e) {
+        log.error(e.getMessage(), e);
+    }
+    
 }
