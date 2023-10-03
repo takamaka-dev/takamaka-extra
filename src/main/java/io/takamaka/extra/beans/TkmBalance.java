@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Balance {
+public class TkmBalance {
 
     //h_addr_sibh_abn_path_id
     private String balanceHash;
