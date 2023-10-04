@@ -59,4 +59,8 @@ public class TkmErrorUtils {
         log.error(e.getMessage(), e);
     }
 
+    public static final <T extends Exception> void logExceptionAndContinue(T e, String message) {
+        log.error(message, e);
+    }
+
 }

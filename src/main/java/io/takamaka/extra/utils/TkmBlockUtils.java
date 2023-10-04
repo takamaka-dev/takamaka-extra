@@ -546,6 +546,11 @@ public class TkmBlockUtils {
      * @throws DecodeBlockException
      */
     public static final CompactAddressBean[] collectLargeAddresses(BlockBox blockBox) throws DecodeBlockException, AddressDecodeException, DecodeForwardKeysException {
+        ConcurrentSkipListSet<String> allAddresses = collectAllAddressesFromBlock(blockBox);
+        return filterNonEdAddresses(allAddresses);
+    }
+
+    public static final ConcurrentSkipListSet<String> collectAllAddressesFromBlock(BlockBox blockBox) throws AddressDecodeException, DecodeForwardKeysException, DecodeBlockException {
         ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<String>();
         String[] blockHashAddresses = null;
         String[] coinbaseAddresses = null;
@@ -556,7 +561,6 @@ public class TkmBlockUtils {
         ConcurrentSkipListSet<String> trxAddresses = new ConcurrentSkipListSet<>();
         ConcurrentSkipListSet<String> allAddresses = new ConcurrentSkipListSet<>();
         allAddresses.add(publicKey);
-
         ConcurrentSkipListSet<Exception> tboxExc = new ConcurrentSkipListSet<>();
         if (!blockBox.isValid()) {
             log.error("addresses extraction requested on invalid block");
@@ -586,11 +590,10 @@ public class TkmBlockUtils {
             }
         }
         fwKeys = TkmForwardKeys.extractAddresses(blockBox.getForwardKeys());
-//        if (!blockBox.getForwardKeys().isEmpty()) {
+        //        if (!blockBox.getForwardKeys().isEmpty()) {
 //            fwKeys = blockBox.getForwardKeys().values().toArray(String[]::new);
 //        }
         rewardListAddresses = TkmRewardUtils.extractRewardAddressesRaw(blockBox);
-
         ConcurrentSkipListSet<String> filterNullToSet = TkmArrayUtils.filterNullToSet(
                 blockHashAddresses,
                 coinbaseAddresses,
@@ -602,6 +605,17 @@ public class TkmBlockUtils {
             trxAddresses = TkmTransactionUtils.extractAllTransactionAdresses(blockBox);
             allAddresses.addAll(trxAddresses);
         }
+        if (!tboxExc.isEmpty()) {
+            tboxExc.stream().forEach(ex -> {
+                log.error("exception in address casting inside block decoding", ex);
+            });
+            throw new DecodeBlockException("exception in address casting inside block decoding", tboxExc.first());
+        }
+        return allAddresses;
+    }
+
+    private static CompactAddressBean[] filterNonEdAddresses(ConcurrentSkipListSet<String> allAddresses) throws DecodeBlockException {
+        ConcurrentSkipListSet<Exception> tboxExc = new ConcurrentSkipListSet<>();
         CompactAddressBean[] nonEdAddrBeans = Arrays
                 .stream(allAddresses.toArray(String[]::new))
                 .parallel()
