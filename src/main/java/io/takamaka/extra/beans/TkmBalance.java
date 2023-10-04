@@ -44,9 +44,11 @@ import lombok.extern.slf4j.Slf4j;
 public class TkmBalance implements Serializable, Comparable<TkmBalance> {
 
     //h_addr_sibh_abn_path_id
+    @Setter(AccessLevel.NONE)
     private String balanceHash;
     //address
-    private String address;
+    @Setter(AccessLevel.NONE)
+    final private String address;
     //single_inclusion_block_hash
     private String sibh;
     //absolute_block_number
@@ -94,32 +96,35 @@ public class TkmBalance implements Serializable, Comparable<TkmBalance> {
 
     private void setModified() throws TkmBalanceException {
         this.modified = true;
-        refreshHash();
+//        refreshHash();
     }
 
-    public void setBalanceHash(String balanceHash) throws TkmBalanceException {
-        this.balanceHash = balanceHash;
-        setModified();
-    }
+//    public void setBalanceHash(String balanceHash) throws TkmBalanceException {
+//        this.balanceHash = balanceHash;
+//        setModified();
+//    }
 
-    public void setAddress(String address) throws TkmBalanceException {
-        this.address = address;
-        setModified();
-    }
+//    public void setAddress(String address) throws TkmBalanceException {
+//        this.address = address;
+//        setModified();
+//    }
 
     public void setSibh(String sibh) throws TkmBalanceException {
         this.sibh = sibh;
-        setModified();
+        refreshHash();
+//        setModified();
     }
 
     public void setAbsoluteBlockNumber(Long absoluteBlockNumber) throws TkmBalanceException {
         this.absoluteBlockNumber = absoluteBlockNumber;
-        setModified();
+        refreshHash();
+//        setModified();
     }
 
     public void setPathId(Long pathId) throws TkmBalanceException {
         this.pathId = pathId;
-        setModified();
+        refreshHash();
+//        setModified();
     }
 
     public void setGreenValue(BigInteger greenValue) throws TkmBalanceException {
@@ -147,10 +152,11 @@ public class TkmBalance implements Serializable, Comparable<TkmBalance> {
         setModified();
     }
 
-    public void setGeneratorSith(String generatorSith) throws TkmBalanceException {
+    public void setGeneratorSith(String generatorSith) {
         this.generatorSith = generatorSith;
-        setModified();
     }
+    
+    
 
     @Override
     public int compareTo(TkmBalance o) {
