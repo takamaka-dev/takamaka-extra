@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @EqualsAndHashCode
 public class TkmBalance implements Serializable, Comparable<TkmBalance> {
 
-    //h_addr_sibh_abn_path_id
+    //h_addr_sibh_abn
     @Setter(AccessLevel.NONE)
     private String balanceHash;
     //address
@@ -53,8 +53,6 @@ public class TkmBalance implements Serializable, Comparable<TkmBalance> {
     private String sibh;
     //absolute_block_number
     private Long absoluteBlockNumber;
-    //path_id
-    private Long pathId;
     //green_value
     private BigInteger greenValue;
     //red_value
@@ -74,11 +72,10 @@ public class TkmBalance implements Serializable, Comparable<TkmBalance> {
     @JsonIgnore
     private HashFunctionalInterfaceChecked<String, String> hashFunction;
 
-    public TkmBalance(String address, String sibh, Long absoluteBlockNumber, Long pathId, BigInteger greenValue, BigInteger redValue, BigInteger frozenGreen, BigInteger frozenRed, Integer penaltySlots, String generatorSith, boolean isNewBalance, HashFunctionalInterfaceChecked<String, String> hashFunction) throws TkmBalanceException {
+    public TkmBalance(String address, String sibh, Long absoluteBlockNumber, BigInteger greenValue, BigInteger redValue, BigInteger frozenGreen, BigInteger frozenRed, Integer penaltySlots, String generatorSith, boolean isNewBalance, HashFunctionalInterfaceChecked<String, String> hashFunction) throws TkmBalanceException {
         this.address = address;
         this.sibh = sibh;
         this.absoluteBlockNumber = absoluteBlockNumber;
-        this.pathId = pathId;
         this.greenValue = greenValue;
         this.redValue = redValue;
         this.frozenGreen = frozenGreen;
@@ -91,7 +88,7 @@ public class TkmBalance implements Serializable, Comparable<TkmBalance> {
     }
 
     private void refreshHash() throws TkmBalanceException {
-        this.balanceHash = this.hashFunction.apply(this.address + this.sibh + this.absoluteBlockNumber + this.pathId);
+        this.balanceHash = this.hashFunction.apply(this.address + this.sibh + this.absoluteBlockNumber);
     }
 
     private void setModified() throws TkmBalanceException {
@@ -103,12 +100,10 @@ public class TkmBalance implements Serializable, Comparable<TkmBalance> {
 //        this.balanceHash = balanceHash;
 //        setModified();
 //    }
-
 //    public void setAddress(String address) throws TkmBalanceException {
 //        this.address = address;
 //        setModified();
 //    }
-
     public void setSibh(String sibh) throws TkmBalanceException {
         this.sibh = sibh;
         refreshHash();
@@ -117,12 +112,6 @@ public class TkmBalance implements Serializable, Comparable<TkmBalance> {
 
     public void setAbsoluteBlockNumber(Long absoluteBlockNumber) throws TkmBalanceException {
         this.absoluteBlockNumber = absoluteBlockNumber;
-        refreshHash();
-//        setModified();
-    }
-
-    public void setPathId(Long pathId) throws TkmBalanceException {
-        this.pathId = pathId;
         refreshHash();
 //        setModified();
     }
@@ -155,8 +144,6 @@ public class TkmBalance implements Serializable, Comparable<TkmBalance> {
     public void setGeneratorSith(String generatorSith) {
         this.generatorSith = generatorSith;
     }
-    
-    
 
     @Override
     public int compareTo(TkmBalance o) {
