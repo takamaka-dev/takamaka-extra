@@ -200,7 +200,7 @@ class TransactionGenerator {
         transactions = new String[transactionList.size()];
         return transactionList.toArray(transactions);
     }
-    
+
     public static String[] generateDeregisterOverflowTransactionArray() throws TransactionCanNotBeCreatedException, TransactionNotYetImplementedException, InvalidWalletIndexException, PublicKeySerializzationException, WalletException {
         String[] transactions;
         ArrayList<String> transactionList = new ArrayList<>();
@@ -502,6 +502,7 @@ class TransactionGenerator {
 
         return result;
     }
+
     public static String[] generateTransactionArrayWithPaySU(int numberOfTransaction, KeyContexts.TransactionType type, String walletPrefix, int numberOfFromWallets, int numberOfToWallets, int fromWalletSpace, int toWalletSpace) throws TransactionCanNotBeCreatedException, TransactionNotYetImplementedException, InvalidWalletIndexException, PublicKeySerializzationException, UnlockWalletException {
         String[] transactions = new String[numberOfTransaction * 3];
         System.out.println("number of transactions: " + transactions.length);
@@ -583,6 +584,7 @@ class TransactionGenerator {
         System.out.println("...100%");
         return transactions;
     }
+
     public static InternalTransactionBean getInternalTransactionBean(KeyContexts.TransactionType type, String from, String to, BigInteger greenValue, BigInteger redValue, String message) throws TransactionNotYetImplementedException {
         InternalTransactionBean itb = null;
         switch (type) {
@@ -624,9 +626,9 @@ class TransactionGenerator {
         }
         return itb;
     }
-    
+
     /**
-     * 
+     *
      * @param type
      * @param from
      * @param to
@@ -637,7 +639,7 @@ class TransactionGenerator {
      * @param slot
      * @param notBefore
      * @return
-     * @throws TransactionNotYetImplementedException 
+     * @throws TransactionNotYetImplementedException
      */
     public static InternalTransactionBean getTestInternalTransactionBean(KeyContexts.TransactionType type, String from, String to, BigInteger greenValue, BigInteger redValue, String message, Integer epoch, Integer slot, Date notBefore) throws TransactionNotYetImplementedException {
         InternalTransactionBean itb = null;
@@ -712,7 +714,7 @@ class TransactionGenerator {
         }
         return itb;
     }
-    
+
     public static String createIdentifingMessage(String header, int fromWalletNumber, int fromWalletKey, int toWalletNumber, int toWalletKey) {
         StringBuilder sb = new StringBuilder();
         sb.append(header).append(" ")
@@ -720,7 +722,7 @@ class TransactionGenerator {
                 .append("to to_wallet (").append(toWalletNumber).append(",").append(toWalletKey).append(") ");
         return sb.toString();
     }
-    
+
     public static InstanceWalletKeystoreInterface[] generateWalletList(String basename, int numAddr, KeyContexts.WalletCypher cy) throws TransactionNotYetImplementedException, UnlockWalletException, WalletBurnedException, WalletEmptySeedException {
         InstanceWalletKeystoreInterface[] iwk = new InstanceWalletKeystoreInterface[numAddr];
         for (int i = 0; i < numAddr; i++) {
@@ -742,7 +744,7 @@ class TransactionGenerator {
         Arrays.sort(iwk);
         return iwk;
     }
-    
+
     public static String[] generateStakeholderDeclarations(InstanceWalletKeystoreInterface[] keys) {
         String[] holdersDeclarations = new String[keys.length];
         //System.out.println(Arrays.binarySearch(keys, keys[4]));
@@ -769,7 +771,7 @@ class TransactionGenerator {
         Arrays.sort(holdersDeclarations);
         return holdersDeclarations;
     }
-    
+
     public static String[] generateStakeholderDeclarations(InstanceWalletKeystoreInterface[] keys, int greenTK, int redTK) {
         String[] holdersDeclarations = new String[keys.length];
         //System.out.println(Arrays.binarySearch(keys, keys[4]));
@@ -796,11 +798,11 @@ class TransactionGenerator {
         Arrays.sort(holdersDeclarations);
         return holdersDeclarations;
     }
-    
+
     public static String[] generateRedWalletsDeclarations(InstanceWalletKeystoreInterface[] keys) {
         return generateStakeholderDeclarations(keys, 4800, 1200);
     }
-    
+
     public static String[] generateRegisterMain(InstanceWalletKeystoreInterface[] keys) {
         String[] holdersDeclarations = new String[keys.length];
         //System.out.println(Arrays.binarySearch(keys, keys[4]));
@@ -827,7 +829,7 @@ class TransactionGenerator {
         Arrays.sort(holdersDeclarations);
         return holdersDeclarations;
     }
-    
+
     public static String[] generateRegisterOverflow(InstanceWalletKeystoreInterface[] keys) {
         String[] holdersDeclarations = new String[keys.length];
         //System.out.println(Arrays.binarySearch(keys, keys[4]));
@@ -854,7 +856,7 @@ class TransactionGenerator {
         Arrays.sort(holdersDeclarations);
         return holdersDeclarations;
     }
-    
+
     public static String[] generateAssignOverflowToMain(InstanceWalletKeystoreInterface[] mainKeys, InstanceWalletKeystoreInterface[] overflowKeys) {
         String[] assign = new String[overflowKeys.length];
         int totlaMains = mainKeys.length;
@@ -889,7 +891,7 @@ class TransactionGenerator {
         Arrays.sort(assign);
         return assign;
     }
-    
+
     public static String[] generatStakeToMain(InstanceWalletKeystoreInterface[] mainKeys, InstanceWalletKeystoreInterface[] holderKeys) {
         String[] assign = new String[holderKeys.length];
         int totlaMains = mainKeys.length;
@@ -924,7 +926,7 @@ class TransactionGenerator {
         Arrays.sort(assign);
         return assign;
     }
-    
+
     public static String[] generatePayToRed(InstanceWalletKeystoreInterface[] from, InstanceWalletKeystoreInterface[] to, BigInteger value) {
         String[] assign = new String[to.length];
         int totlaMains = from.length;
@@ -949,7 +951,7 @@ class TransactionGenerator {
         Arrays.sort(assign);
         return assign;
     }
-    
+
     public static String[] generatePayToGreen(InstanceWalletKeystoreInterface[] from, InstanceWalletKeystoreInterface[] to, BigInteger value) {
         String[] assign = new String[to.length];
         int totlaMains = from.length;
@@ -974,7 +976,7 @@ class TransactionGenerator {
         Arrays.sort(assign);
         return assign;
     }
-    
+
     public static String[] mergeStringArrays(String[]... args) {
         ConcurrentSkipListSet<String> merged = new ConcurrentSkipListSet<String>();
         for (String[] arg : args) {
@@ -1077,15 +1079,38 @@ class TransactionGenerator {
     }
 
     private static InternalTransactionBean registerMain(String from, String to, String message) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            InternalTransactionBean registerMain = BuilderITB.registerMain(from, message, new Date());
+            registerMain.setTo(to);
+            registerMain.setTransactionHash(TkmTextUtils.internalTransactionBeanHash(registerMain));
+            return registerMain;
+        } catch (NullInternalTransactionBeanException | HashCompositionException ex) {
+            log.error("Error creating register main transaction", ex);
+            return null;
+        }
     }
 
     private static InternalTransactionBean registerOverflow(String from, String to, String message) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            InternalTransactionBean registerOverflow = BuilderITB.registerOverflow(from, message, new Date());
+            registerOverflow.setTo(to);
+            registerOverflow.setTransactionHash(TkmTextUtils.internalTransactionBeanHash(registerOverflow));
+            return registerOverflow;
+        } catch (NullInternalTransactionBeanException | HashCompositionException ex) {
+            log.error("Error creating register main transaction", ex);
+            return null;
+        }
     }
 
-
     private static InternalTransactionBean blob(String from, String to, String message) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            InternalTransactionBean blob = BuilderITB.blob(from, message, new Date());
+            blob.setTo(to);
+            blob.setTransactionHash(TkmTextUtils.internalTransactionBeanHash(blob));
+            return blob;
+        } catch (NullInternalTransactionBeanException | HashCompositionException ex) {
+            log.error("Error creating register main transaction", ex);
+            return null;
+        }
     }
 }

@@ -1155,10 +1155,10 @@ public class TransactionGeneratorUtils {
                 itb = BuilderITB.declaration(to, greenValue, redValue, message);
                 break;
             case REGISTER_MAIN:
-                itb = BuilderITB.registerMain(from, to, message);
+                itb = registerMain(from, to, message);
                 break;
             case REGISTER_OVERFLOW:
-                itb = BuilderITB.registerOverflow(from, to, message);
+                itb = registerOverflow(from, to, message);
                 break;
             case DEREGISTER_OVERFLOW:
                 itb = BuilderITB.deregisterOverflow(from, message);
@@ -1179,7 +1179,7 @@ public class TransactionGeneratorUtils {
                 itb = BuilderITB.stake(from, to, greenValue, message);
                 break;
             case BLOB:
-                itb = BuilderITB.blob(from, to, message);
+                itb = blob(from, to, message);
                 break;
             default:
                 throw new TransactionNotYetImplementedException("NOT YET IMPLEMENTED: " + type.name());
@@ -1602,17 +1602,40 @@ public class TransactionGeneratorUtils {
         }
     }
 
-    private static InternalTransactionBean registerMain(String from, String to, String message) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+private static InternalTransactionBean registerMain(String from, String to, String message) {
+        try {
+            InternalTransactionBean registerMain = BuilderITB.registerMain(from, message, new Date());
+            registerMain.setTo(to);
+            registerMain.setTransactionHash(TkmTextUtils.internalTransactionBeanHash(registerMain));
+            return registerMain;
+        } catch (NullInternalTransactionBeanException | HashCompositionException ex) {
+            log.error("Error creating register main transaction", ex);
+            return null;
+        }
     }
 
     private static InternalTransactionBean registerOverflow(String from, String to, String message) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            InternalTransactionBean registerOverflow = BuilderITB.registerOverflow(from, message, new Date());
+            registerOverflow.setTo(to);
+            registerOverflow.setTransactionHash(TkmTextUtils.internalTransactionBeanHash(registerOverflow));
+            return registerOverflow;
+        } catch (NullInternalTransactionBeanException | HashCompositionException ex) {
+            log.error("Error creating register main transaction", ex);
+            return null;
+        }
     }
 
-
     private static InternalTransactionBean blob(String from, String to, String message) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            InternalTransactionBean blob = BuilderITB.blob(from, message, new Date());
+            blob.setTo(to);
+            blob.setTransactionHash(TkmTextUtils.internalTransactionBeanHash(blob));
+            return blob;
+        } catch (NullInternalTransactionBeanException | HashCompositionException ex) {
+            log.error("Error creating register main transaction", ex);
+            return null;
+        }
     }
 
 }
