@@ -19,6 +19,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -61,6 +62,10 @@ public class TkmErrorUtils {
 
     public static final <T extends Exception> void logExceptionAndContinue(T e, String message) {
         log.error(message, e);
+    }
+
+    public static final ConcurrentSkipListSet<Boolean> getErrorChechingFlag() {
+        return new ConcurrentSkipListSet<>();
     }
 
 }
