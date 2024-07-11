@@ -15,6 +15,8 @@
  */
 package io.takamaka.extra.beans;
 
+import io.takamaka.extra.exceptions.ForwardKeyException;
+import io.takamaka.extra.utils.TkmForwardKeys;
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,6 +35,8 @@ import lombok.extern.slf4j.Slf4j;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ESBean implements Serializable, Comparable<ESBean> {
 
+    private static final long serialVersionUID = 1L;
+
     @EqualsAndHashCode.Include
     private Integer epoch;
     @EqualsAndHashCode.Include
@@ -40,8 +44,11 @@ public class ESBean implements Serializable, Comparable<ESBean> {
 
     @Override
     public int compareTo(ESBean o) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            return TkmForwardKeys.getProposedKeyName(this).compareTo(TkmForwardKeys.getProposedKeyName(o));
+        } catch (ForwardKeyException ex) {
+            throw new RuntimeException(ex);
+        }
     }
-    
-    
+
 }

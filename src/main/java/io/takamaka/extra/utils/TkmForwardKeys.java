@@ -83,4 +83,8 @@ public class TkmForwardKeys {
         return sb.toString();
     }
 
+    public static final String getProposedKeyName(ESBean eSBean) throws ForwardKeyException {
+        return getProposedKeyName(eSBean.getEpoch(), eSBean.getSlot());
+    }
+
 }
