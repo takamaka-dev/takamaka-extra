@@ -15,6 +15,9 @@
  */
 package io.takamaka.extra.utils;
 
+import io.takamaka.extra.beans.ESBean;
+import io.takamaka.extra.exceptions.EpochSlotBeanException;
+import io.takamaka.extra.exceptions.ForwardKeyException;
 import io.takamaka.extra.identicon.exceptions.DecodeForwardKeysException;
 import java.util.concurrent.ConcurrentSkipListMap;
 import lombok.extern.slf4j.Slf4j;
@@ -36,4 +39,48 @@ public class TkmForwardKeys {
         }
         return fwKeys.values().toArray(String[]::new);
     }
+
+    public static final ESBean getEpochSlot(String epochSlot) throws EpochSlotBeanException {
+        ESBean result = null;
+        try {
+            String removeE = epochSlot.substring(1);
+            String[] splitAtS = removeE.split("S");
+            Integer epoch = Integer.valueOf(splitAtS[0]);
+            Integer slot = Integer.valueOf(splitAtS[1]);
+            if (epoch < 0 | slot < 0) {
+                throw new ForwardKeyException("[decoding] negative parameter epoch: " + epoch + " slot: " + slot);
+            }
+            if (epoch > 99999 | slot > 99999) {
+                throw new ForwardKeyException("[decoding] invalid parameter value, is too large"
+                        + " must be less than 99999,"
+                        + " epoch: " + epoch
+                        + " slot: " + slot);
+            }
+            result = new ESBean(epoch, slot);
+        } catch (ForwardKeyException | NumberFormatException ex) {
+            throw new EpochSlotBeanException("[decoding] error crating bean for string " + epochSlot, ex);
+        }
+        return result;
+    }
+
+    public static final String getProposedKeyName(Integer epoch, Integer slot) throws ForwardKeyException {
+        if (epoch == null | slot == null) {
+            throw new ForwardKeyException("[encoding] null parameter epoch: " + epoch + " slot: " + slot);
+        }
+        if (epoch < 0 | slot < 0) {
+            throw new ForwardKeyException("[encoding] negative parameter epoch: " + epoch + " slot: " + slot);
+        }
+        if (epoch > 99999 | slot > 99999) {
+            throw new ForwardKeyException("[encoding] invalid parameter value, is too large"
+                    + " must be less than 99999,"
+                    + " epoch: " + epoch
+                    + " slot: " + slot);
+        }
+        StringBuilder sb = new StringBuilder("E");
+        sb.append(String.format("%05d", epoch));
+        sb.append("S");
+        sb.append(String.format("%05d", slot));
+        return sb.toString();
+    }
+
 }
