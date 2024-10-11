@@ -22,7 +22,10 @@ import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
 import io.takamaka.extra.identicon.exceptions.AddressNullException;
 import io.takamaka.extra.identicon.exceptions.AddressFunctionUnsupportedException;
 import io.takamaka.extra.identicon.exceptions.AddressTooLongException;
+import io.takamaka.extra.seed.DeterministicSeedGenerator;
+import io.takamaka.extra.seed.DeterministicSeedGeneratorInterface;
 import static io.takamaka.extra.utils.TestEnvObjects.REF_TRX_QTESLA;
+import io.takamaka.wallet.exceptions.WalletException;
 import io.takamaka.wallet.utils.TkmSignUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,6 +75,7 @@ public class TkmAddressUtilsTest {
     @AfterAll
     public static void tearDownClass() {
         log.info("test AfterClass");
+        Configurator.setLevel("io.takamaka.extra.utils.AddressUtilsTest", Level.INFO);
     }
 
     @BeforeEach
@@ -158,6 +162,18 @@ public class TkmAddressUtilsTest {
         //Configurator.setLevel("io.takamaka.extra.utils.AddressUtilsTest", Level.DEBUG);
         String hexBH = "69b9619ea29021e5dee7978e789e6cb6369432e6e356176c906d40dfab1dd045aee023e3489946d7293ec7dd6689cd766d6a67b1d9af5a10045ab97133be0c9b";
         testAddr(hexBH);
+    }
+
+    @Test
+    public void getDeterministicSeedtext() throws WalletException {
+        DeterministicSeedGeneratorInterface dsi = new DeterministicSeedGenerator("the_test_seed");
+        String seedB64Url = dsi.getSeedB64Url("test", 0, 32);
+        String seedB64Url1 = dsi.getSeedB64Url("test", 1, 32);
+        String seedB64Url_eq1 = dsi.getSeedB64Url("test", 0, 32);
+        //System.err.println(dsi.getSeedB64Url("test", 0, 32));
+        assertEquals(seedB64Url, seedB64Url_eq1);
+        assertNotEquals(seedB64Url, seedB64Url1);
+        assertNotEquals(seedB64Url_eq1, seedB64Url1);
     }
 
     private void testAddr(String hexBH) throws AddressEncodeException, AddressDecodeException {
