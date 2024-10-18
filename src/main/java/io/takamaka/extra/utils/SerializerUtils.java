@@ -16,6 +16,7 @@
 package io.takamaka.extra.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.takamaka.extra.beans.EncMessageBean;
 import io.takamaka.extra.beans.FileMessageBean;
 import io.takamaka.wallet.utils.TkmTextUtils;
 import java.util.regex.Pattern;
@@ -28,11 +29,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class SerializerUtils {
-    
+
     public static final String TSQUERY_PARAM_STRING = "^[\\p{Alnum}\\p{Blank}\\p{Space}]$";
     public static final Pattern TSQUERY_PARAM_PATTERN = Pattern.compile(TSQUERY_PARAM_STRING);
-    
-    
+
     public static final FileMessageBean decodeTagsString(String message) {
         try {
             return TkmTextUtils.getJacksonMapper().readValue(message, FileMessageBean.class);
@@ -42,20 +42,25 @@ public class SerializerUtils {
         }
         return null;
     }
-    
-    
-    
-    
+
     public static final String removeUnsafeTsQuery(String message) {
         char[] chArr = message.toCharArray();
         char[] resArray = new char[chArr.length];
         IntStream.range(0, chArr.length).parallel().forEach((index) -> {
-            if(TSQUERY_PARAM_PATTERN.matcher(String.valueOf(chArr[index])).find()){
+            if (TSQUERY_PARAM_PATTERN.matcher(String.valueOf(chArr[index])).find()) {
                 resArray[index] = chArr[index];
             } else {
                 resArray[index] = ' ';
             }
         });
         return String.valueOf(resArray);
+    }
+
+    public static final String getJson(EncMessageBean encMessageBean) throws JsonProcessingException {
+        return TkmTextUtils.getJacksonMapper().writeValueAsString(encMessageBean);
+    }
+
+    public static final EncMessageBean getEncMessageBeanFromJson(String encMessageBeanJson) throws JsonProcessingException {
+        return TkmTextUtils.getJacksonMapper().readValue(encMessageBeanJson, EncMessageBean.class);
     }
 }

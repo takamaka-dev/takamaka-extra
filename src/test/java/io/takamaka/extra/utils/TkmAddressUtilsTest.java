@@ -15,7 +15,9 @@
  */
 package io.takamaka.extra.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.takamaka.extra.beans.CompactAddressBean;
+import io.takamaka.extra.beans.EncMessageBean;
 import io.takamaka.extra.identicon.exceptions.AddressDecodeException;
 import io.takamaka.extra.identicon.exceptions.AddressEncodeException;
 import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
@@ -54,6 +56,7 @@ public class TkmAddressUtilsTest {
 
     public TkmAddressUtilsTest() {
         Configurator.setLevel("io.takamaka.extra.utils.AddressUtilsTest", Level.DEBUG);
+        Configurator.setLevel("io.takamaka.extra.utils.TkmAddressUtilsTest", Level.DEBUG);
         log.info("test constructor");
     }
 
@@ -202,6 +205,30 @@ public class TkmAddressUtilsTest {
         assertEquals(hexBH, fromB64URLToHex);
         //69b9619ea29021e5dee7978e789e6cb6369432e6e356176c906d40dfab1dd045aee023e3489946d7293ec7dd6689cd766d6a67b1d9af5a10045ab97133be0c9b
         //ablhnqKQIeXe55eOeJ5stjaUMubjVhdskG1A36sd0EWu4CPjSJlG1yk-x91mic12bWpnsdmvWhAEWrlxM74Mmw..
+    }
+
+    @Test
+    public void testEncryption() throws WalletException, JsonProcessingException {
+        int ei = 0;
+        for (String password : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
+            for (String message : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
+                for (String scope : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
+                    for (EncryptionContext ec : EncryptionContext.values()) {
+                        log.info("testing encryption for %s %s %s %s ", password, message, scope, ec.name());
+                        log.info(message);
+                        EncMessageBean passwordEncryptedContent = TkmEncryptionUtils.toPasswordEncryptedContent(password, message, scope, ec.name());
+                        log.info(passwordEncryptedContent.toString());
+                        String jsonEMB = SerializerUtils.getJson(passwordEncryptedContent);
+                        log.info(jsonEMB);
+                        EncMessageBean encMessageBeanFromJson = SerializerUtils.getEncMessageBeanFromJson(jsonEMB);
+                        log.info(encMessageBeanFromJson.toString());
+                        String decodedMessage = TkmEncryptionUtils.fromPasswordEncryptedContent(password, scope, encMessageBeanFromJson);
+                        log.info(decodedMessage);
+                        assertEquals(message, decodedMessage);
+                    }
+                }
+            }
+        }
     }
 
 }
