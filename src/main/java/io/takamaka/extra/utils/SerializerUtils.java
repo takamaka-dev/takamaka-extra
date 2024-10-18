@@ -16,6 +16,7 @@
 package io.takamaka.extra.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.takamaka.extra.beans.EncMessageBean;
 import io.takamaka.extra.beans.FileMessageBean;
 import io.takamaka.wallet.utils.TkmTextUtils;
@@ -57,7 +58,10 @@ public class SerializerUtils {
     }
 
     public static final String getJson(EncMessageBean encMessageBean) throws JsonProcessingException {
-        return TkmTextUtils.getJacksonMapper().writeValueAsString(encMessageBean);
+        return TkmTextUtils.getJacksonMapper()
+                .configure(SerializationFeature.INDENT_OUTPUT, false)
+                .configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true)
+                .writeValueAsString(encMessageBean);
     }
 
     public static final EncMessageBean getEncMessageBeanFromJson(String encMessageBeanJson) throws JsonProcessingException {
