@@ -309,13 +309,15 @@ public class TkmAddressUtilsTest {
     }
     
     @Test
-    public void testDynamicEncryptionRSAAES() throws UnlockWalletException, InvalidWalletIndexException, PublicKeySerializzationException, WalletException{
+    public void testDynamicEncryptionRSAAES() throws UnlockWalletException, InvalidWalletIndexException, PublicKeySerializzationException, WalletException, JsonProcessingException{
         InstanceWalletKeyStoreBCRSA4096ENC iwk = new InstanceWalletKeyStoreBCRSA4096ENC("test_rsa_aes","password");
         for(int i = 0; i < 3; i++){
             String publicKeyRSA = iwk.getPublicKeyAtIndexURL64(i);
             String plaintext = UUID.randomUUID().toString();
             CombinedRSAAESBean combinedRSAAESBean = TkmEncryptionUtils.encryptRSAAES(publicKeyRSA, plaintext);
-            String decrypted = TkmEncryptionUtils.decryptRSAAES(combinedRSAAESBean, iwk, i);
+            String jsonCrab = SerializerUtils.getJson(combinedRSAAESBean);
+            CombinedRSAAESBean newCombinedRSAAESBeanJson = SerializerUtils.getCombinedRSAAESBeanJson(jsonCrab);
+            String decrypted = TkmEncryptionUtils.decryptRSAAES(newCombinedRSAAESBeanJson, iwk, i);
             assertEquals("must be equal", plaintext, decrypted );
             assertNotEquals("must not be equal", plaintext + "pollo", decrypted);
         }
