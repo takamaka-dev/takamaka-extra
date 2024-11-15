@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.RandomStringGenerator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import static org.junit.Assert.assertEquals;
@@ -245,7 +246,11 @@ public class TkmAddressUtilsTest {
                 for (String message : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
 
                     for (EncryptionContext ec : EncryptionContext.values()) {
-                        String secretKey = UUID.randomUUID().toString();
+                        RandomStringGenerator generator = new RandomStringGenerator.Builder()
+                                .withinRange('0', 'z')
+                                .filteredBy(Character::isLetterOrDigit)
+                                .get();
+                        String secretKey = generator.generate(400);
                         log.info("generate secret key " + secretKey);
                         String encodedKey = TkmCypherProviderBCRSA4096ENC.encrypt(iwk.getPublicKeyAtIndexURL64(i * 10), secretKey);
                         EncMessageBean passwordEncryptedContent = TkmEncryptionUtils.toPasswordEncryptedContent(
