@@ -40,6 +40,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.text.RandomStringGenerator;
 
 /**
  *
@@ -122,17 +123,28 @@ public class TkmEncryptionUtils {
         }
     }
 
-    public static final CombinedRSAAESBean encryptRSAAES(String rsaPublicKey, String password, String message) throws WalletException {
+    /***
+     * 
+     * @param rsaPublicKey
+     * @param message
+     * @return
+     * @throws WalletException 
+     */
+    public static final CombinedRSAAESBean encryptRSAAES(String rsaPublicKey, String message) throws WalletException {
 
         CombinedRSAAESBean crab = new CombinedRSAAESBean();
-
-        String rsaEncPubKey = TkmCypherProviderBCRSA4096ENC.encrypt(rsaPublicKey, password);
+        RandomStringGenerator generator = new RandomStringGenerator.Builder()
+                .withinRange('0', 'z')
+                .filteredBy(Character::isLetterOrDigit)
+                .get();
+        String secretKey = generator.generate(400);
+        String rsaEncPubKey = TkmCypherProviderBCRSA4096ENC.encrypt(rsaPublicKey, secretKey);
 
         crab.setRSAEncryptedKey(rsaEncPubKey);
         crab.setScope(AdvancedScopeContext.RSA_KEY_ENCRYPTION_AES_CYPHERTEXT.name());
 
         EncMessageBean passwordEncryptedContent = TkmEncryptionUtils.toPasswordEncryptedContent(
-                password,
+                secretKey,
                 message,
                 AdvancedScopeContext.RSA_KEY_ENCRYPTION_AES_CYPHERTEXT.name(),
                 EncryptionContext.v0_1_a.name());
@@ -142,17 +154,29 @@ public class TkmEncryptionUtils {
 
     }
 
-    public static final String decryptRSAAES(CombinedRSAAESBean crab, String password, InstanceWalletKeystoreInterface iwk, int index) throws WalletException {
+    /***
+     * 
+     * @param crab
+     * @param iwk
+     * @param index
+     * @return
+     * @throws WalletException 
+     */
+    public static final String decryptRSAAES(CombinedRSAAESBean crab, InstanceWalletKeystoreInterface iwk, int index) throws WalletException {
         String message = null;
-        if (password == null) {
-            password = decryptSecretKey(crab, iwk, index);
-            message = TkmEncryptionUtils.fromPasswordEncryptedContent(password, crab.getScope(), crab.getAesContentBean());
-        } else {
-            message = TkmEncryptionUtils.fromPasswordEncryptedContent(password, crab.getScope(), crab.getAesContentBean());
-        }
+        String password = decryptSecretKey(crab, iwk, index);
+        message = TkmEncryptionUtils.fromPasswordEncryptedContent(password, crab.getScope(), crab.getAesContentBean());
         return message;
     }
 
+    /***
+     * 
+     * @param crab
+     * @param iwk
+     * @param index
+     * @return
+     * @throws WalletException 
+     */
     public static final String decryptSecretKey(CombinedRSAAESBean crab, InstanceWalletKeystoreInterface iwk, int index) throws WalletException {
         String secret;
         secret = TkmCypherProviderBCRSA4096ENC.decrypt(iwk, index, crab.getRSAEncryptedKey());
