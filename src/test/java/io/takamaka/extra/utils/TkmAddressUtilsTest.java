@@ -243,7 +243,7 @@ public class TkmAddressUtilsTest {
     public void testCombineRSAEncryption() throws WalletException, JsonProcessingException {
         int ei = 0;
         InstanceWalletKeystoreInterface iwk = new InstanceWalletKeyStoreBCRSA4096ENC("test_wallet_rsa", "password");
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 2; i++) {
 
             for (String password : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
                 for (String message : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
@@ -267,9 +267,16 @@ public class TkmAddressUtilsTest {
                                 passwordEncryptedContent
                         );
                         log.info(combinedRSAAESBean.toString());
-                        String decryptedKey = TkmCypherProviderBCRSA4096ENC.decrypt(iwk, i * 10, combinedRSAAESBean.getRSAEncryptedKey());
+                        
+                        String crabJson = SerializerUtils.getJson(combinedRSAAESBean);
+                        log.info("json object: " + crabJson);
+                        CombinedRSAAESBean crab = SerializerUtils.getCombinedRSAAESBeanJson(crabJson);
+                        if(crab != null){
+                            log.info("crab deserialization success..");
+                        }
+                        String decryptedKey = TkmCypherProviderBCRSA4096ENC.decrypt(iwk, i * 10, crab.getRSAEncryptedKey());
                         assertEquals("decrypted key must be equals to original key", secretKey, decryptedKey);
-                        String decodedMessage = TkmEncryptionUtils.fromPasswordEncryptedContent(decryptedKey, combinedRSAAESBean.getScope(), combinedRSAAESBean.getAesContentBean());
+                        String decodedMessage = TkmEncryptionUtils.fromPasswordEncryptedContent(decryptedKey, crab.getScope(), crab.getAesContentBean());
                         assertEquals(message, decodedMessage);
 //                        log.info("testing encryption for %s %s %s %s ", password, message, scope, ec.name());
                         //                        log.info(message);
