@@ -16,6 +16,7 @@
 package io.takamaka.extra.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.takamaka.extra.beans.CombinedRSAAESBean;
 import io.takamaka.extra.beans.CompactAddressBean;
 import io.takamaka.extra.beans.EncMessageBean;
 import io.takamaka.extra.identicon.exceptions.AddressDecodeException;
@@ -27,6 +28,9 @@ import io.takamaka.extra.identicon.exceptions.AddressTooLongException;
 import io.takamaka.extra.seed.DeterministicSeedGenerator;
 import io.takamaka.extra.seed.DeterministicSeedGeneratorInterface;
 import static io.takamaka.extra.utils.TestEnvObjects.REF_TRX_QTESLA;
+import io.takamaka.wallet.InstanceWalletKeyStoreBCRSA4096ENC;
+import io.takamaka.wallet.InstanceWalletKeystoreInterface;
+import io.takamaka.wallet.TkmCypherProviderBCRSA4096ENC;
 import io.takamaka.wallet.exceptions.WalletException;
 import io.takamaka.wallet.utils.TkmSignUtils;
 import java.io.IOException;
@@ -34,6 +38,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -225,6 +230,52 @@ public class TkmAddressUtilsTest {
                         log.info(decodedMessage);
                         assertEquals(message, decodedMessage);
                     }
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testCombineRSAEncryption() throws WalletException, JsonProcessingException {
+        int ei = 0;
+        InstanceWalletKeystoreInterface iwk = new InstanceWalletKeyStoreBCRSA4096ENC("test_wallet_rsa", "password");
+        for (int i = 0; i < 5; i++) {
+
+            for (String password : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
+                for (String message : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
+
+                    for (EncryptionContext ec : EncryptionContext.values()) {
+                        String secretKey = UUID.randomUUID().toString();
+                        log.info("generate secret key " + secretKey);
+                        String encodedKey = TkmCypherProviderBCRSA4096ENC.encrypt(iwk.getPublicKeyAtIndexURL64(i * 10), secretKey);
+                        EncMessageBean passwordEncryptedContent = TkmEncryptionUtils.toPasswordEncryptedContent(
+                                secretKey,
+                                message,
+                                AdvancedScopeContext.RSA_KEY_ENCRYPTION_AES_CYPHERTEXT.name(),
+                                ec.name());
+                        CombinedRSAAESBean combinedRSAAESBean = new CombinedRSAAESBean(
+                                encodedKey,
+                                AdvancedScopeContext.RSA_KEY_ENCRYPTION_AES_CYPHERTEXT.name(),
+                                passwordEncryptedContent
+                        );
+                        log.info(combinedRSAAESBean.toString());
+                        String decryptedKey = TkmCypherProviderBCRSA4096ENC.decrypt(iwk, i * 10, combinedRSAAESBean.getRSAEncryptedKey());
+                        assertEquals("decrypted key must be equals to original key", secretKey, decryptedKey);
+                        String decodedMessage = TkmEncryptionUtils.fromPasswordEncryptedContent(decryptedKey, combinedRSAAESBean.getScope(), combinedRSAAESBean.getAesContentBean());
+                        assertEquals(message, decodedMessage);
+//                        log.info("testing encryption for %s %s %s %s ", password, message, scope, ec.name());
+                        //                        log.info(message);
+                        //                        EncMessageBean passwordEncryptedContent = TkmEncryptionUtils.toPasswordEncryptedContent(password, message, scope, ec.name());
+                        //                        log.info(passwordEncryptedContent.toString());
+                        //                        String jsonEMB = SerializerUtils.getJson(passwordEncryptedContent);
+                        //                        log.info(jsonEMB);
+                        //                        EncMessageBean encMessageBeanFromJson = SerializerUtils.getEncMessageBeanFromJson(jsonEMB);
+                        //                        log.info(encMessageBeanFromJson.toString());
+                        //                        String decodedMessage = TkmEncryptionUtils.fromPasswordEncryptedContent(password, scope, encMessageBeanFromJson);
+                        //                        log.info(decodedMessage);
+                        //                        assertEquals(message, decodedMessage);
+                    }
+
                 }
             }
         }
