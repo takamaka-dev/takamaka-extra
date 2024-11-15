@@ -15,7 +15,11 @@
  */
 package io.takamaka.extra.utils;
 
+import io.takamaka.extra.beans.CombinedRSAAESBean;
 import io.takamaka.extra.beans.EncMessageBean;
+import static io.takamaka.extra.identicon.IdenticonManager.i;
+import io.takamaka.wallet.InstanceWalletKeystoreInterface;
+import io.takamaka.wallet.TkmCypherProviderBCRSA4096ENC;
 import io.takamaka.wallet.exceptions.InvalidCypherException;
 import io.takamaka.wallet.exceptions.WalletException;
 import io.takamaka.wallet.utils.FixedParameters;
@@ -116,5 +120,42 @@ public class TkmEncryptionUtils {
         } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | UnsupportedEncodingException | IllegalBlockSizeException | BadPaddingException ex) {
             throw new WalletException(ex);
         }
+    }
+
+    public static final CombinedRSAAESBean encryptRSAAES(String rsaPublicKey, String password, String message) throws WalletException {
+
+        CombinedRSAAESBean crab = new CombinedRSAAESBean();
+
+        String rsaEncPubKey = TkmCypherProviderBCRSA4096ENC.encrypt(rsaPublicKey, password);
+
+        crab.setRSAEncryptedKey(rsaEncPubKey);
+        crab.setScope(AdvancedScopeContext.RSA_KEY_ENCRYPTION_AES_CYPHERTEXT.name());
+
+        EncMessageBean passwordEncryptedContent = TkmEncryptionUtils.toPasswordEncryptedContent(
+                password,
+                message,
+                AdvancedScopeContext.RSA_KEY_ENCRYPTION_AES_CYPHERTEXT.name(),
+                EncryptionContext.v0_1_a.name());
+
+        crab.setAesContentBean(passwordEncryptedContent);
+        return crab;
+
+    }
+
+    public static final String decryptRSAAES(CombinedRSAAESBean crab, String password, InstanceWalletKeystoreInterface iwk, int index) throws WalletException {
+        String message = null;
+        if (password == null) {
+            password = decryptSecretKey(crab, iwk, index);
+            message = TkmEncryptionUtils.fromPasswordEncryptedContent(password, crab.getScope(), crab.getAesContentBean());
+        } else {
+            message = TkmEncryptionUtils.fromPasswordEncryptedContent(password, crab.getScope(), crab.getAesContentBean());
+        }
+        return message;
+    }
+
+    public static final String decryptSecretKey(CombinedRSAAESBean crab, InstanceWalletKeystoreInterface iwk, int index) throws WalletException {
+        String secret;
+        secret = TkmCypherProviderBCRSA4096ENC.decrypt(iwk, index, crab.getRSAEncryptedKey());
+        return secret;
     }
 }
