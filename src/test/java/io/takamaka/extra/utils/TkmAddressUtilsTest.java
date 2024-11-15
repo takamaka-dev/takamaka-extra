@@ -31,6 +31,9 @@ import static io.takamaka.extra.utils.TestEnvObjects.REF_TRX_QTESLA;
 import io.takamaka.wallet.InstanceWalletKeyStoreBCRSA4096ENC;
 import io.takamaka.wallet.InstanceWalletKeystoreInterface;
 import io.takamaka.wallet.TkmCypherProviderBCRSA4096ENC;
+import io.takamaka.wallet.exceptions.InvalidWalletIndexException;
+import io.takamaka.wallet.exceptions.PublicKeySerializzationException;
+import io.takamaka.wallet.exceptions.UnlockWalletException;
 import io.takamaka.wallet.exceptions.WalletException;
 import io.takamaka.wallet.utils.TkmSignUtils;
 import java.io.IOException;
@@ -285,5 +288,29 @@ public class TkmAddressUtilsTest {
             }
         }
     }
-
+    
+    @Test
+    public void testStaticEncryptionRSAAES() throws UnlockWalletException, WalletException{
+        InstanceWalletKeyStoreBCRSA4096ENC iwk = new InstanceWalletKeyStoreBCRSA4096ENC("test_rsa_aes","password");
+        for(int i = 0; i < 3; i++){
+            String publicKeyRSA = iwk.getPublicKeyAtIndexURL64(i);
+            String plaintext = TestEnvObjects.REF_ADDR_ARRAY_LOREM[i];
+            CombinedRSAAESBean combinedRSAAESBean = TkmEncryptionUtils.encryptRSAAES(publicKeyRSA, plaintext);
+            String decrypted = TkmEncryptionUtils.decryptRSAAES(combinedRSAAESBean, iwk, i);
+            assertEquals("must be equal", plaintext, decrypted);
+        } 
+    }
+    
+    @Test
+    public void testDynamicEncryptionRSAAES() throws UnlockWalletException, InvalidWalletIndexException, PublicKeySerializzationException, WalletException{
+        InstanceWalletKeyStoreBCRSA4096ENC iwk = new InstanceWalletKeyStoreBCRSA4096ENC("test_rsa_aes","password");
+        for(int i = 0; i < 3; i++){
+            String publicKeyRSA = iwk.getPublicKeyAtIndexURL64(i);
+            String plaintext = UUID.randomUUID().toString();
+            CombinedRSAAESBean combinedRSAAESBean = TkmEncryptionUtils.encryptRSAAES(publicKeyRSA, plaintext);
+            String decrypted = TkmEncryptionUtils.decryptRSAAES(combinedRSAAESBean, iwk, i);
+            assertEquals("must be equal", plaintext, decrypted );
+            assertNotEquals("must not be equal", plaintext + "pollo", decrypted);
+        }
+    }
 }
