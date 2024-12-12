@@ -26,8 +26,10 @@ import io.takamaka.wallet.utils.FixedParameters;
 import io.takamaka.wallet.utils.TkmSignUtils;
 import io.takamaka.wallet.utils.TkmTextUtils;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.logging.Level;
@@ -123,12 +125,13 @@ public class TkmEncryptionUtils {
         }
     }
 
-    /***
-     * 
+    /**
+     * *
+     *
      * @param rsaPublicKey
      * @param message
      * @return
-     * @throws WalletException 
+     * @throws WalletException
      */
     public static final CombinedRSAAESBean encryptRSAAES(String rsaPublicKey, String message) throws WalletException {
 
@@ -154,13 +157,14 @@ public class TkmEncryptionUtils {
 
     }
 
-    /***
-     * 
+    /**
+     * *
+     *
      * @param crab
      * @param iwk
      * @param index
      * @return
-     * @throws WalletException 
+     * @throws WalletException
      */
     public static final String decryptRSAAES(CombinedRSAAESBean crab, InstanceWalletKeystoreInterface iwk, int index) throws WalletException {
         String message = null;
@@ -169,17 +173,37 @@ public class TkmEncryptionUtils {
         return message;
     }
 
-    /***
-     * 
+    /**
+     * *
+     *
      * @param crab
      * @param iwk
      * @param index
      * @return
-     * @throws WalletException 
+     * @throws WalletException
      */
     public static final String decryptSecretKey(CombinedRSAAESBean crab, InstanceWalletKeystoreInterface iwk, int index) throws WalletException {
         String secret;
         secret = TkmCypherProviderBCRSA4096ENC.decrypt(iwk, index, crab.getRSAEncryptedKey());
         return secret;
     }
+
+    /**
+     *
+     * @param secret
+     * @param alogorithm es "SHA-256"
+     * @param message
+     * @return
+     * @throws NoSuchAlgorithmException
+     */
+    public static final byte[] getHMACDigestUTF8(String secret, String alogorithm, String message) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance(alogorithm);
+        String text = "Text to hash, cryptographically.";
+
+        // Change this to UTF-16 if needed
+        md.update(text.getBytes(StandardCharsets.UTF_8));
+        byte[] digest = md.digest();
+        return digest;
+    }
+
 }
