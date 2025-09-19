@@ -334,11 +334,10 @@ public class TkmAddressUtilsTest {
 
     @Test
     public void testStreamEncryption() {
-
         try {
             for (String password : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
                 //for (String message : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
-                String message = "pollo pollo 1 pollo 2 pollo 3 pollo 4 pollo 5";
+                String message = "pollo pollo 1 pollo 2 pollo 3 pollo 4 pollo 5pollo pollo12345678 e porci";
                 for (String scope : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
                     final ByteArrayInputStream byteArrayInputStreamPlain = new ByteArrayInputStream(message.getBytes());
                     final ByteArrayOutputStream byteArrayOutputStreamCypher = new ByteArrayOutputStream(message.getBytes().length + 1024);
@@ -357,7 +356,7 @@ public class TkmAddressUtilsTest {
                 //}
             }
         } catch (WalletException ex) {
-            System.getLogger(TkmAddressUtilsTest.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            log.error("test error", ex);
             assert (false);
         }
     }

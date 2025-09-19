@@ -46,6 +46,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
@@ -163,8 +165,8 @@ public class TkmEncryptionUtils {
             final String password,
             final String scope,
             final String version,
-            final InputStream inputStream,
-            final OutputStream outputStream,
+            final InputStream inputStreamE,
+            final OutputStream outputStreamE,
             final int bufferByteSize
     ) throws InvalidCypherException, WalletException {
         try {
@@ -204,18 +206,37 @@ public class TkmEncryptionUtils {
             SecretKey secret = new SecretKeySpec(secretKey, sed.getKeySpecAlgorithm());
             
             Cipher cipher = Cipher.getInstance(sed.getTransformation(), "BC");
+            //CipherInputStream inputStream = new CipherInputStream(inputStreamE, cipher);
+            CipherOutputStream outputStream = new CipherOutputStream(outputStreamE, cipher);
             cipher.init(Cipher.ENCRYPT_MODE, secret, iv);
-            byte[] buffer = new byte[bufferByteSize];
-            //int bytesRead = 0;
-            int bytesRead;// = inputStream.read(buffer); //data
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                byte[] output = cipher.update(buffer, 0, bytesRead); //enc
-                if (output != null) { //enc
-                    outputStream.write(output); //enc
-                    digest.update(output);//hash
-                } //enc                
+            //byte[] buffer = new byte[32];
+            
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStreamE.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
             }
+            outputStream.close();
+//            //int bytesRead = 0;
+//            int bytesRead = 0;// = inputStream.read(buffer); //data
+//            bytesRead = inputStream.read(buffer);
+//            while (bytesRead != -1) {
+//                byte[] output = cipher.update(buffer, 0, bytesRead); //enc
+//                
+//                //cipher.up
+//                if (output != null) { //enc
+//                    outputStream.write(output); //enc
+//                    digest.update(output);//hash
+//                    
+//                } //enc              
+//                bytesRead = inputStream.read(buffer);
+//            }
+            log.info("iv " + iv);
+            byte[] iv1 = cipher.getIV();
+            
+            log.info("iv " + iv1);
+            //outputStream.flush();
+            
             byte[] encodedhash = digest.digest();
             final String hexHash = TkmSignUtils.fromByteArrayToHexString(encodedhash);
             sed.setEncryptedContentHash(hexHash);
@@ -231,8 +252,8 @@ public class TkmEncryptionUtils {
             final String password,
             final StreamEncryptedDescriptor sed,
             final String version,
-            final InputStream inputStream,
-            final OutputStream outputStream,
+            final InputStream inputStreamE,
+            final OutputStream outputStreamE,
             final int bufferByteSize
     ) throws InvalidCypherException, WalletException {
         try {
@@ -251,18 +272,26 @@ public class TkmEncryptionUtils {
             
             Cipher cipher = Cipher.getInstance(sed.getTransformation(), "BC");
             cipher.init(Cipher.DECRYPT_MODE, secret, iv);
-            byte[] buffer = new byte[bufferByteSize];
-            //int bytesRead = 0;
-            int bytesRead;// = inputStream.read(buffer); //data
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                byte[] output = cipher.update(buffer, 0, bytesRead); //enc
-                if (output != null) { //enc
-                    outputStream.write(output); //enc
-                    digest.update(buffer);//hash
-                } //enc
-
+            CipherInputStream cipherInputStream = new CipherInputStream(inputStreamE, cipher);
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = cipherInputStream.read(buffer)) != -1) {
+                outputStreamE.write(buffer, 0, bytesRead);
             }
+            cipherInputStream.close();
+//            byte[] buffer = new byte[32];
+//            //int bytesRead = 0;
+//            int bytesRead;// = inputStream.read(buffer); //data
+//
+//            while ((bytesRead = inputStream.read(buffer)) != -1) {
+//                System.out.print((char) bytesRead);
+//                byte[] output = cipher.update(buffer, 0, bytesRead); //enc
+//                if (output != null) { //enc
+//                    outputStream.write(output); //enc
+//                    digest.update(buffer);//hash
+//                } //enc
+//
+//            }
             byte[] encodedhash = digest.digest();
             final String hexHash = TkmSignUtils.fromByteArrayToHexString(encodedhash);
             if (!sed.getEncryptedContentHash().equals(sed.getEncryptedContentHash())) {

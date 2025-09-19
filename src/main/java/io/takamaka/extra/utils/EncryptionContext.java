@@ -41,10 +41,10 @@ public enum EncryptionContext {
             20000,
             "AES/GCM/NoPadding",
             "AES",
-            256,
+            256,//aes key size
             StandardCharsets.UTF_8.name(),
-            128,
-            12,
+            128,//gcm
+            12,//nonce
             "SHA3-256"
     );
 
