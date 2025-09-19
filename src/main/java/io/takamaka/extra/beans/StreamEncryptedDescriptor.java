@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 AiliA SA.
+ * Copyright 2025 AiliA SA.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,58 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.takamaka.extra.utils;
+package io.takamaka.extra.beans;
 
-import java.nio.charset.StandardCharsets;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  *
  * @author Giovanni Antino giovanni.antino@takamaka.io
  */
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
-public enum EncryptionContext {
-    v0_1_a(
-            "PBKDF2WithHmacSHA512",
-            20000,
-            "AES/CBC/PKCS5Padding",
-            "AES",
-            256,
-            StandardCharsets.UTF_8.name(),
-            null,
-            null,
-            null
-    ),
-    v0_2_a_stream_gcm(
-            "PBKDF2WithHmacSHA512",
-            20000,
-            "AES/GCM/NoPadding",
-            "AES",
-            256,
-            StandardCharsets.UTF_8.name(),
-            128,
-            12,
-            "SHA3-256"
-    );
+public class StreamEncryptedDescriptor {
 
-    @Getter
+    @JsonProperty("pa")
     private String passwordHashAlgorithm;
-    @Getter
+    @JsonProperty("it")
     private int iterations;
-    @Getter
+    @JsonProperty("tr")
     private String transformation;
-    @Getter
+    @JsonProperty("ka")
     private String keySpecAlgorithm;
-    @Getter
+    @JsonProperty("tv")
+    private String tkVersion;
+    @JsonProperty("kl")
     private int outputKeyLengthBit;
-    @Getter
+    @JsonProperty("ec")
     private String encoding;
-    @Getter
-    private Integer tagBitLength;
-    @Getter
-    private Integer ivByteLength;
-    @Getter
+    @JsonProperty("iv")
+    private String iv;
+    @JsonProperty("iv_length_byte")
+    private int ivLengthByte;
+    @JsonProperty("tag_length_bit")
+    private int tagLengthBit;
+    @JsonProperty("encrypted_content_hash")
+    private String encryptedContentHash;
+    @JsonProperty("salt")
+    private String salt;
+    @JsonProperty("digest_hash")
     private String digestHash;
 
 }

@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.takamaka.extra.beans.CombinedRSAAESBean;
 import io.takamaka.extra.beans.CompactAddressBean;
 import io.takamaka.extra.beans.EncMessageBean;
+import io.takamaka.extra.beans.StreamEncryptedDescriptor;
 import io.takamaka.extra.identicon.exceptions.AddressDecodeException;
 import io.takamaka.extra.identicon.exceptions.AddressEncodeException;
 import io.takamaka.extra.identicon.exceptions.AddressNotRecognizedException;
@@ -36,6 +37,9 @@ import io.takamaka.wallet.exceptions.PublicKeySerializzationException;
 import io.takamaka.wallet.exceptions.UnlockWalletException;
 import io.takamaka.wallet.exceptions.WalletException;
 import io.takamaka.wallet.utils.TkmSignUtils;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -218,10 +222,11 @@ public class TkmAddressUtilsTest {
     @Test
     public void testEncryption() throws WalletException, JsonProcessingException {
         int ei = 0;
+        final EncryptionContext[] context = new EncryptionContext[]{EncryptionContext.v0_1_a};
         for (String password : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
             for (String message : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
                 for (String scope : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
-                    for (EncryptionContext ec : EncryptionContext.values()) {
+                    for (EncryptionContext ec : context) {
                         log.info("testing encryption for %s %s %s %s ", password, message, scope, ec.name());
                         log.info(message);
                         EncMessageBean passwordEncryptedContent = TkmEncryptionUtils.toPasswordEncryptedContent(password, message, scope, ec.name());
@@ -234,6 +239,9 @@ public class TkmAddressUtilsTest {
                         log.info(decodedMessage);
                         assertEquals(message, decodedMessage);
                     }
+                    {
+
+                    }
                 }
             }
         }
@@ -242,13 +250,14 @@ public class TkmAddressUtilsTest {
     @Test
     public void testCombineRSAEncryption() throws WalletException, JsonProcessingException {
         int ei = 0;
+        final EncryptionContext[] context = new EncryptionContext[]{EncryptionContext.v0_1_a};
         InstanceWalletKeystoreInterface iwk = new InstanceWalletKeyStoreBCRSA4096ENC("test_wallet_rsa", "password");
         for (int i = 0; i < 2; i++) {
 
             for (String password : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
                 for (String message : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
 
-                    for (EncryptionContext ec : EncryptionContext.values()) {
+                    for (EncryptionContext ec : context) {
                         RandomStringGenerator generator = new RandomStringGenerator.Builder()
                                 .withinRange('0', 'z')
                                 .filteredBy(Character::isLetterOrDigit)
@@ -267,11 +276,11 @@ public class TkmAddressUtilsTest {
                                 passwordEncryptedContent
                         );
                         log.info(combinedRSAAESBean.toString());
-                        
+
                         String crabJson = SerializerUtils.getJson(combinedRSAAESBean);
                         log.info("json object: " + crabJson);
                         CombinedRSAAESBean crab = SerializerUtils.getCombinedRSAAESBeanJson(crabJson);
-                        if(crab != null){
+                        if (crab != null) {
                             log.info("crab deserialization success..");
                         }
                         String decryptedKey = TkmCypherProviderBCRSA4096ENC.decrypt(iwk, i * 10, crab.getRSAEncryptedKey());
@@ -295,31 +304,61 @@ public class TkmAddressUtilsTest {
             }
         }
     }
-    
+
     @Test
-    public void testStaticEncryptionRSAAES() throws UnlockWalletException, WalletException{
-        InstanceWalletKeyStoreBCRSA4096ENC iwk = new InstanceWalletKeyStoreBCRSA4096ENC("test_rsa_aes","password");
-        for(int i = 0; i < 3; i++){
+    public void testStaticEncryptionRSAAES() throws UnlockWalletException, WalletException {
+        InstanceWalletKeyStoreBCRSA4096ENC iwk = new InstanceWalletKeyStoreBCRSA4096ENC("test_rsa_aes", "password");
+        for (int i = 0; i < 3; i++) {
             String publicKeyRSA = iwk.getPublicKeyAtIndexURL64(i);
             String plaintext = TestEnvObjects.REF_ADDR_ARRAY_LOREM[i];
             CombinedRSAAESBean combinedRSAAESBean = TkmEncryptionUtils.encryptRSAAES(publicKeyRSA, plaintext);
             String decrypted = TkmEncryptionUtils.decryptRSAAES(combinedRSAAESBean, iwk, i);
             assertEquals("must be equal", plaintext, decrypted);
-        } 
+        }
     }
-    
+
     @Test
-    public void testDynamicEncryptionRSAAES() throws UnlockWalletException, InvalidWalletIndexException, PublicKeySerializzationException, WalletException, JsonProcessingException{
-        InstanceWalletKeyStoreBCRSA4096ENC iwk = new InstanceWalletKeyStoreBCRSA4096ENC("test_rsa_aes","password");
-        for(int i = 0; i < 3; i++){
+    public void testDynamicEncryptionRSAAES() throws UnlockWalletException, InvalidWalletIndexException, PublicKeySerializzationException, WalletException, JsonProcessingException {
+        InstanceWalletKeyStoreBCRSA4096ENC iwk = new InstanceWalletKeyStoreBCRSA4096ENC("test_rsa_aes", "password");
+        for (int i = 0; i < 3; i++) {
             String publicKeyRSA = iwk.getPublicKeyAtIndexURL64(i);
             String plaintext = UUID.randomUUID().toString();
             CombinedRSAAESBean combinedRSAAESBean = TkmEncryptionUtils.encryptRSAAES(publicKeyRSA, plaintext);
             String jsonCrab = SerializerUtils.getJson(combinedRSAAESBean);
             CombinedRSAAESBean newCombinedRSAAESBeanJson = SerializerUtils.getCombinedRSAAESBeanJson(jsonCrab);
             String decrypted = TkmEncryptionUtils.decryptRSAAES(newCombinedRSAAESBeanJson, iwk, i);
-            assertEquals("must be equal", plaintext, decrypted );
+            assertEquals("must be equal", plaintext, decrypted);
             assertNotEquals("must not be equal", plaintext + "pollo", decrypted);
+        }
+    }
+
+    @Test
+    public void testStreamEncryption() {
+
+        try {
+            for (String password : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
+                //for (String message : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
+                String message = "pollo pollo 1 pollo 2 pollo 3 pollo 4 pollo 5";
+                for (String scope : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
+                    final ByteArrayInputStream byteArrayInputStreamPlain = new ByteArrayInputStream(message.getBytes());
+                    final ByteArrayOutputStream byteArrayOutputStreamCypher = new ByteArrayOutputStream(message.getBytes().length + 1024);
+
+                    StreamEncryptedDescriptor sed = TkmEncryptionUtils.streamPasswordEncrypt(password, scope, "v0_2_a_stream_gcm", byteArrayInputStreamPlain, byteArrayOutputStreamCypher, 64);
+                    //log.info("sad :-( )-: {}", sed.toString());
+                    String b64Cypher = TkmSignUtils.fromByteArrayToB64(byteArrayOutputStreamCypher.toByteArray());
+                    //log.info("cypher {}", b64Cypher);
+                    final ByteArrayInputStream byteArrayInputStreamCypher = new ByteArrayInputStream(byteArrayOutputStreamCypher.toByteArray());
+                    final ByteArrayOutputStream byteArrayOutputStreamPlain = new ByteArrayOutputStream(byteArrayOutputStreamCypher.toByteArray().length);
+                    TkmEncryptionUtils.streamPasswordDecrypt(password, sed, "v0_2_a_stream_gcm", byteArrayInputStreamCypher, byteArrayOutputStreamPlain, 64);
+                    log.info("plain {}", new String(byteArrayOutputStreamPlain.toByteArray(), StandardCharsets.UTF_8));
+
+                    assertEquals("plaintext not equals to decrypted", message, new String(byteArrayOutputStreamPlain.toByteArray(), StandardCharsets.UTF_8));
+                }
+                //}
+            }
+        } catch (WalletException ex) {
+            System.getLogger(TkmAddressUtilsTest.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            assert (false);
         }
     }
 }
