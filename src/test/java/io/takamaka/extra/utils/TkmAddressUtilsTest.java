@@ -336,24 +336,23 @@ public class TkmAddressUtilsTest {
     public void testStreamEncryption() {
         try {
             for (String password : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
-                //for (String message : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
-                String message = "pollo pollo 1 pollo 2 pollo 3 pollo 4 pollo 5pollo pollo12345678 e porci";
-                for (String scope : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
-                    final ByteArrayInputStream byteArrayInputStreamPlain = new ByteArrayInputStream(message.getBytes());
-                    final ByteArrayOutputStream byteArrayOutputStreamCypher = new ByteArrayOutputStream(message.getBytes().length + 1024);
+                for (String message : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
+                    for (String scope : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
+                        final ByteArrayInputStream byteArrayInputStreamPlain = new ByteArrayInputStream(message.getBytes());
+                        final ByteArrayOutputStream byteArrayOutputStreamCypher = new ByteArrayOutputStream(message.getBytes().length + 1024);
 
-                    StreamEncryptedDescriptor sed = TkmEncryptionUtils.streamPasswordEncrypt(password, scope, "v0_2_a_stream_gcm", byteArrayInputStreamPlain, byteArrayOutputStreamCypher, 64);
-                    //log.info("sad :-( )-: {}", sed.toString());
-                    String b64Cypher = TkmSignUtils.fromByteArrayToB64(byteArrayOutputStreamCypher.toByteArray());
-                    //log.info("cypher {}", b64Cypher);
-                    final ByteArrayInputStream byteArrayInputStreamCypher = new ByteArrayInputStream(byteArrayOutputStreamCypher.toByteArray());
-                    final ByteArrayOutputStream byteArrayOutputStreamPlain = new ByteArrayOutputStream(byteArrayOutputStreamCypher.toByteArray().length);
-                    TkmEncryptionUtils.streamPasswordDecrypt(password, sed, "v0_2_a_stream_gcm", byteArrayInputStreamCypher, byteArrayOutputStreamPlain, 64);
-                    log.info("plain {}", new String(byteArrayOutputStreamPlain.toByteArray(), StandardCharsets.UTF_8));
+                        StreamEncryptedDescriptor sed = TkmEncryptionUtils.streamPasswordEncrypt(password, scope, "v0_2_a_stream_gcm", byteArrayInputStreamPlain, byteArrayOutputStreamCypher);
+                        //log.info("sad :-( )-: {}", sed.toString());
+                        String b64Cypher = TkmSignUtils.fromByteArrayToB64(byteArrayOutputStreamCypher.toByteArray());
+                        //log.info("cypher {}", b64Cypher);
+                        final ByteArrayInputStream byteArrayInputStreamCypher = new ByteArrayInputStream(byteArrayOutputStreamCypher.toByteArray());
+                        final ByteArrayOutputStream byteArrayOutputStreamPlain = new ByteArrayOutputStream(byteArrayOutputStreamCypher.toByteArray().length);
+                        TkmEncryptionUtils.streamPasswordDecrypt(password, sed, "v0_2_a_stream_gcm", byteArrayInputStreamCypher, byteArrayOutputStreamPlain);
+                        log.info("plain {}", new String(byteArrayOutputStreamPlain.toByteArray(), StandardCharsets.UTF_8));
 
-                    assertEquals("plaintext not equals to decrypted", message, new String(byteArrayOutputStreamPlain.toByteArray(), StandardCharsets.UTF_8));
+                        assertEquals("plaintext not equals to decrypted", message, new String(byteArrayOutputStreamPlain.toByteArray(), StandardCharsets.UTF_8));
+                    }
                 }
-                //}
             }
         } catch (WalletException ex) {
             log.error("test error", ex);

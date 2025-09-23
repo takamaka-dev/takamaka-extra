@@ -155,9 +155,8 @@ public class TkmEncryptionUtils {
      * @param password
      * @param scope
      * @param version
-     * @param inputStream
-     * @param outputStream
-     * @param bufferByteSize (default 64) 2^x size is requered to avoid problems
+     * @param inputStreamE
+     * @param outputStreamE
      * @return
      * @throws io.takamaka.wallet.exceptions.InvalidCypherException
      */
@@ -166,8 +165,7 @@ public class TkmEncryptionUtils {
             final String scope,
             final String version,
             final InputStream inputStreamE,
-            final OutputStream outputStreamE,
-            final int bufferByteSize
+            final OutputStream outputStreamE
     ) throws InvalidCypherException, WalletException {
         try {
             final StreamEncryptedDescriptor sed;
@@ -253,8 +251,7 @@ public class TkmEncryptionUtils {
             final StreamEncryptedDescriptor sed,
             final String version,
             final InputStream inputStreamE,
-            final OutputStream outputStreamE,
-            final int bufferByteSize
+            final OutputStream outputStreamE
     ) throws InvalidCypherException, WalletException {
         try {
 
