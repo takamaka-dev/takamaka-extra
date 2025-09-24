@@ -53,7 +53,7 @@ public class StreamEncryptedDescriptor {
     private String encryptedContentHash;
     @JsonProperty("salt")
     private String salt;
-    @JsonProperty("digest_hash")
-    private String digestHash;
+    @JsonProperty("digest_hash_function")
+    private String digestHashFunction;
 
 }

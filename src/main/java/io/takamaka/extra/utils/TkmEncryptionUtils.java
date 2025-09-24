@@ -30,6 +30,7 @@ import io.takamaka.wallet.exceptions.WalletException;
 import io.takamaka.wallet.utils.FixedParameters;
 import io.takamaka.wallet.utils.TkmSignUtils;
 import io.takamaka.wallet.utils.TkmTextUtils;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -42,6 +43,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
@@ -57,7 +60,13 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64InputStream;
+import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.text.RandomStringGenerator;
+import org.bouncycastle.crypto.digests.SHA3Digest;
+import org.bouncycastle.crypto.io.DigestOutputStream;
+import org.bouncycastle.util.io.TeeInputStream;
+import org.bouncycastle.util.io.TeeOutputStream;
 
 /**
  *
@@ -65,7 +74,7 @@ import org.apache.commons.text.RandomStringGenerator;
  */
 @Slf4j
 public class TkmEncryptionUtils {
-    
+
     public static final String fromPasswordEncryptedContent(String password, String scope, EncMessageBean encMessageBean) throws InvalidCypherException, WalletException {
         try {
             final String theMessage;
@@ -75,15 +84,15 @@ public class TkmEncryptionUtils {
                     SecretKeyFactory skf = SecretKeyFactory.getInstance(encMessageBean.getPasswordHashAlgorithm());
                     byte[] secretKey = skf.generateSecret(spec).getEncoded();
                     SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, encMessageBean.getKeySpecAlgorithm());
-                    
+
                     byte[] iv = TkmSignUtils.fromB64URLToByteArray(encMessageBean.getEncryptedMessage()[0]);
                     byte[] content = TkmSignUtils.fromB64URLToByteArray(encMessageBean.getEncryptedMessage()[1]);
-                    
+
                     Cipher cipher = Cipher.getInstance(encMessageBean.getTransformation());
                     cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(iv));
                     theMessage = new String(cipher.doFinal(content), encMessageBean.getEncoding());
                     break;
-                
+
                 default:
                     throw new InvalidCypherException("unrecognized version " + encMessageBean.getTkVersion());
             }
@@ -118,7 +127,7 @@ public class TkmEncryptionUtils {
                             null
                     );
                     break;
-                
+
                 default:
                     throw new InvalidCypherException("unrecognized version " + version);
             }
@@ -157,6 +166,9 @@ public class TkmEncryptionUtils {
      * @param version
      * @param inputStreamE
      * @param outputStreamE
+     * @param bufferSizeExponent 2^x buffer byte size example: [10 -> 2^10 =
+     * 1024] or [12 -> 2^12 = 4096] bytes = 1 kibibyte
+     * @param processedBytes zeroed when process start
      * @return
      * @throws io.takamaka.wallet.exceptions.InvalidCypherException
      */
@@ -165,9 +177,13 @@ public class TkmEncryptionUtils {
             final String scope,
             final String version,
             final InputStream inputStreamE,
-            final OutputStream outputStreamE
+            final OutputStream outputStreamE,
+            final int bufferSizeExponent,
+            final AtomicLong processedBytes
     ) throws InvalidCypherException, WalletException {
         try {
+            final int bufferBytes = (int) Math.pow(2, bufferSizeExponent);
+            processedBytes.set(0L);
             final StreamEncryptedDescriptor sed;
             switch (version) {
                 case "v0_2_a_stream_gcm":
@@ -187,56 +203,52 @@ public class TkmEncryptionUtils {
                             EncryptionContext.v0_2_a_stream_gcm.getDigestHash()
                     );
                     break;
-                
+
                 default:
                     throw new InvalidCypherException("unrecognized version " + version);
             }
-            //hash
-            final MessageDigest digest = MessageDigest.getInstance("SHA3-256", "BC");
-            //enc
             final byte[] saltBytes = TkmSignUtils.fromHexToByteArray(sed.getSalt());
-            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), saltBytes, sed.getIterations(), sed.getOutputKeyLengthBit());
-            String string = new String(spec.getPassword());
+            final PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), saltBytes, sed.getIterations(), sed.getOutputKeyLengthBit());
             final GCMParameterSpec iv = generateIv(sed.getTagLengthBit(), sed.getIvLengthByte());
             sed.setIv(TkmSignUtils.fromByteArrayToHexString(iv.getIV()));
-            SecretKeyFactory skf = SecretKeyFactory.getInstance(sed.getPasswordHashAlgorithm());
-            byte[] secretKey = skf.generateSecret(spec).getEncoded();
-            SecretKey secret = new SecretKeySpec(secretKey, sed.getKeySpecAlgorithm());
-            
-            Cipher cipher = Cipher.getInstance(sed.getTransformation(), "BC");
-            //CipherInputStream inputStream = new CipherInputStream(inputStreamE, cipher);
-            CipherOutputStream outputStream = new CipherOutputStream(outputStreamE, cipher);
-            cipher.init(Cipher.ENCRYPT_MODE, secret, iv);
-            //byte[] buffer = new byte[32];
-            
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = inputStreamE.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
+            final SecretKeyFactory skf = SecretKeyFactory.getInstance(sed.getPasswordHashAlgorithm());
+            final byte[] secretKey = skf.generateSecret(spec).getEncoded();
+            final SecretKey secret = new SecretKeySpec(secretKey, sed.getKeySpecAlgorithm());
+
+            final Cipher cipher = Cipher.getInstance(sed.getTransformation(), "BC");
+            final String digestHash = EncryptionContext.v0_2_a_stream_gcm.getDigestHash();
+
+            final int shad = Integer.parseInt(digestHash.split("-")[1]);
+            final SHA3Digest shA3Digest = new SHA3Digest(shad);
+            if (!shA3Digest.getAlgorithmName().toLowerCase().equals(digestHash.toLowerCase())) {
+                throw new WalletException("invalid hash algorithm");
             }
-            outputStream.close();
-//            //int bytesRead = 0;
-//            int bytesRead = 0;// = inputStream.read(buffer); //data
-//            bytesRead = inputStream.read(buffer);
-//            while (bytesRead != -1) {
-//                byte[] output = cipher.update(buffer, 0, bytesRead); //enc
-//                
-//                //cipher.up
-//                if (output != null) { //enc
-//                    outputStream.write(output); //enc
-//                    digest.update(output);//hash
-//                    
-//                } //enc              
-//                bytesRead = inputStream.read(buffer);
-//            }
-            log.info("iv " + iv);
-            byte[] iv1 = cipher.getIV();
-            
-            log.info("iv " + iv1);
-            //outputStream.flush();
-            
-            byte[] encodedhash = digest.digest();
-            final String hexHash = TkmSignUtils.fromByteArrayToHexString(encodedhash);
+            final DigestOutputStream digestOutputStream = new DigestOutputStream(shA3Digest);
+
+            final TeeOutputStream teeOutputStream = new TeeOutputStream(outputStreamE, digestOutputStream);
+            final Base64OutputStream base64OutputStream = new Base64OutputStream(teeOutputStream);
+            final CipherOutputStream cipherOutputStream = new CipherOutputStream(base64OutputStream, cipher);
+            cipher.init(Cipher.ENCRYPT_MODE, secret, iv);
+
+            byte[] buffer = new byte[bufferBytes];
+            int bytesRead;
+
+            while ((bytesRead = inputStreamE.read(buffer)) != -1) {
+                cipherOutputStream.write(buffer, 0, bytesRead);
+                processedBytes.accumulateAndGet(bytesRead, Long::sum);
+
+            }
+
+            digestOutputStream.flush();
+            cipherOutputStream.flush();
+            base64OutputStream.flush();
+            teeOutputStream.flush();
+            digestOutputStream.close();
+            cipherOutputStream.close();
+            base64OutputStream.close();
+            teeOutputStream.close();
+
+            final String hexHash = TkmSignUtils.fromByteArrayToHexString(digestOutputStream.getDigest());
             sed.setEncryptedContentHash(hexHash);
             return sed;
         } catch (InvalidAlgorithmParameterException | NoSuchProviderException | TkmCryptoExtraException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | UnsupportedEncodingException ex) {
@@ -245,57 +257,66 @@ public class TkmEncryptionUtils {
             throw new WalletException("buffer error", ex);
         }
     }
-    
+
     public static final void streamPasswordDecrypt(
             final String password,
             final StreamEncryptedDescriptor sed,
             final String version,
             final InputStream inputStreamE,
-            final OutputStream outputStreamE
+            final OutputStream outputStreamE,
+            final int bufferSizeExponent,
+            final AtomicLong processedBytes
     ) throws InvalidCypherException, WalletException {
         try {
-
+            final int bufferBytes = (int) Math.pow(2, bufferSizeExponent);
+            processedBytes.set(0L);
             //hash
-            final MessageDigest digest = MessageDigest.getInstance("SHA3-256", "BC");
+            //final MessageDigest digest = MessageDigest.getInstance(sed.getDigestHashFunction(), "BC");
             //enc
             final byte[] saltBytes = TkmSignUtils.fromHexToByteArray(sed.getSalt());
-            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), saltBytes, sed.getIterations(), sed.getOutputKeyLengthBit());
-            String string = new String(spec.getPassword());
-            GCMParameterSpec iv = new GCMParameterSpec(sed.getTagLengthBit(), TkmSignUtils.fromHexToByteArray(sed.getIv()));
+            final PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), saltBytes, sed.getIterations(), sed.getOutputKeyLengthBit());
+            final GCMParameterSpec iv = new GCMParameterSpec(sed.getTagLengthBit(), TkmSignUtils.fromHexToByteArray(sed.getIv()));
             //sed.setIv(TkmSignUtils.fromByteArrayToB64(iv.getIV()));
-            SecretKeyFactory skf = SecretKeyFactory.getInstance(sed.getPasswordHashAlgorithm());
-            byte[] secretKey = skf.generateSecret(spec).getEncoded();
-            SecretKey secret = new SecretKeySpec(secretKey, sed.getKeySpecAlgorithm());
-            
-            Cipher cipher = Cipher.getInstance(sed.getTransformation(), "BC");
+            final SecretKeyFactory skf = SecretKeyFactory.getInstance(sed.getPasswordHashAlgorithm());
+            final byte[] secretKey = skf.generateSecret(spec).getEncoded();
+            final SecretKey secret = new SecretKeySpec(secretKey, sed.getKeySpecAlgorithm());
+
+            final Cipher cipher = Cipher.getInstance(sed.getTransformation(), "BC");
+            final String digestHash = EncryptionContext.v0_2_a_stream_gcm.getDigestHash();
+
+            final int shad = Integer.parseInt(digestHash.split("-")[1]);
+            final SHA3Digest shA3Digest = new SHA3Digest(shad);
+            if (!shA3Digest.getAlgorithmName().toLowerCase().equals(digestHash.toLowerCase())) {
+                throw new WalletException("invalid hash algorithm");
+            }
+            final DigestOutputStream digestOutputStream = new DigestOutputStream(shA3Digest);
+
             cipher.init(Cipher.DECRYPT_MODE, secret, iv);
-            CipherInputStream cipherInputStream = new CipherInputStream(inputStreamE, cipher);
-            byte[] buffer = new byte[1024];
+            //ByteArrayOutputStream tempDupStream = new ByteArrayOutputStream(bufferBytes);
+            final TeeInputStream teeInputStream = new TeeInputStream(inputStreamE, digestOutputStream);
+            final Base64InputStream base64InputStream = new Base64InputStream(teeInputStream);//decode
+            final CipherInputStream cipherInputStream = new CipherInputStream(base64InputStream, cipher);//decrypt
+
+            final byte[] buffer = new byte[bufferBytes];
             int bytesRead;
             while ((bytesRead = cipherInputStream.read(buffer)) != -1) {
                 outputStreamE.write(buffer, 0, bytesRead);
+                processedBytes.accumulateAndGet(bytesRead, Long::sum);
+
             }
             cipherInputStream.close();
-//            byte[] buffer = new byte[32];
-//            //int bytesRead = 0;
-//            int bytesRead;// = inputStream.read(buffer); //data
-//
-//            while ((bytesRead = inputStream.read(buffer)) != -1) {
-//                System.out.print((char) bytesRead);
-//                byte[] output = cipher.update(buffer, 0, bytesRead); //enc
-//                if (output != null) { //enc
-//                    outputStream.write(output); //enc
-//                    digest.update(buffer);//hash
-//                } //enc
-//
-//            }
-            byte[] encodedhash = digest.digest();
-            final String hexHash = TkmSignUtils.fromByteArrayToHexString(encodedhash);
-            if (!sed.getEncryptedContentHash().equals(sed.getEncryptedContentHash())) {
+            teeInputStream.close();
+            base64InputStream.close();
+            digestOutputStream.flush();
+            digestOutputStream.close();
+
+            //byte[] encodedhash = digest.digest();
+            final String hexHash = TkmSignUtils.fromByteArrayToHexString(digestOutputStream.getDigest());
+            if (!sed.getEncryptedContentHash().equals(hexHash)) {
                 String errMsg = String.format("invalid encrypted content hash, declared hash %1$s does not match calculated hash %2$s", sed.getEncryptedContentHash(), hexHash);
                 throw new WalletException(errMsg);
             }
-            
+
         } catch (InvalidAlgorithmParameterException | NoSuchProviderException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | UnsupportedEncodingException ex) {
             throw new WalletException("cypher error", ex);
         } catch (IOException ex) {
@@ -322,7 +343,7 @@ public class TkmEncryptionUtils {
             throw new TkmCryptoExtraException(ex);
         }
     }
-    
+
     public static final String getRandomSaltWithScope256bitB64(String scope) throws TkmCryptoExtraException {
         try {
             RandomStringGenerator generator = new RandomStringGenerator.Builder()
@@ -345,7 +366,7 @@ public class TkmEncryptionUtils {
      * @throws WalletException
      */
     public static final CombinedRSAAESBean encryptRSAAES(String rsaPublicKey, String message) throws WalletException {
-        
+
         CombinedRSAAESBean crab = new CombinedRSAAESBean();
         RandomStringGenerator generator = new RandomStringGenerator.Builder()
                 .withinRange('0', 'z')
@@ -353,19 +374,19 @@ public class TkmEncryptionUtils {
                 .get();
         String secretKey = generator.generate(400);
         String rsaEncPubKey = TkmCypherProviderBCRSA4096ENC.encrypt(rsaPublicKey, secretKey);
-        
+
         crab.setRSAEncryptedKey(rsaEncPubKey);
         crab.setScope(AdvancedScopeContext.RSA_KEY_ENCRYPTION_AES_CYPHERTEXT.name());
-        
+
         EncMessageBean passwordEncryptedContent = TkmEncryptionUtils.toPasswordEncryptedContent(
                 secretKey,
                 message,
                 AdvancedScopeContext.RSA_KEY_ENCRYPTION_AES_CYPHERTEXT.name(),
                 EncryptionContext.v0_1_a.name());
-        
+
         crab.setAesContentBean(passwordEncryptedContent);
         return crab;
-        
+
     }
 
     /**
@@ -416,5 +437,5 @@ public class TkmEncryptionUtils {
         byte[] digest = md.digest();
         return digest;
     }
-    
+
 }
