@@ -16,23 +16,22 @@
 package io.takamaka.extra.beans;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- *
- * @author Giovanni Antino giovanni.antino@takamaka.io
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StreamEncryptedDescriptor {
+public class StreamEncryptedDescriptor implements Serializable {
+
+    private static final long serialVersionUID = -5363192068927539306L;
 
     @JsonProperty("pa")
     private String passwordHashAlgorithm;
     @JsonProperty("it")
-    private int iterations;
+    private Integer iterations;
     @JsonProperty("tr")
     private String transformation;
     @JsonProperty("ka")
@@ -40,15 +39,15 @@ public class StreamEncryptedDescriptor {
     @JsonProperty("tv")
     private String tkVersion;
     @JsonProperty("kl")
-    private int outputKeyLengthBit;
+    private Integer outputKeyLengthBit;
     @JsonProperty("ec")
     private String encoding;
     @JsonProperty("iv")
     private String iv;
     @JsonProperty("iv_length_byte")
-    private int ivLengthByte;
+    private Integer ivLengthByte;
     @JsonProperty("tag_length_bit")
-    private int tagLengthBit;
+    private Integer tagLengthBit;
     @JsonProperty("encrypted_content_hash")
     private String encryptedContentHash;
     @JsonProperty("salt")
