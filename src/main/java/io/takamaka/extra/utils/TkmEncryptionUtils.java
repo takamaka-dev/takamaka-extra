@@ -43,6 +43,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
@@ -172,7 +173,7 @@ public class TkmEncryptionUtils {
      * @return
      * @throws io.takamaka.wallet.exceptions.InvalidCypherException
      */
-    public static final StreamEncryptedDescriptor streamPasswordEncrypt(
+    public static final AbstractMap.SimpleImmutableEntry<String, StreamEncryptedDescriptor> streamPasswordEncrypt(
             final String password,
             final String scope,
             final String version,
@@ -219,13 +220,15 @@ public class TkmEncryptionUtils {
             final String digestHash = EncryptionContext.v0_2_a_stream_gcm.getDigestHash();
 
             final int shad = Integer.parseInt(digestHash.split("-")[1]);
-            final SHA3Digest shA3Digest = new SHA3Digest(shad);
-            if (!shA3Digest.getAlgorithmName().toLowerCase().equals(digestHash.toLowerCase())) {
+            final SHA3Digest shA3DigestEnc = new SHA3Digest(shad);
+            final SHA3Digest shA3DigestPlain = new SHA3Digest(shad);
+            //final SHA3Digest shA3Digest = new SHA3Digest(shad);
+            if (!shA3DigestEnc.getAlgorithmName().toLowerCase().equals(digestHash.toLowerCase())) {
                 throw new WalletException("invalid hash algorithm");
             }
-            final DigestOutputStream digestOutputStream = new DigestOutputStream(shA3Digest);
+            final DigestOutputStream digestOutputStreamEnc = new DigestOutputStream(shA3DigestEnc);
 
-            final TeeOutputStream teeOutputStream = new TeeOutputStream(outputStreamE, digestOutputStream);
+            final TeeOutputStream teeOutputStream = new TeeOutputStream(outputStreamE, digestOutputStreamEnc);
             final Base64OutputStream base64OutputStream = new Base64OutputStream(teeOutputStream);
             final CipherOutputStream cipherOutputStream = new CipherOutputStream(base64OutputStream, cipher);
             cipher.init(Cipher.ENCRYPT_MODE, secret, iv);
@@ -233,24 +236,32 @@ public class TkmEncryptionUtils {
             byte[] buffer = new byte[bufferBytes];
             int bytesRead;
 
-            while ((bytesRead = inputStreamE.read(buffer)) != -1) {
+            final DigestOutputStream digestOutputStreamPlain = new DigestOutputStream(shA3DigestPlain);
+            final TeeInputStream teeInputStreamPlain = new TeeInputStream(inputStreamE, digestOutputStreamPlain);
+
+            while ((bytesRead = teeInputStreamPlain.read(buffer)) != -1) {
                 cipherOutputStream.write(buffer, 0, bytesRead);
                 processedBytes.accumulateAndGet(bytesRead, Long::sum);
 
             }
 
-            digestOutputStream.flush();
+            digestOutputStreamEnc.flush();
+            digestOutputStreamPlain.flush();
             cipherOutputStream.flush();
             base64OutputStream.flush();
             teeOutputStream.flush();
-            digestOutputStream.close();
+            digestOutputStreamEnc.close();
+            digestOutputStreamPlain.close();
             cipherOutputStream.close();
             base64OutputStream.close();
             teeOutputStream.close();
+            teeInputStreamPlain.close();
 
-            final String hexHash = TkmSignUtils.fromByteArrayToHexString(digestOutputStream.getDigest());
-            sed.setEncryptedContentHash(hexHash);
-            return sed;
+            final String hexHashEnc = TkmSignUtils.fromByteArrayToHexString(digestOutputStreamEnc.getDigest());
+            final String hexHashPlain = TkmSignUtils.fromByteArrayToHexString(digestOutputStreamPlain.getDigest());
+            sed.setEncryptedContentHash(hexHashEnc);
+            final AbstractMap.SimpleImmutableEntry<String, StreamEncryptedDescriptor> res = new AbstractMap.SimpleImmutableEntry<String, StreamEncryptedDescriptor>(hexHashPlain, sed);
+            return res;
         } catch (InvalidAlgorithmParameterException | NoSuchProviderException | TkmCryptoExtraException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | UnsupportedEncodingException ex) {
             throw new WalletException("cypher error", ex);
         } catch (IOException ex) {
@@ -265,7 +276,8 @@ public class TkmEncryptionUtils {
             final InputStream inputStreamE,
             final OutputStream outputStreamE,
             final int bufferSizeExponent,
-            final AtomicLong processedBytes
+            final AtomicLong processedBytes,
+            final String plainHash
     ) throws InvalidCypherException, WalletException {
         try {
             final int bufferBytes = (int) Math.pow(2, bufferSizeExponent);
@@ -285,36 +297,50 @@ public class TkmEncryptionUtils {
             final String digestHash = EncryptionContext.v0_2_a_stream_gcm.getDigestHash();
 
             final int shad = Integer.parseInt(digestHash.split("-")[1]);
-            final SHA3Digest shA3Digest = new SHA3Digest(shad);
-            if (!shA3Digest.getAlgorithmName().toLowerCase().equals(digestHash.toLowerCase())) {
+            final SHA3Digest shA3DigestEnc = new SHA3Digest(shad);
+            final SHA3Digest shA3DigestPlain = new SHA3Digest(shad);
+            if (!shA3DigestEnc.getAlgorithmName().toLowerCase().equals(digestHash.toLowerCase())) {
                 throw new WalletException("invalid hash algorithm");
             }
-            final DigestOutputStream digestOutputStream = new DigestOutputStream(shA3Digest);
+            final DigestOutputStream digestOutputStreamEnc = new DigestOutputStream(shA3DigestEnc);
+            final DigestOutputStream digestOutputStreamPlain = new DigestOutputStream(shA3DigestPlain);
+
+            final TeeOutputStream teeOutputStream = new TeeOutputStream(outputStreamE, digestOutputStreamPlain);
 
             cipher.init(Cipher.DECRYPT_MODE, secret, iv);
             //ByteArrayOutputStream tempDupStream = new ByteArrayOutputStream(bufferBytes);
-            final TeeInputStream teeInputStream = new TeeInputStream(inputStreamE, digestOutputStream);
+            final TeeInputStream teeInputStream = new TeeInputStream(inputStreamE, digestOutputStreamEnc);
             final Base64InputStream base64InputStream = new Base64InputStream(teeInputStream);//decode
             final CipherInputStream cipherInputStream = new CipherInputStream(base64InputStream, cipher);//decrypt
 
             final byte[] buffer = new byte[bufferBytes];
             int bytesRead;
             while ((bytesRead = cipherInputStream.read(buffer)) != -1) {
-                outputStreamE.write(buffer, 0, bytesRead);
+                teeOutputStream.write(buffer, 0, bytesRead);
                 processedBytes.accumulateAndGet(bytesRead, Long::sum);
 
             }
+            digestOutputStreamPlain.flush();
             cipherInputStream.close();
             teeInputStream.close();
             base64InputStream.close();
-            digestOutputStream.flush();
-            digestOutputStream.close();
+            digestOutputStreamEnc.flush();
+            digestOutputStreamEnc.close();
+            digestOutputStreamPlain.close();
 
             //byte[] encodedhash = digest.digest();
-            final String hexHash = TkmSignUtils.fromByteArrayToHexString(digestOutputStream.getDigest());
-            if (!sed.getEncryptedContentHash().equals(hexHash)) {
-                String errMsg = String.format("invalid encrypted content hash, declared hash %1$s does not match calculated hash %2$s", sed.getEncryptedContentHash(), hexHash);
+            final String hexHashEnc = TkmSignUtils.fromByteArrayToHexString(digestOutputStreamEnc.getDigest());
+            final String hexHashPlain = TkmSignUtils.fromByteArrayToHexString(digestOutputStreamPlain.getDigest());
+            if (!sed.getEncryptedContentHash().equals(hexHashEnc)) {
+                String errMsg = String.format("invalid encrypted content hash, declared hash %1$s does not match calculated hash %2$s", sed.getEncryptedContentHash(), hexHashEnc);
                 throw new WalletException(errMsg);
+            }
+
+            if (!TkmTextUtils.isNullOrBlank(plainHash)) {
+                if (!plainHash.equals(hexHashPlain)) {
+                    String errMsg = String.format("invalid plain content hash, declared hash %1$s does not match calculated hash %2$s", plainHash, hexHashPlain);
+                    throw new WalletException(errMsg);
+                }
             }
 
         } catch (InvalidAlgorithmParameterException | NoSuchProviderException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | UnsupportedEncodingException ex) {
