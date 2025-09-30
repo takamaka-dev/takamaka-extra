@@ -217,6 +217,7 @@ public class TkmEncryptionUtils {
             final SecretKey secret = new SecretKeySpec(secretKey, sed.getKeySpecAlgorithm());
 
             final Cipher cipher = Cipher.getInstance(sed.getTransformation(), "BC");
+            //in future release must be changed to be more flexible
             final String digestHash = EncryptionContext.v0_2_a_stream_gcm.getDigestHash();
 
             final int shad = Integer.parseInt(digestHash.split("-")[1]);
@@ -294,6 +295,7 @@ public class TkmEncryptionUtils {
             final SecretKey secret = new SecretKeySpec(secretKey, sed.getKeySpecAlgorithm());
 
             final Cipher cipher = Cipher.getInstance(sed.getTransformation(), "BC");
+            //in future release must be changed to be more flexible
             final String digestHash = EncryptionContext.v0_2_a_stream_gcm.getDigestHash();
 
             final int shad = Integer.parseInt(digestHash.split("-")[1]);
@@ -348,6 +350,41 @@ public class TkmEncryptionUtils {
         } catch (IOException ex) {
             throw new WalletException("buffer error", ex);
         }
+    }
+
+    public static final String streamCalcHash(
+            final InputStream in,
+            final String hashingAlgorothm,
+            final String hash,
+            final int bufferSizeExponent,
+            final AtomicLong processedBytes
+    ) throws WalletException {
+        final int bufferBytes = (int) Math.pow(2, bufferSizeExponent);
+        //in future release must be changed to be more flexible
+        final String digestHash = EncryptionContext.v0_2_a_stream_gcm.getDigestHash();
+        final int shad = Integer.parseInt(digestHash.split("-")[1]);
+        final SHA3Digest shA3DigestEnc = new SHA3Digest(shad);
+//            final SHA3Digest shA3DigestPlain = new SHA3Digest(shad);
+        if (!shA3DigestEnc.getAlgorithmName().toLowerCase().equals(digestHash.toLowerCase())) {
+            throw new WalletException("invalid hash algorithm");
+        }
+        final DigestOutputStream digestOutputStreamEnc = new DigestOutputStream(shA3DigestEnc);
+        final byte[] buffer = new byte[bufferBytes];
+        int bytesRead;
+        try {
+            while ((bytesRead = in.read(buffer)) != -1) {
+                digestOutputStreamEnc.write(buffer, 0, bytesRead);
+                processedBytes.accumulateAndGet(bytesRead, Long::sum);
+            }
+            digestOutputStreamEnc.flush();
+            digestOutputStreamEnc.close();
+            final String hexHashEnc = TkmSignUtils.fromByteArrayToHexString(digestOutputStreamEnc.getDigest());
+            return hexHashEnc;
+        } catch (IOException ex) {
+            throw new WalletException("buffer error", ex);
+        }
+//        return null;
+
     }
 
     /**

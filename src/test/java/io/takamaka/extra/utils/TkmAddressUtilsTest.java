@@ -68,13 +68,13 @@ import static org.junit.Assert.*;
  */
 @Slf4j
 public class TkmAddressUtilsTest {
-
+    
     public TkmAddressUtilsTest() {
         Configurator.setLevel("io.takamaka.extra.utils.AddressUtilsTest", Level.DEBUG);
         Configurator.setLevel("io.takamaka.extra.utils.TkmAddressUtilsTest", Level.DEBUG);
         log.info("test constructor");
     }
-
+    
     @BeforeAll
     public static void setUpClass() throws IOException {
         log.info("test BeforeClass");
@@ -89,18 +89,18 @@ public class TkmAddressUtilsTest {
         }
         log.info("all loaded");
     }
-
+    
     @AfterAll
     public static void tearDownClass() {
         log.info("test AfterClass");
         Configurator.setLevel("io.takamaka.extra.utils.AddressUtilsTest", Level.INFO);
     }
-
+    
     @BeforeEach
     public void setUp() {
         log.info("test Before");
     }
-
+    
     @AfterEach
     public void tearDown() {
         log.info("test After");
@@ -132,17 +132,17 @@ public class TkmAddressUtilsTest {
             }
         }
     }
-
+    
     @Test
     public void testToHexBookmarksAddress() throws AddressNotRecognizedException, AddressFunctionUnsupportedException, AddressTooLongException {
         for (String originalAddr : TestEnvObjects.REF_ADDR_ARRAY) {
             if (originalAddr.length() == 19840) {
                 assertEquals(TestEnvObjects.DEFAULT_SHORT_HEX.get(originalAddr), TkmAddressUtils.getBookmarkAddress(TkmAddressUtils.toCompactAddress(originalAddr)));
             }
-
+            
         }
     }
-
+    
     @Test
     public void testNullAddress() {
         for (String originalAddr : TestEnvObjects.REF_ADDR_ARRAY_EMPTY) {
@@ -152,16 +152,16 @@ public class TkmAddressUtilsTest {
             assertEquals("null or zero char", assertThrows.getMessage());
         }
     }
-
+    
     @Test
     public void testTooLongAddress() {
         AddressTooLongException assertThrows = assertThrows("expected 19840 or less, found 19862", AddressTooLongException.class, () -> {
             TkmAddressUtils.toCompactAddress(TestEnvObjects.REF_ADDR01_TOO_LONG);
         });
         assertEquals("expected 19840 or less, found 19862", assertThrows.getMessage());
-
+        
     }
-
+    
     @Test
     public void testUndefinedAddress() throws AddressNotRecognizedException, AddressFunctionUnsupportedException, AddressTooLongException {
         for (String originalAddr : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
@@ -174,14 +174,14 @@ public class TkmAddressUtilsTest {
             assertEquals(TestEnvObjects.DEFAULT_UNDEFINED_SHORT_HEX.get(originalAddr), bookmarkAddress);
         }
     }
-
+    
     @Test
     public void testSibhRetro() throws AddressNotRecognizedException, AddressFunctionUnsupportedException, AddressTooLongException, AddressDecodeException, AddressEncodeException {
         //Configurator.setLevel("io.takamaka.extra.utils.AddressUtilsTest", Level.DEBUG);
         String hexBH = "69b9619ea29021e5dee7978e789e6cb6369432e6e356176c906d40dfab1dd045aee023e3489946d7293ec7dd6689cd766d6a67b1d9af5a10045ab97133be0c9b";
         testAddr(hexBH);
     }
-
+    
     @Test
     public void getDeterministicSeedtext() throws WalletException {
         DeterministicSeedGeneratorInterface dsi = new DeterministicSeedGenerator("the_test_seed");
@@ -193,7 +193,7 @@ public class TkmAddressUtilsTest {
         assertNotEquals(seedB64Url, seedB64Url1);
         assertNotEquals(seedB64Url_eq1, seedB64Url1);
     }
-
+    
     private void testAddr(String hexBH) throws AddressEncodeException, AddressDecodeException {
         byte[] byteBH = TkmSignUtils.fromHexToByteArray(hexBH);
         log.info("reference: " + Arrays.toString(byteBH));
@@ -221,7 +221,7 @@ public class TkmAddressUtilsTest {
         //69b9619ea29021e5dee7978e789e6cb6369432e6e356176c906d40dfab1dd045aee023e3489946d7293ec7dd6689cd766d6a67b1d9af5a10045ab97133be0c9b
         //ablhnqKQIeXe55eOeJ5stjaUMubjVhdskG1A36sd0EWu4CPjSJlG1yk-x91mic12bWpnsdmvWhAEWrlxM74Mmw..
     }
-
+    
     @Test
     public void testEncryption() throws WalletException, JsonProcessingException {
         int ei = 0;
@@ -243,23 +243,23 @@ public class TkmAddressUtilsTest {
                         assertEquals(message, decodedMessage);
                     }
                     {
-
+                        
                     }
                 }
             }
         }
     }
-
+    
     @Test
     public void testCombineRSAEncryption() throws WalletException, JsonProcessingException {
         int ei = 0;
         final EncryptionContext[] context = new EncryptionContext[]{EncryptionContext.v0_1_a};
         InstanceWalletKeystoreInterface iwk = new InstanceWalletKeyStoreBCRSA4096ENC("test_wallet_rsa", "password");
         for (int i = 0; i < 2; i++) {
-
+            
             for (String password : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
                 for (String message : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
-
+                    
                     for (EncryptionContext ec : context) {
                         RandomStringGenerator generator = new RandomStringGenerator.Builder()
                                 .withinRange('0', 'z')
@@ -279,7 +279,7 @@ public class TkmAddressUtilsTest {
                                 passwordEncryptedContent
                         );
                         log.info(combinedRSAAESBean.toString());
-
+                        
                         String crabJson = SerializerUtils.getJson(combinedRSAAESBean);
                         log.info("json object: " + crabJson);
                         CombinedRSAAESBean crab = SerializerUtils.getCombinedRSAAESBeanJson(crabJson);
@@ -302,12 +302,12 @@ public class TkmAddressUtilsTest {
                         //                        log.info(decodedMessage);
                         //                        assertEquals(message, decodedMessage);
                     }
-
+                    
                 }
             }
         }
     }
-
+    
     @Test
     public void testStaticEncryptionRSAAES() throws UnlockWalletException, WalletException {
         InstanceWalletKeyStoreBCRSA4096ENC iwk = new InstanceWalletKeyStoreBCRSA4096ENC("test_rsa_aes", "password");
@@ -319,7 +319,7 @@ public class TkmAddressUtilsTest {
             assertEquals("must be equal", plaintext, decrypted);
         }
     }
-
+    
     @Test
     public void testDynamicEncryptionRSAAES() throws UnlockWalletException, InvalidWalletIndexException, PublicKeySerializzationException, WalletException, JsonProcessingException {
         InstanceWalletKeyStoreBCRSA4096ENC iwk = new InstanceWalletKeyStoreBCRSA4096ENC("test_rsa_aes", "password");
@@ -334,9 +334,9 @@ public class TkmAddressUtilsTest {
             assertNotEquals("must not be equal", plaintext + "pollo", decrypted);
         }
     }
-
+    
     @Test
-    public void testStreamEncryption() throws InvalidCypherException, InterruptedException {
+    public void testStreamEncryption() throws InvalidCypherException, InterruptedException, IOException {
         try {
             for (String password : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
                 for (String message : TestEnvObjects.REF_ADDR_ARRAY_LOREM) {
@@ -353,11 +353,24 @@ public class TkmAddressUtilsTest {
                         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(toByteArrayB64);
                         ByteArrayOutputStream clearOutStream = new ByteArrayOutputStream(toByteArrayB64.length);
                         TkmEncryptionUtils.streamPasswordDecrypt(password, sed, "v0_2_a_stream_gcm", byteArrayInputStream, clearOutStream, 10, decryptionAccumulator, streamPasswordEncrypt.getKey());
+                        byteArrayInputStream.close();
+                        byteArrayInputStreamPlain.close();
+                        byteArrayOutputStreamCypher.close();
                         byte[] toByteArrayClearOut = clearOutStream.toByteArray();
                         final String decryptedOutText = new String(toByteArrayClearOut, StandardCharsets.UTF_8);
                         log.info("decrypted {}", decryptedOutText);
                         log.info("SED: {}", sed.toString());
                         assertEquals(message, decryptedOutText);
+                        ByteArrayInputStream byteArrayInputStreamHash = new ByteArrayInputStream(toByteArrayB64);
+                        String streamCalcHash = TkmEncryptionUtils.streamCalcHash(
+                                byteArrayInputStreamHash,
+                                EncryptionContext.v0_2_a_stream_gcm.getDigestHash(),
+                                scope,
+                                12,
+                                decryptionAccumulator);
+                        byteArrayInputStreamHash.close();
+                        log.info("exp hash {}, calc hash {}", sed.getEncryptedContentHash(), streamCalcHash);
+                        assertEquals("enc hash not match", sed.getEncryptedContentHash(), streamCalcHash);
 //                        StreamEncryptedDescriptor sed = TkmEncryptionUtils.streamPasswordEncrypt(password, scope, "v0_2_a_stream_gcm", byteArrayInputStreamPlain, byteArrayOutputStreamCypher, 12, encryptionAccumulator);
 //                        //log.info("sad :-( )-: {}", sed.toString());
 //                        //String b64Cypher = TkmSignUtils.fromByteArrayToB64(byteArrayOutputStreamCypher.toByteArray());
