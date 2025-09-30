@@ -355,7 +355,6 @@ public class TkmEncryptionUtils {
     public static final String streamCalcHash(
             final InputStream in,
             final String hashingAlgorothm,
-            final String hash,
             final int bufferSizeExponent,
             final AtomicLong processedBytes
     ) throws WalletException {

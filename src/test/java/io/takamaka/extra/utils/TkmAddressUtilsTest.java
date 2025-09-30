@@ -365,7 +365,6 @@ public class TkmAddressUtilsTest {
                         String streamCalcHash = TkmEncryptionUtils.streamCalcHash(
                                 byteArrayInputStreamHash,
                                 EncryptionContext.v0_2_a_stream_gcm.getDigestHash(),
-                                scope,
                                 12,
                                 decryptionAccumulator);
                         byteArrayInputStreamHash.close();
