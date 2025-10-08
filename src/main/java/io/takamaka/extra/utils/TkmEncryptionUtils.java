@@ -170,7 +170,7 @@ public class TkmEncryptionUtils {
      * @param bufferSizeExponent 2^x buffer byte size example: [10 -> 2^10 =
      * 1024] or [12 -> 2^12 = 4096] bytes = 1 kibibyte
      * @param processedBytes zeroed when process start
-     * @return
+     * @return map where key is the unencrypted file hash and value is the encrypted stram descriptor
      * @throws io.takamaka.wallet.exceptions.InvalidCypherException
      */
     public static final AbstractMap.SimpleImmutableEntry<String, StreamEncryptedDescriptor> streamPasswordEncrypt(
