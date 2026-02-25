@@ -1,0 +1,153 @@
+{
+  "version" : "1.0.0",
+  "generator" : "TestVectorGenerator.java",
+  "generated_at" : "2026-02-25T15:06:03.023453523Z",
+  "pbkdf2_vectors" : [ {
+    "password" : "password",
+    "salt" : "salt",
+    "iterations" : 20000,
+    "keyLengthBits" : 256,
+    "derivedKey_hex" : "c7c8138dc6ca43558747f20708f2637e2e6ffdcaf954f91d7ac9ef5979f93444",
+    "derivedKey_b64url" : "x8gTjcbKQ1WHR_IHCPJjfi5v_cr5VPkdesnvWXn5NEQ."
+  }, {
+    "password" : "test-password-12345",
+    "salt" : "test-scope",
+    "iterations" : 20000,
+    "keyLengthBits" : 256,
+    "derivedKey_hex" : "6e355108573e22dbfe9663da78f79a3889c1999f7f172513a8ba7d0f80666114",
+    "derivedKey_b64url" : "bjVRCFc-Itv-lmPaePeaOInBmZ9_FyUTqLp9D4BmYRQ."
+  }, {
+    "password" : "complex!@#$%^&*()password",
+    "salt" : "unicode-scope-日本語",
+    "iterations" : 20000,
+    "keyLengthBits" : 256,
+    "derivedKey_hex" : "3495893833a2b19cae054c4edf11308b4aca36cb51170ad3983a94769a4292f3",
+    "derivedKey_b64url" : "NJWJODOisZyuBUxO3xEwi0rKNstRFwrTmDqUdppCkvM."
+  }, {
+    "password" : "symmetric-key-400chars-abcdefghijklmnopqrstuvwxyz",
+    "salt" : "conversation-salt-32chars",
+    "iterations" : 20000,
+    "keyLengthBits" : 256,
+    "derivedKey_hex" : "94ccbeddb68494610bb21a97e20a35bfead5b164fd7fe95f46bb2641683b76aa",
+    "derivedKey_b64url" : "lMy-3baElGELshqX4go1v-rVsWT9f-lfRrsmQWg7dqo."
+  } ],
+  "sha3_256_vectors" : [ {
+    "input" : "Hello, World!",
+    "hash_hex" : "1af17a664e3fa8e419b8ba05c2a173169df76162a5a286e0c405b460d478f7ef",
+    "hash_b64url" : "GvF6Zk4_qOQZuLoFwqFzFp33YWKloobgxAW0YNR49-8."
+  }, {
+    "input" : "Test input string",
+    "hash_hex" : "a082c04075827cfc6bdc548e36524b76021ee4960cf3ffc54adb9670044227ae",
+    "hash_b64url" : "oILAQHWCfPxr3FSONlJLdgIe5JYM8__FStuWcARCJ64."
+  }, {
+    "input" : "My Conversation",
+    "hash_hex" : "3601f84a2003a7b2c8e07409c3b8f948f243c6c449407d59e3e5c46c1c9cd6bf",
+    "hash_b64url" : "NgH4SiADp7LI4HQJw7j5SPJDxsRJQH1Z4-XEbByc1r8."
+  }, {
+    "input" : "unicode-日本語-\uD83D\uDE00",
+    "hash_hex" : "81657119f8e8be88b2441be12dd4a3294ddaab62257e835a822ce16b5d8c7639",
+    "hash_b64url" : "gWVxGfjovoiyRBvhLdSjKU3aq2IlfoNagizha12Mdjk."
+  }, {
+    "input" : "The quick brown fox jumps over the lazy dog",
+    "hash_hex" : "69070dda01975c8c120c3aada1b282394e7f032fa9cf32f4cb2259a0897dfc04",
+    "hash_b64url" : "aQcN2gGXXIwSDDqtobKCOU5_Ay-pzzL0yyJZoIl9_AQ."
+  } ],
+  "aes_cbc_vectors" : [ {
+    "password" : "test-password-12345",
+    "content" : "Hello, World!",
+    "scope" : "test-scope",
+    "iv_hex" : "00112233445566778899aabbccddeeff",
+    "iv_b64url" : "ABEiM0RVZneImaq7zN3u_w..",
+    "ciphertext_hex" : "5fc984173234f9c552cd5f52228a6350",
+    "ciphertext_b64url" : "X8mEFzI0-cVSzV9SIopjUA..",
+    "derivedKey_hex" : "6e355108573e22dbfe9663da78f79a3889c1999f7f172513a8ba7d0f80666114",
+    "fixed_iv_warning" : "TEST ONLY - fixed IV used for deterministic test vectors"
+  }, {
+    "password" : "unicode-password",
+    "content" : "Hello, \uD83D\uDE00 World! 中文",
+    "scope" : "unicode-scope",
+    "iv_hex" : "112233445566778899aabbccddeeff00",
+    "iv_b64url" : "ESIzRFVmd4iZqrvM3e7_AA..",
+    "ciphertext_hex" : "d6b20227c345e11a346a22e8bdeff31f1b3777e276b1bd720ed30a873d723956",
+    "ciphertext_b64url" : "1rICJ8NF4Ro0aiLove_zHxs3d-J2sb1yDtMKhz1yOVY.",
+    "derivedKey_hex" : "9fd9f967a1cd0c228d5dfc2dc8caecb7d749adf2d091f607593dde3168b3b4fc",
+    "fixed_iv_warning" : "TEST ONLY - fixed IV used for deterministic test vectors"
+  }, {
+    "password" : "long-content-password",
+    "content" : "This is a longer message that spans multiple AES blocks to test proper CBC chaining.",
+    "scope" : "long-scope",
+    "iv_hex" : "ffeeddccbbaa99887766554433221100",
+    "iv_b64url" : "_-7dzLuqmYh3ZlVEMyIRAA..",
+    "ciphertext_hex" : "e02a8a1db4005b3c5a16f2c3010ab994ce31d897de96ab8d7c4a6a9f010b37bc8d1ecdfff07b5e087b82a76150e97230bfcbd9b173504a3b7a6fbf6b2a576716d10165069b078cbd992f01173bb086b26c55c4f1e0a026eddd48fc23b65f5f5f",
+    "ciphertext_b64url" : "4CqKHbQAWzxaFvLDAQq5lM4x2JfelquNfEpqnwELN7yNHs3_8HteCHuCp2FQ6XIwv8vZsXNQSjt6b79rKldnFtEBZQabB4y9mS8BFzuwhrJsVcTx4KAm7d1I_CO2X19f",
+    "derivedKey_hex" : "ec42a8eba069550aa54edf86f122b3b5960d825c4c432166cb83a3fa68a7c60e",
+    "fixed_iv_warning" : "TEST ONLY - fixed IV used for deterministic test vectors"
+  } ],
+  "aes_gcm_vectors" : [ {
+    "password" : "test-password-12345",
+    "content" : "Hello, World!",
+    "salt" : "test-salt-32chars-for-key-deriv",
+    "nonce_hex" : "000102030405060708090a0b",
+    "nonce_b64url" : "AAECAwQFBgcICQoL",
+    "ciphertextWithTag_hex" : "b1f0cb64269ac9eccfebca5c39c5277d969fb336b4b040c722a83fa25a",
+    "ciphertextWithTag_b64url" : "sfDLZCaayezP68pcOcUnfZafsza0sEDHIqg_olo.",
+    "derivedKey_hex" : "fe7d257761ff2f03073f275615ba1b4d378a224468a7800960bc027d2c8dd03a",
+    "fixed_nonce_warning" : "TEST ONLY - fixed nonce used for deterministic test vectors"
+  }, {
+    "password" : "gcm-password",
+    "content" : "This is authenticated encrypted content using AES-GCM mode.",
+    "salt" : "gcm-salt-32-characters-exactly!",
+    "nonce_hex" : "0f0e0d0c0b0a09080706050f",
+    "nonce_b64url" : "Dw4NDAsKCQgHBgUP",
+    "ciphertextWithTag_hex" : "8cca32eda9f46881927e51dab91798bdf16915b87bc96bf21c42c9b88d5d73b44c439b3af19da65dc6028295dce4dec868ea3c37dd2204ea05931f0eb77d6047a9a6f65bb0cd0126791e2f",
+    "ciphertextWithTag_b64url" : "jMoy7an0aIGSflHauReYvfFpFbh7yWvyHELJuI1dc7RMQ5s68Z2mXcYCgpXc5N7IaOo8N90iBOoFkx8Ot31gR6mm9luwzQEmeR4v",
+    "derivedKey_hex" : "724aeaf0a3161db1cd4734b5bcceeebb4e1a01d0695b34b3fd4efebe7a803ce2",
+    "fixed_nonce_warning" : "TEST ONLY - fixed nonce used for deterministic test vectors"
+  } ],
+  "round_trip_vectors" : [ {
+    "password" : "test-password",
+    "content" : "Hello, World!",
+    "scope" : "test-scope",
+    "tkVersion" : "v0_1_a",
+    "passwordHashAlgorithm" : "PBKDF2WithHmacSHA512",
+    "iterations" : 20000,
+    "transformation" : "AES/CBC/PKCS5Padding",
+    "keySpecAlgorithm" : "AES",
+    "outputKeyLengthBit" : 256,
+    "encoding" : "UTF-8",
+    "iv_b64url" : "5z24Z8_dEHkhEK39YS-kZg..",
+    "ciphertext_b64url" : "UpQZOTw52reVDBQKeuWyzg..",
+    "decrypted" : "Hello, World!",
+    "matches" : true
+  }, {
+    "password" : "symmetric-key-for-conversation",
+    "content" : "This is a chat message content.",
+    "scope" : "conversation-salt",
+    "tkVersion" : "v0_1_a",
+    "passwordHashAlgorithm" : "PBKDF2WithHmacSHA512",
+    "iterations" : 20000,
+    "transformation" : "AES/CBC/PKCS5Padding",
+    "keySpecAlgorithm" : "AES",
+    "outputKeyLengthBit" : 256,
+    "encoding" : "UTF-8",
+    "iv_b64url" : "39Xnin_oIToKu2PuJnCTPw..",
+    "ciphertext_b64url" : "N2eSrPNMigyav9P6E4V8GDFFv0zy5_HzHp1sZHKcvic.",
+    "decrypted" : "This is a chat message content.",
+    "matches" : true
+  }, {
+    "password" : "unicode-key-日本語",
+    "content" : "Unicode content: 日本語 \uD83D\uDE00",
+    "scope" : "unicode-scope-\uD83C\uDF89",
+    "tkVersion" : "v0_1_a",
+    "passwordHashAlgorithm" : "PBKDF2WithHmacSHA512",
+    "iterations" : 20000,
+    "transformation" : "AES/CBC/PKCS5Padding",
+    "keySpecAlgorithm" : "AES",
+    "outputKeyLengthBit" : 256,
+    "encoding" : "UTF-8",
+    "iv_b64url" : "KZsgM8DGm7-c7yar36Dk8g..",
+    "ciphertext_b64url" : "Yb3UmHzghHfpfSYX3lElsfbwnoV9Pr22WNh2G_YKIHk.",
+    "decrypted" : "Unicode content: 日本語 \uD83D\uDE00",
+    "matches" : true
+  } ]
+}

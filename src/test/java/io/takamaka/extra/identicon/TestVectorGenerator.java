@@ -121,6 +121,9 @@ public class TestVectorGenerator {
         root.put("version", "1.0.0");
         root.put("generator", "TestVectorGenerator.java");
         root.put("generated_at", java.time.Instant.now().toString());
+        root.put("png_encoding_note",
+                "PNG hashes are Java-reference-only (platform-specific encoding). "
+                + "Use matrix hashes for cross-platform validation instead of PNG hashes.");
 
         // 1. Generate base blocks (16 blocks, 16x16 matrices)
         root.set("base_blocks", generateBaseBlocks());
@@ -349,6 +352,8 @@ public class TestVectorGenerator {
                 BufferedImage image = IdentiColorHelper.getAvatarByString256(address);
                 String pngHash = computeImageHash(image);
                 identiconNode.put("png_sha256", pngHash);
+                identiconNode.put("png_hash_note",
+                        "Java-reference-only (platform-specific encoding)");
 
                 identiconArray.add(identiconNode);
 
@@ -388,6 +393,8 @@ public class TestVectorGenerator {
                 BufferedImage image = IdentiColorHelper.getAvatarByHex(hex);
                 String pngHash = computeImageHash(image);
                 identiconNode.put("png_sha256", pngHash);
+                identiconNode.put("png_hash_note",
+                        "Java-reference-only (platform-specific encoding)");
 
                 identiconArray.add(identiconNode);
 
@@ -458,8 +465,9 @@ public class TestVectorGenerator {
             StringBuilder sb = new StringBuilder();
             for (int[] row : matrix) {
                 for (int value : row) {
-                    sb.append(value);
+                    sb.append(value).append(",");
                 }
+                sb.append("\n");
             }
             byte[] hash = digest.digest(sb.toString().getBytes());
             return bytesToHex(hash);

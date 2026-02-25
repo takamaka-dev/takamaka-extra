@@ -53,14 +53,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.RandomStringGenerator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -146,18 +144,18 @@ public class TkmAddressUtilsTest {
     @Test
     public void testNullAddress() {
         for (String originalAddr : TestEnvObjects.REF_ADDR_ARRAY_EMPTY) {
-            AddressNotRecognizedException assertThrows = assertThrows("null or zero char", AddressNotRecognizedException.class, () -> {
+            AddressNotRecognizedException assertThrows = assertThrows(AddressNotRecognizedException.class, () -> {
                 TkmAddressUtils.toCompactAddress(originalAddr);
-            });
+            }, "null or zero char");
             assertEquals("null or zero char", assertThrows.getMessage());
         }
     }
     
     @Test
     public void testTooLongAddress() {
-        AddressTooLongException assertThrows = assertThrows("expected 19840 or less, found 19862", AddressTooLongException.class, () -> {
+        AddressTooLongException assertThrows = assertThrows(AddressTooLongException.class, () -> {
             TkmAddressUtils.toCompactAddress(TestEnvObjects.REF_ADDR01_TOO_LONG);
-        });
+        }, "expected 19840 or less, found 19862");
         assertEquals("expected 19840 or less, found 19862", assertThrows.getMessage());
         
     }
@@ -287,7 +285,7 @@ public class TkmAddressUtilsTest {
                             log.info("crab deserialization success..");
                         }
                         String decryptedKey = TkmCypherProviderBCRSA4096ENC.decrypt(iwk, i * 10, crab.getRSAEncryptedKey());
-                        assertEquals("decrypted key must be equals to original key", secretKey, decryptedKey);
+                        assertEquals(secretKey, decryptedKey, "decrypted key must be equals to original key");
                         String decodedMessage = TkmEncryptionUtils.fromPasswordEncryptedContent(decryptedKey, crab.getScope(), crab.getAesContentBean());
                         assertEquals(message, decodedMessage);
 //                        log.info("testing encryption for %s %s %s %s ", password, message, scope, ec.name());
@@ -316,10 +314,10 @@ public class TkmAddressUtilsTest {
             String plaintext = TestEnvObjects.REF_ADDR_ARRAY_LOREM[i];
             CombinedRSAAESBean combinedRSAAESBean = TkmEncryptionUtils.encryptRSAAES(publicKeyRSA, plaintext);
             String decrypted = TkmEncryptionUtils.decryptRSAAES(combinedRSAAESBean, iwk, i);
-            assertEquals("must be equal", plaintext, decrypted);
+            assertEquals(plaintext, decrypted, "must be equal");
         }
     }
-    
+
     @Test
     public void testDynamicEncryptionRSAAES() throws UnlockWalletException, InvalidWalletIndexException, PublicKeySerializzationException, WalletException, JsonProcessingException {
         InstanceWalletKeyStoreBCRSA4096ENC iwk = new InstanceWalletKeyStoreBCRSA4096ENC("test_rsa_aes", "password");
@@ -330,8 +328,8 @@ public class TkmAddressUtilsTest {
             String jsonCrab = SerializerUtils.getJson(combinedRSAAESBean);
             CombinedRSAAESBean newCombinedRSAAESBeanJson = SerializerUtils.getCombinedRSAAESBeanJson(jsonCrab);
             String decrypted = TkmEncryptionUtils.decryptRSAAES(newCombinedRSAAESBeanJson, iwk, i);
-            assertEquals("must be equal", plaintext, decrypted);
-            assertNotEquals("must not be equal", plaintext + "pollo", decrypted);
+            assertEquals(plaintext, decrypted, "must be equal");
+            assertNotEquals(plaintext + "pollo", decrypted, "must not be equal");
         }
     }
     
@@ -369,7 +367,7 @@ public class TkmAddressUtilsTest {
                                 decryptionAccumulator);
                         byteArrayInputStreamHash.close();
                         log.info("exp hash {}, calc hash {}", sed.getEncryptedContentHash(), streamCalcHash);
-                        assertEquals("enc hash not match", sed.getEncryptedContentHash(), streamCalcHash);
+                        assertEquals(sed.getEncryptedContentHash(), streamCalcHash, "enc hash not match");
 //                        StreamEncryptedDescriptor sed = TkmEncryptionUtils.streamPasswordEncrypt(password, scope, "v0_2_a_stream_gcm", byteArrayInputStreamPlain, byteArrayOutputStreamCypher, 12, encryptionAccumulator);
 //                        //log.info("sad :-( )-: {}", sed.toString());
 //                        //String b64Cypher = TkmSignUtils.fromByteArrayToB64(byteArrayOutputStreamCypher.toByteArray());
