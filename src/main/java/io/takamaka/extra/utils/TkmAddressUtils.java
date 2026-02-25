@@ -93,6 +93,7 @@ public class TkmAddressUtils {
                     } else {
                         compactAddressBean.setType(TypeOfAddress.ed25519);
                         compactAddressBean.setOriginal(TkmSignUtils.fromByteArrayToB64URL(addrBytes));
+                        setDefaultShort(compactAddressBean);
                     }
                     break;
                 case 19840:

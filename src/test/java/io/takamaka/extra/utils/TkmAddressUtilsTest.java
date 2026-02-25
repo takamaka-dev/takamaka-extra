@@ -117,7 +117,7 @@ public class TkmAddressUtilsTest {
             assertEquals(addr, result.getOriginal());
             switch (result.getType()) {
                 case ed25519:
-                    assertNull(result.getDefaultShort());
+                    assertNotNull(result.getDefaultShort());
                     break;
                 case qTesla:
                     assertNotNull(result.getDefaultShort());
