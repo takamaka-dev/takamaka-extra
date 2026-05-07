@@ -1284,17 +1284,20 @@ public class TransactionGeneratorUtils {
     }
 
     public static InstanceWalletKeystoreInterface[] generateWalletList(String basename, int numAddr, KeyContexts.WalletCypher cy) throws TransactionNotYetImplementedException, UnlockWalletException, WalletBurnedException, WalletEmptySeedException {
+        // 0.10.0 — see TransactionGenerator#generateWalletList for the
+        // migration rationale. Public API preserved; -1 hardcoded internally.
+        final int LEGACY_FLAT_EPOCH = -1;
         InstanceWalletKeystoreInterface[] iwk = new InstanceWalletKeystoreInterface[numAddr];
         for (int i = 0; i < numAddr; i++) {
             switch (cy) {
                 case BCQTESLA_PS_1:
-                    iwk[i] = new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(basename + "_test_" + cy.name() + "_" + i, 800);
+                    iwk[i] = new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(basename + "_test_" + cy.name() + "_" + i, 800, LEGACY_FLAT_EPOCH);
                     break;
                 case BCQTESLA_PS_1_R2:
-                    iwk[i] = new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(basename + "_test_" + cy.name() + "_" + i, 800);
+                    iwk[i] = new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(basename + "_test_" + cy.name() + "_" + i, 800, LEGACY_FLAT_EPOCH);
                     break;
                 case Ed25519BC:
-                    iwk[i] = new InstanceWalletKeyStoreBCED25519(basename + "_test_" + cy.name() + "_" + i, 800);
+                    iwk[i] = new InstanceWalletKeyStoreBCED25519(basename + "_test_" + cy.name() + "_" + i, 800, LEGACY_FLAT_EPOCH);
                     break;
                 default:
                     throw new TransactionNotYetImplementedException(cy.name());

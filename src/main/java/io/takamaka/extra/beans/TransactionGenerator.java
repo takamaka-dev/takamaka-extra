@@ -724,17 +724,25 @@ class TransactionGenerator {
     }
 
     public static InstanceWalletKeystoreInterface[] generateWalletList(String basename, int numAddr, KeyContexts.WalletCypher cy) throws TransactionNotYetImplementedException, UnlockWalletException, WalletBurnedException, WalletEmptySeedException {
+        // 0.10.0 — wallet-core ephemeral ctor signature changed to require
+        // an explicit `int epoch` parameter (Proposal 3 from
+        // nodeflux/docs/TASK-wallet-core-app-root-overload.md §12.4). This
+        // method's API surface is preserved by hard-coding -1 (legacy flat
+        // ephemeral dir) per T3 decision; if a future test scenario needs
+        // epoch-aware ephemeral routing, add a sibling
+        // generateWalletListAtEpoch(basename, numAddr, cy, epoch) method.
+        final int LEGACY_FLAT_EPOCH = -1;
         InstanceWalletKeystoreInterface[] iwk = new InstanceWalletKeystoreInterface[numAddr];
         for (int i = 0; i < numAddr; i++) {
             switch (cy) {
                 case BCQTESLA_PS_1:
-                    iwk[i] = new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(basename + "_test_" + cy.name() + "_" + i, 800);
+                    iwk[i] = new InstanceWalletKeyStoreBCQTESLAPSSC1Round1(basename + "_test_" + cy.name() + "_" + i, 800, LEGACY_FLAT_EPOCH);
                     break;
                 case BCQTESLA_PS_1_R2:
-                    iwk[i] = new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(basename + "_test_" + cy.name() + "_" + i, 800);
+                    iwk[i] = new InstanceWalletKeyStoreBCQTESLAPSSC1Round2(basename + "_test_" + cy.name() + "_" + i, 800, LEGACY_FLAT_EPOCH);
                     break;
                 case Ed25519BC:
-                    iwk[i] = new InstanceWalletKeyStoreBCED25519(basename + "_test_" + cy.name() + "_" + i, 800);
+                    iwk[i] = new InstanceWalletKeyStoreBCED25519(basename + "_test_" + cy.name() + "_" + i, 800, LEGACY_FLAT_EPOCH);
                     break;
                 default:
                     throw new TransactionNotYetImplementedException(cy.name());

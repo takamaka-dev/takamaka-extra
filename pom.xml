@@ -13,8 +13,17 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.takamaka.extra</groupId>
     <artifactId>takamaka-extra</artifactId>
-    <version>0.4.3-SNAPSHOT</version>
+    <version>0.5.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <!--
+        0.5.0 — minor bump cascade from takamaka-core-wallet 0.10.0.
+        TransactionGenerator + TransactionGeneratorUtils#generateWalletList
+        updated to pass the new explicit `int epoch` param to the
+        BREAKING wallet-core ephemeral ctor (uses -1 = legacy flat dir
+        for API stability — public method signature unchanged).
+        See nodeflux/docs/TASK-wallet-core-app-root-overload.md §12.4.3.
+    -->
+
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
@@ -172,7 +181,7 @@
         <dependency>
             <groupId>io.takamaka.wallet</groupId>
             <artifactId>takamaka-core-wallet</artifactId>
-            <version>0.9.4.6-SNAPSHOT</version>
+            <version>0.10.0-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
         <dependency>

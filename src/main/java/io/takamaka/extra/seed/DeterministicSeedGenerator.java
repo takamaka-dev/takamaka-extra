@@ -116,7 +116,9 @@ public class DeterministicSeedGenerator implements DeterministicSeedGeneratorInt
             try {
                 WalletHelper.writeKeyFile(FileHelper.getDefaultWalletDirectoryPath(), currentWalletName, kb, password);
 
-            } catch (NoSuchProviderException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
+            } catch (NoSuchProviderException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | io.takamaka.wallet.exceptions.KeystoreFileExistsException ex) {
+                // 0.10.0 — KeystoreFileExistsException added; pre-check
+                // shields. Same pattern as the 6 wallet-core keystore classes.
                 log.error("instance error password", ex);
                 throw new UnlockWalletException("instance error password", ex);
             }
