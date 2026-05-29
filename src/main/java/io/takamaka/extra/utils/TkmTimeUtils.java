@@ -30,7 +30,7 @@ public class TkmTimeUtils {
         if (epoch < 0) {
             throw new InvalidEpochException(epoch + " is not a valid value for epoch");
         }
-        if (slot < 0 | slot >= 24000) {
+        if (slot < 0 | slot >= slotPerEpoch) {
             throw new InvalidSlotException(slot + " is not a valid value for slot");
         }
         return (slotPerEpoch * epoch) + slot;
