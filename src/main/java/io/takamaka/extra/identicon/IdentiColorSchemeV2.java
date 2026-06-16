@@ -53,6 +53,17 @@ import java.awt.Color;
  * borders). The canonical specification is
  * {@code chat-web-gui/docs/architecture/COLOR_SCHEME_V2.md}.</p>
  *
+ * <p><b>Status — merged but DORMANT (DR-001).</b> This class is present in the
+ * library yet <b>wired nowhere</b>: no {@code src/main} code references it, and
+ * {@link IdenticonManager} / {@link IdentiColorHelper} remain the active colour
+ * path. It ships as a dormant capability — the same pattern as the DR-009 v2
+ * keystore (capability present, default unchanged). <b>Activation</b> (making any
+ * shipped or cross-platform surface render with v2) is gated on the DR-001
+ * <b>cross-platform parity gate</b>: Java reference vectors reproduced
+ * byte-identically by the Dart/Flutter port. chat-web-gui may adopt it
+ * <i>local-only</i> in the meantime. Merging this class to {@code master} is
+ * therefore safe; it is not a release of v2 colours. See DECISION_REGISTER DR-001.</p>
+ *
  * @author Giovanni Antino giovanni.antino@takamaka.io
  */
 public final class IdentiColorSchemeV2 {
