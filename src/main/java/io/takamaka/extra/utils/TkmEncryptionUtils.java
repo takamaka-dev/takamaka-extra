@@ -76,6 +76,40 @@ import org.bouncycastle.util.io.TeeOutputStream;
 @Slf4j
 public class TkmEncryptionUtils {
 
+    /**
+     * Decode a base64 field of an {@code EncMessageBean}, failing with a message that NAMES the field
+     * instead of letting a {@code null} reach a cipher (F12/SF-4).
+     *
+     * <p>{@code TkmSignUtils.fromB64URLToByteArray} returns {@code null} on a decode failure rather than
+     * throwing. Passing that to {@code new IvParameterSpec(...)} or {@code doFinal(...)} yields a bare
+     * {@link NullPointerException} raised deep inside the JCE, which names neither the field nor the value
+     * and points the reader at the cipher rather than at the payload.
+     *
+     * <p>Accepts either base64 alphabet: {@code em[]} is subject to the same permanent read contract as
+     * {@code enc_key} — a peer may legitimately encode it in the other alphabet, and historic values can
+     * never be re-encoded. See {@code rschat-docs/security/BASE64_ENCODING_CONTRACT.md}.
+     *
+     * @param value the base64 field as it arrived on the wire
+     * @param fieldName human-readable field name, used in the failure message
+     * @return the decoded bytes, never null
+     * @throws InvalidCypherException if the field is absent or does not decode
+     */
+    private static byte[] decodeOrFail(String value, String fieldName) throws InvalidCypherException {
+        if (value == null) {
+            throw new InvalidCypherException("EncMessageBean " + fieldName + " is missing");
+        }
+        try {
+            byte[] decoded = TkmSignUtils.fromAnyB64ToByteArray(value);
+            if (decoded == null) {
+                throw new InvalidCypherException("EncMessageBean " + fieldName + " did not decode");
+            }
+            return decoded;
+        } catch (RuntimeException ex) {
+            throw new InvalidCypherException("EncMessageBean " + fieldName
+                    + " is not valid base64 in either alphabet (length " + value.length() + ")", ex);
+        }
+    }
+
     public static final String fromPasswordEncryptedContent(String password, String scope, EncMessageBean encMessageBean) throws InvalidCypherException, WalletException {
         try {
             final String theMessage;
@@ -86,8 +120,16 @@ public class TkmEncryptionUtils {
                     byte[] secretKey = skf.generateSecret(spec).getEncoded();
                     SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, encMessageBean.getKeySpecAlgorithm());
 
-                    byte[] iv = TkmSignUtils.fromB64URLToByteArray(encMessageBean.getEncryptedMessage()[0]);
-                    byte[] content = TkmSignUtils.fromB64URLToByteArray(encMessageBean.getEncryptedMessage()[1]);
+                    // F12/SF-4 — fromB64URLToByteArray SWALLOWS a decode failure into null. Feeding that
+                    // straight into IvParameterSpec / doFinal produced a bare NullPointerException from deep
+                    // inside the cipher: a decode fault reported as a crash in the wrong subsystem, with
+                    // nothing naming the field or the value. Fail here, saying which half failed.
+                    //
+                    // fromAnyB64ToByteArray is used because `em[]` must also survive a peer that encodes it
+                    // in the other alphabet — the same permanent read contract as enc_key. See
+                    // rschat-docs/security/BASE64_ENCODING_CONTRACT.md.
+                    byte[] iv = decodeOrFail(encMessageBean.getEncryptedMessage()[0], "em[0] (IV)");
+                    byte[] content = decodeOrFail(encMessageBean.getEncryptedMessage()[1], "em[1] (ciphertext)");
 
                     Cipher cipher = Cipher.getInstance(encMessageBean.getTransformation());
                     cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(iv));
