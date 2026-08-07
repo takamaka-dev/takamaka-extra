@@ -23,6 +23,11 @@ import org.apache.commons.text.RandomStringGenerator;
  * @author Giovanni Antino giovanni.antino@takamaka.io
  */
 public class TkmRandomGeneratorUtils {
+    /** VB-29: CSPRNG for every RandomStringGenerator in this class. commons-text falls back to
+     *  ThreadLocalRandom when no provider is supplied — a 64-bit clock-seeded root shared by the whole
+     *  JVM. See rschat-docs/security/PRNG_ENTROPY_AUDIT.md. */
+    private static final java.security.SecureRandom TKM_CSPRNG = new java.security.SecureRandom();
+
 
     public static final String getRandomLetterNumbers(int len) throws TkmCryptoExtraException {
         if (len < 1) {
@@ -31,6 +36,7 @@ public class TkmRandomGeneratorUtils {
         RandomStringGenerator generator = new RandomStringGenerator.Builder()
                 .withinRange('0', 'z')
                 .filteredBy(Character::isLetterOrDigit)
+                    .usingRandom(TKM_CSPRNG::nextInt)
                 .get();
         return generator.generate(len);
     }
@@ -45,6 +51,7 @@ public class TkmRandomGeneratorUtils {
         RandomStringGenerator generator = new RandomStringGenerator.Builder()
                 .withinRange('0', 'z')
                 .filteredBy(Character::isLetterOrDigit)
+                    .usingRandom(TKM_CSPRNG::nextInt)
                 .get();
         return generator.generate(minLengthInclusive, maxLengthInclusive);
     }

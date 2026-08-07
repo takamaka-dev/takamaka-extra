@@ -75,6 +75,11 @@ import org.bouncycastle.util.io.TeeOutputStream;
  */
 @Slf4j
 public class TkmEncryptionUtils {
+    /** VB-29: CSPRNG for every RandomStringGenerator in this class. commons-text falls back to
+     *  ThreadLocalRandom when no provider is supplied — a 64-bit clock-seeded root shared by the whole
+     *  JVM. See rschat-docs/security/PRNG_ENTROPY_AUDIT.md. */
+    private static final java.security.SecureRandom TKM_CSPRNG = new java.security.SecureRandom();
+
 
     /**
      * Decode a base64 field of an {@code EncMessageBean}, failing with a message that NAMES the field
@@ -453,6 +458,7 @@ public class TkmEncryptionUtils {
             RandomStringGenerator generator = new RandomStringGenerator.Builder()
                     .withinRange('0', 'z')
                     .filteredBy(Character::isLetterOrDigit)
+                    .usingRandom(TKM_CSPRNG::nextInt)
                     .get();
             String b64hash = TkmSignUtils.Hash256ToHex(scope + generator.generate(256));
             return b64hash;
@@ -475,6 +481,7 @@ public class TkmEncryptionUtils {
         RandomStringGenerator generator = new RandomStringGenerator.Builder()
                 .withinRange('0', 'z')
                 .filteredBy(Character::isLetterOrDigit)
+                    .usingRandom(TKM_CSPRNG::nextInt)
                 .get();
         String secretKey = generator.generate(400);
         String rsaEncPubKey = TkmCypherProviderBCRSA4096ENC.encrypt(rsaPublicKey, secretKey);
