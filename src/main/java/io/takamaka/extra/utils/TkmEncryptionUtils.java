@@ -229,6 +229,34 @@ public class TkmEncryptionUtils {
             final int bufferSizeExponent,
             final AtomicLong processedBytes
     ) throws InvalidCypherException, WalletException {
+        return streamPasswordEncrypt(password, scope, version, inputStreamE, outputStreamE,
+                bufferSizeExponent, processedBytes, new AtomicLong());
+    }
+
+    /**
+     * As {@link #streamPasswordEncrypt(String, String, String, InputStream, OutputStream, int, AtomicLong)},
+     * additionally reporting the CIPHERTEXT byte count.
+     *
+     * <p>DR-030: {@code ChatMediaPlaceholderBean.size} is the ciphertext byte count. Callers used to
+     * take the length of the ENCRYPTED FILE, which is base64 text and therefore varies with wrapping
+     * and padding — the same defect as hashing the encoded form, one field over. A Java caller
+     * measuring the file and a Dart caller measuring its unwrapped base64 reported different sizes
+     * for identical content.</p>
+     *
+     * @param ciphertextBytes out-param, set to the number of ciphertext bytes produced
+     * @return plaintext hash + the populated descriptor
+     * @since 0.6.0
+     */
+    public static final AbstractMap.SimpleImmutableEntry<String, StreamEncryptedDescriptor> streamPasswordEncrypt(
+            final String password,
+            final String scope,
+            final String version,
+            final InputStream inputStreamE,
+            final OutputStream outputStreamE,
+            final int bufferSizeExponent,
+            final AtomicLong processedBytes,
+            final AtomicLong ciphertextBytes
+    ) throws InvalidCypherException, WalletException {
         try {
             final int bufferBytes = (int) Math.pow(2, bufferSizeExponent);
             processedBytes.set(0L);
@@ -290,7 +318,11 @@ public class TkmEncryptionUtils {
             // Chain: cipher -> tee(base64 -> file, digest) instead of cipher -> base64 -> tee(file, digest).
             final Base64OutputStream base64OutputStream = new Base64OutputStream(outputStreamE);
             final TeeOutputStream teeOutputStream = new TeeOutputStream(base64OutputStream, digestOutputStreamEnc);
-            final CipherOutputStream cipherOutputStream = new CipherOutputStream(teeOutputStream, cipher);
+            // Counts the CIPHERTEXT, on the same side of the encoder as the digest — so `size` and
+            // the hash are measured over exactly the same bytes and cannot disagree.
+            final org.apache.commons.io.output.CountingOutputStream ciphertextCounter
+                    = new org.apache.commons.io.output.CountingOutputStream(teeOutputStream);
+            final CipherOutputStream cipherOutputStream = new CipherOutputStream(ciphertextCounter, cipher);
             cipher.init(Cipher.ENCRYPT_MODE, secret, iv);
 
             byte[] buffer = new byte[bufferBytes];
@@ -324,6 +356,7 @@ public class TkmEncryptionUtils {
 
             final String hexHashEnc = TkmSignUtils.fromByteArrayToHexString(digestOutputStreamEnc.getDigest());
             final String hexHashPlain = TkmSignUtils.fromByteArrayToHexString(digestOutputStreamPlain.getDigest());
+            ciphertextBytes.set(ciphertextCounter.getByteCount());
             sed.setEncryptedContentHash(hexHashEnc);
             final AbstractMap.SimpleImmutableEntry<String, StreamEncryptedDescriptor> res = new AbstractMap.SimpleImmutableEntry<String, StreamEncryptedDescriptor>(hexHashPlain, sed);
             return res;
