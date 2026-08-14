@@ -365,15 +365,36 @@ public class TkmAddressUtilsTest {
                         log.info("decrypted {}", decryptedOutText);
                         log.info("SED: {}", sed.toString());
                         assertEquals(message, decryptedOutText);
+                        // DR-030: encrypted_content_hash is over the CIPHERTEXT BYTES, so an
+                        // independent recomputation must DECODE the base64 wire body first. This is
+                        // exactly the change rschat's upload check needs (DownloadUploadUtils:539) —
+                        // streamCalcHash still hashes whatever stream it is handed; what changes is
+                        // which stream it is handed.
                         ByteArrayInputStream byteArrayInputStreamHash = new ByteArrayInputStream(toByteArrayB64);
+                        org.apache.commons.codec.binary.Base64InputStream decodedForHash
+                                = new org.apache.commons.codec.binary.Base64InputStream(byteArrayInputStreamHash);
                         String streamCalcHash = TkmEncryptionUtils.streamCalcHash(
-                                byteArrayInputStreamHash,
+                                decodedForHash,
                                 EncryptionContext.v0_2_a_stream_gcm.getDigestHash(),
                                 12,
                                 decryptionAccumulator);
+                        decodedForHash.close();
                         byteArrayInputStreamHash.close();
                         log.info("exp hash {}, calc hash {}", sed.getEncryptedContentHash(), streamCalcHash);
                         assertEquals(sed.getEncryptedContentHash(), streamCalcHash, "enc hash not match");
+
+                        // POSITIVE CONTROL: the PRE-DR-030 definition must NOT match any more.
+                        // Without this the assertion above would still pass if the digest silently
+                        // reverted to hashing the wire text, since both are "a hash of the content".
+                        ByteArrayInputStream legacyWireStream = new ByteArrayInputStream(toByteArrayB64);
+                        String legacyWireHash = TkmEncryptionUtils.streamCalcHash(
+                                legacyWireStream,
+                                EncryptionContext.v0_2_a_stream_gcm.getDigestHash(),
+                                12,
+                                decryptionAccumulator);
+                        legacyWireStream.close();
+                        assertNotEquals(legacyWireHash, sed.getEncryptedContentHash(),
+                                "encrypted_content_hash must be over the ciphertext BYTES, not the base64 wire text");
 //                        StreamEncryptedDescriptor sed = TkmEncryptionUtils.streamPasswordEncrypt(password, scope, "v0_2_a_stream_gcm", byteArrayInputStreamPlain, byteArrayOutputStreamCypher, 12, encryptionAccumulator);
 //                        //log.info("sad :-( )-: {}", sed.toString());
 //                        //String b64Cypher = TkmSignUtils.fromByteArrayToB64(byteArrayOutputStreamCypher.toByteArray());

@@ -276,9 +276,21 @@ public class TkmEncryptionUtils {
             }
             final DigestOutputStream digestOutputStreamEnc = new DigestOutputStream(shA3DigestEnc);
 
-            final TeeOutputStream teeOutputStream = new TeeOutputStream(outputStreamE, digestOutputStreamEnc);
-            final Base64OutputStream base64OutputStream = new Base64OutputStream(teeOutputStream);
-            final CipherOutputStream cipherOutputStream = new CipherOutputStream(base64OutputStream, cipher);
+            // DR-030: the digest tee sits BETWEEN the cipher and the base64 encoder, so
+            // encrypted_content_hash is SHA3-256 of the CIPHERTEXT BYTES.
+            //
+            // It used to sit on the far side of the encoder — Base64OutputStream(tee(out, digest)) —
+            // which fed the digest the base64 TEXT, including the 76-char CRLF wrapping Apache
+            // Commons emits by default. That put every property of the encoding inside the
+            // attachment's identity: the Dart port emits one unwrapped line and hashed that, so
+            // identical ciphertext produced a different encrypted_content_hash depending only on
+            // which platform uploaded it (F14/D1/O-10). Hashing the bytes makes wrapping, padding
+            // and alphabet permanently irrelevant.
+            //
+            // Chain: cipher -> tee(base64 -> file, digest) instead of cipher -> base64 -> tee(file, digest).
+            final Base64OutputStream base64OutputStream = new Base64OutputStream(outputStreamE);
+            final TeeOutputStream teeOutputStream = new TeeOutputStream(base64OutputStream, digestOutputStreamEnc);
+            final CipherOutputStream cipherOutputStream = new CipherOutputStream(teeOutputStream, cipher);
             cipher.init(Cipher.ENCRYPT_MODE, secret, iv);
 
             byte[] buffer = new byte[bufferBytes];
@@ -293,16 +305,21 @@ public class TkmEncryptionUtils {
 
             }
 
-            digestOutputStreamEnc.flush();
-            digestOutputStreamPlain.flush();
+            // Close OUTERMOST-FIRST. CipherOutputStream.close() is what writes the final block and
+            // the GCM tag, and those bytes must still reach the digest — so the digest stream can
+            // only be closed AFTER the cipher has finished pushing through the tee. The old order
+            // closed the digest first; it survived because the tee sat downstream of base64
+            // buffering, and it would silently drop the tag bytes from the hash in the new chain.
             cipherOutputStream.flush();
-            base64OutputStream.flush();
-            teeOutputStream.flush();
-            digestOutputStreamEnc.close();
-            digestOutputStreamPlain.close();
             cipherOutputStream.close();
-            base64OutputStream.close();
+            teeOutputStream.flush();
             teeOutputStream.close();
+            base64OutputStream.flush();
+            base64OutputStream.close();
+            digestOutputStreamEnc.flush();
+            digestOutputStreamEnc.close();
+            digestOutputStreamPlain.flush();
+            digestOutputStreamPlain.close();
             teeInputStreamPlain.close();
 
             final String hexHashEnc = TkmSignUtils.fromByteArrayToHexString(digestOutputStreamEnc.getDigest());
@@ -357,10 +374,22 @@ public class TkmEncryptionUtils {
             final TeeOutputStream teeOutputStream = new TeeOutputStream(outputStreamE, digestOutputStreamPlain);
 
             cipher.init(Cipher.DECRYPT_MODE, secret, iv);
-            //ByteArrayOutputStream tempDupStream = new ByteArrayOutputStream(bufferBytes);
-            final TeeInputStream teeInputStream = new TeeInputStream(inputStreamE, digestOutputStreamEnc);
-            final Base64InputStream base64InputStream = new Base64InputStream(teeInputStream);//decode
-            final CipherInputStream cipherInputStream = new CipherInputStream(base64InputStream, cipher);//decrypt
+
+            // DR-030 (mirror of the encrypt path): the digest tee sits AFTER the base64 decoder, so
+            // encrypted_content_hash is verified against the CIPHERTEXT BYTES.
+            //
+            // The second digest hashes the base64 TEXT as received — the PRE-DR-030 definition. It is
+            // never used on success. It exists so that a failure can say WHICH failure it is: under
+            // hard-fail, a stale build still emitting the old form and a genuine tampered download
+            // would otherwise produce the identical "the server returned the wrong bytes" message,
+            // and the stale build — the thing hard-fail exists to surface — would be indistinguishable
+            // from a security incident. Cost is one SHA3 over bytes already flowing.
+            final SHA3Digest shA3DigestLegacyWire = new SHA3Digest(shad);
+            final DigestOutputStream digestOutputStreamLegacyWire = new DigestOutputStream(shA3DigestLegacyWire);
+            final TeeInputStream legacyWireTee = new TeeInputStream(inputStreamE, digestOutputStreamLegacyWire);
+            final Base64InputStream base64InputStream = new Base64InputStream(legacyWireTee);//decode
+            final TeeInputStream teeInputStream = new TeeInputStream(base64InputStream, digestOutputStreamEnc);
+            final CipherInputStream cipherInputStream = new CipherInputStream(teeInputStream, cipher);//decrypt
 
             final byte[] buffer = new byte[bufferBytes];
             int bytesRead;
@@ -373,15 +402,33 @@ public class TkmEncryptionUtils {
             cipherInputStream.close();
             teeInputStream.close();
             base64InputStream.close();
+            legacyWireTee.close();
             digestOutputStreamEnc.flush();
             digestOutputStreamEnc.close();
+            digestOutputStreamLegacyWire.flush();
+            digestOutputStreamLegacyWire.close();
             digestOutputStreamPlain.close();
 
             //byte[] encodedhash = digest.digest();
             final String hexHashEnc = TkmSignUtils.fromByteArrayToHexString(digestOutputStreamEnc.getDigest());
             final String hexHashPlain = TkmSignUtils.fromByteArrayToHexString(digestOutputStreamPlain.getDigest());
             if (!sed.getEncryptedContentHash().equals(hexHashEnc)) {
-                String errMsg = String.format("invalid encrypted content hash, declared hash %1$s does not match calculated hash %2$s", sed.getEncryptedContentHash(), hexHashEnc);
+                // DR-030 hard fail — no remediation. But say WHICH failure it is: if the declared
+                // hash matches the pre-DR-030 definition (SHA3 of the base64 wire text), this is a
+                // pre-release attachment or a producer that has not been rebuilt, NOT tampering.
+                final String legacyWireHash
+                        = TkmSignUtils.fromByteArrayToHexString(digestOutputStreamLegacyWire.getDigest());
+                final boolean preDr030 = sed.getEncryptedContentHash().equals(legacyWireHash);
+                final String errMsg = preDr030
+                        ? String.format("PRE-DR-030 attachment: declared hash %1$s is SHA3-256 of the base64 "
+                                + "WIRE TEXT, which was the contract before 2026-08-14. Since DR-030 the hash "
+                                + "is over the CIPHERTEXT BYTES (%2$s). The content is intact and this is NOT "
+                                + "tampering — it was encrypted by a build predating the change, and there is "
+                                + "no remediation: it cannot be read. If a CURRENT producer emitted this, that "
+                                + "producer has not been rebuilt.",
+                                sed.getEncryptedContentHash(), hexHashEnc)
+                        : String.format("invalid encrypted content hash, declared hash %1$s does not match "
+                                + "calculated hash %2$s", sed.getEncryptedContentHash(), hexHashEnc);
                 throw new WalletException(errMsg);
             }
 
