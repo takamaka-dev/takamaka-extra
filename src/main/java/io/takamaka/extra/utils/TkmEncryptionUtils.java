@@ -70,8 +70,18 @@ import org.bouncycastle.util.io.TeeInputStream;
 import org.bouncycastle.util.io.TeeOutputStream;
 
 /**
+ * Encryption utilities, including the {@code v0_2_a_stream_gcm} attachment stream path.
+ *
+ * <p><b>0.6.0 — DR-030.</b> The content digest moved across the base64 stream on BOTH the encrypt
+ * and the decrypt path: {@code encrypted_content_hash} is SHA3-256 of the <b>ciphertext bytes</b>,
+ * never of the base64 text that carries them, so wrapping, padding and alphabet are permanently
+ * outside a blob's identity. {@code streamPasswordEncrypt} gained an overload reporting the
+ * ciphertext byte count, because {@code ChatMediaPlaceholderBean.size} is that count on the same
+ * basis. This is a FLAG DAY: the hash IS the blob's identity, so a blob produced by an older build
+ * is not readable and is not made readable.</p>
  *
  * @author Giovanni Antino giovanni.antino@takamaka.io
+ * @version 0.6.0
  */
 @Slf4j
 public class TkmEncryptionUtils {

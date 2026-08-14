@@ -1,7 +1,7 @@
 {
   "version" : "1.0.0",
   "generator" : "TestVectorGenerator.java",
-  "generated_at" : "2026-08-14T10:17:49.856138314Z",
+  "generated_at" : "2026-08-14T10:38:05.887454487Z",
   "pbkdf2_vectors" : [ {
     "password" : "password",
     "salt" : "salt",
@@ -115,8 +115,8 @@
     "keySpecAlgorithm" : "AES",
     "outputKeyLengthBit" : 256,
     "encoding" : "UTF-8",
-    "iv_b64url" : "m_Xq6MIbrFr75mH-RoBp6g..",
-    "ciphertext_b64url" : "81-mFfVhTiseflUWIhEvbQ..",
+    "iv_b64url" : "VmbjLLjCgQoCuxWgSaw5pw..",
+    "ciphertext_b64url" : "jZ53uxz0njPx6INpIqFYrA..",
     "decrypted" : "Hello, World!",
     "matches" : true
   }, {
@@ -130,8 +130,8 @@
     "keySpecAlgorithm" : "AES",
     "outputKeyLengthBit" : 256,
     "encoding" : "UTF-8",
-    "iv_b64url" : "5UtkbGwcCjhm_3q3mbhGHg..",
-    "ciphertext_b64url" : "mij8qeecC0fktpZq4ktYhbxwx5Te7p_vewuxOCpZLzY.",
+    "iv_b64url" : "MO9e2svGAnfG5cC8tqtSlA..",
+    "ciphertext_b64url" : "A5T5jGORyAtWE_NdaEY0c0S7qIv_n0qgV_RD2E7H_IM.",
     "decrypted" : "This is a chat message content.",
     "matches" : true
   }, {
@@ -145,8 +145,8 @@
     "keySpecAlgorithm" : "AES",
     "outputKeyLengthBit" : 256,
     "encoding" : "UTF-8",
-    "iv_b64url" : "K_gVbSe5v9U563bouE4FJQ..",
-    "ciphertext_b64url" : "cYksb7BDIkYcRzuikWNA4W_4EjaGn7qJyxtKFSNGvLo.",
+    "iv_b64url" : "IYqUph_iSgydmuJS2ZwCRQ..",
+    "ciphertext_b64url" : "yL-OnwkN40W2rvATi2N7nHwQufxz-12sW7ld4uCpJso.",
     "decrypted" : "Unicode content: 日本語 \uD83D\uDE00",
     "matches" : true
   } ]
