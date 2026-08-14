@@ -75,10 +75,15 @@ import org.bouncycastle.util.io.TeeOutputStream;
  * <p><b>0.6.0 — DR-030.</b> The content digest moved across the base64 stream on BOTH the encrypt
  * and the decrypt path: {@code encrypted_content_hash} is SHA3-256 of the <b>ciphertext bytes</b>,
  * never of the base64 text that carries them, so wrapping, padding and alphabet are permanently
- * outside a blob's identity. {@code streamPasswordEncrypt} gained an overload reporting the
- * ciphertext byte count, because {@code ChatMediaPlaceholderBean.size} is that count on the same
- * basis. This is a FLAG DAY: the hash IS the blob's identity, so a blob produced by an older build
- * is not readable and is not made readable.</p>
+ * outside a blob's identity. This is a FLAG DAY: the hash IS the blob's identity, so a blob produced
+ * by an older build is not readable and is not made readable.</p>
+ *
+ * <p>⚠️ <b>DR-030 is scoped to the HASH.</b> {@code ChatMediaPlaceholderBean.size} is unaffected and
+ * remains the ENCODED length as emitted ({@code ATTACHMENT_PROTOCOL.md} §4.2). A hash is an identity
+ * and must be producer-independent; a size is a transfer descriptor and is producer-relative by
+ * design. The {@code streamPasswordEncrypt} overload reporting the ciphertext byte count was added
+ * for that clause and is retained for §4.3's reserved padded version — read its javadoc before
+ * wiring it to anything called "size".</p>
  *
  * @author Giovanni Antino giovanni.antino@takamaka.io
  * @version 0.6.0
@@ -247,11 +252,18 @@ public class TkmEncryptionUtils {
      * As {@link #streamPasswordEncrypt(String, String, String, InputStream, OutputStream, int, AtomicLong)},
      * additionally reporting the CIPHERTEXT byte count.
      *
-     * <p>DR-030: {@code ChatMediaPlaceholderBean.size} is the ciphertext byte count. Callers used to
-     * take the length of the ENCRYPTED FILE, which is base64 text and therefore varies with wrapping
-     * and padding — the same defect as hashing the encoded form, one field over. A Java caller
-     * measuring the file and a Dart caller measuring its unwrapped base64 reported different sizes
-     * for identical content.</p>
+     * <p>⚠️ <b>This is NOT {@code ChatMediaPlaceholderBean.size}.</b> That field is the ENCODED length
+     * of the encrypted data, as emitted ({@code ATTACHMENT_PROTOCOL.md} §4.2) — i.e. the length of the
+     * file this method writes to {@code outputStreamE}. Setting {@code size} from the ciphertext count
+     * understates it by ~33%, which breaks uploads the server size-checks against the arriving base64
+     * and makes a download bar read ~133%. It was briefly done under DR-030 and withdrawn the same
+     * day: DR-030 moved the {@code encrypted_content_hash} — an IDENTITY, which must be
+     * producer-independent — and nothing else. A size is a transfer descriptor and is
+     * producer-relative by design.</p>
+     *
+     * <p>Provided because the count is a genuine property of the encryption (under {@code v0_2_a} it
+     * is the plaintext length plus the 16-byte GCM tag), and {@code ATTACHMENT_PROTOCOL.md} §4.3
+     * reserves a future padded version that will need it. No current caller uses it.</p>
      *
      * @param ciphertextBytes out-param, set to the number of ciphertext bytes produced
      * @return plaintext hash + the populated descriptor

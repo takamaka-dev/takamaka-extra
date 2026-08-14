@@ -1,7 +1,7 @@
 {
   "version" : "1.0.0",
   "generator" : "TestVectorGenerator.java",
-  "generated_at" : "2026-08-14T10:38:06.194452282Z",
+  "generated_at" : "2026-08-14T11:33:37.651830622Z",
   "png_encoding_note" : "PNG hashes are Java-reference-only (platform-specific encoding). Use matrix hashes for cross-platform validation instead of PNG hashes.",
   "base_blocks" : [ {
     "block_index" : 0,
