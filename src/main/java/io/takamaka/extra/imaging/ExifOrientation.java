@@ -18,7 +18,7 @@ package io.takamaka.extra.imaging;
 import java.awt.geom.AffineTransform;
 
 /**
- * Reads the EXIF orientation tag out of a JPEG, by hand.
+ * Reads the EXIF orientation tag out of a JPEG (APP1) or a PNG ({@code eXIf} chunk), by hand.
  *
  * <h2>Why by hand</h2>
  *
@@ -69,6 +69,7 @@ public final class ExifOrientation {
      *
      * @param bytes the raw source file; may be {@code null}, truncated, or not a JPEG at all
      * @return a value in 1..8, or {@link #NORMAL} when absent, unreadable or not a JPEG
+     * @see #readImage(byte[]) for the format-dispatching call
      */
     public static int read(byte[] bytes) {
         if (bytes == null || bytes.length < 4) {
@@ -130,7 +131,135 @@ public final class ExifOrientation {
 
         final int tiff = off + 6;               // ALL TIFF offsets are relative to here
         final int end = Math.min(b.length, off + declared);
-        if (tiff + 8 > end) {
+        return readTiff(b, tiff, end);
+    }
+
+    /** The 8-byte PNG signature. */
+    private static final int[] PNG_SIG = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
+
+    /**
+     * Sanity cap on the number of PNG chunks walked before {@code IDAT}: real files hold a handful
+     * of ancillary chunks there; a hostile one can chain thousands of empty ones.
+     */
+    private static final int MAX_PNG_CHUNKS = 256;
+
+    /**
+     * Extract the EXIF orientation of a PNG from its {@code eXIf} chunk (PNG 1.5 /
+     * ISO 15948:2022 — a bare TIFF structure, no {@code "Exif\0\0"} prefix).
+     *
+     * <p>C127 (the Java half of C121): {@code ImageIO} does not read the chunk, so a PNG written
+     * with orientation 6 (rare — most PNGs carry 1 — but a phone screenshot tool or a converter can
+     * do it) previews sideways unless the tag is read here and baked by the caller.</p>
+     *
+     * <p>Walks the chunks after the signature up to {@code IDAT} (the tag must precede the pixels)
+     * or {@code IEND}, at most {@value #MAX_PNG_CHUNKS} of them. Chunk CRCs are not checked. Same
+     * fail-OPEN contract as {@link #read(byte[])}: anything truncated, malformed, oversized or not
+     * a PNG answers {@link #NORMAL}. A truncated prefix of a file (a caller that read only its
+     * head) is fine as long as the chunk is inside it.</p>
+     *
+     * <p>Dart mirror: {@code wallet-extra-flutter/lib/src/imaging/exif_orientation.dart}
+     * {@code readPng}. Parity is pinned by {@code java_image_orientation_vectors.json}.</p>
+     *
+     * @param bytes the raw source file; may be {@code null}, truncated, or not a PNG at all
+     * @return a value in 1..8, or {@link #NORMAL} when absent, unreadable or not a PNG
+     * @since 0.6.0
+     */
+    public static int readPng(byte[] bytes) {
+        if (bytes == null || bytes.length < PNG_SIG.length + 8) {
+            return NORMAL;
+        }
+        for (int i = 0; i < PNG_SIG.length; i++) {
+            if (u8(bytes, i) != PNG_SIG[i]) {
+                return NORMAL;
+            }
+        }
+        int pos = PNG_SIG.length;
+        for (int n = 0; n < MAX_PNG_CHUNKS; n++) {
+            if ((long) pos + 8L > bytes.length) {
+                return NORMAL; // header past the end (or a truncated read)
+            }
+            // A chunk is <len:4 BE> <type:4> <data:len> <crc:4>. The length is read as a long so
+            // a claim above 2^31-1 cannot wrap negative and slip under the bound below.
+            final long len = u32(bytes, pos, true);
+            if (len < 0) {
+                return NORMAL;
+            }
+            if (isChunk(bytes, pos + 4, 'I', 'D', 'A', 'T') || isChunk(bytes, pos + 4, 'I', 'E', 'N', 'D')) {
+                return NORMAL; // pixels reached: no eXIf before them
+            }
+            final long dataStart = (long) pos + 8L;
+            final long dataEnd = dataStart + len; // CRC follows
+            if (dataEnd > bytes.length) {
+                return NORMAL; // chunk claims past the end
+            }
+            if (isChunk(bytes, pos + 4, 'e', 'X', 'I', 'f')) {
+                return readTiff(bytes, (int) dataStart, (int) dataEnd);
+            }
+            // Skip the data and its CRC. A CRC cut off by the end of the array means there is
+            // no further chunk header to read either.
+            final long next = dataEnd + 4L;
+            if (next > bytes.length) {
+                return NORMAL;
+            }
+            pos = (int) next;
+        }
+        return NORMAL;
+    }
+
+    /**
+     * {@link #read(byte[])} for a JPEG, {@link #readPng(byte[])} for a PNG, {@link #NORMAL} for
+     * anything else — the one call for "what orientation does this image file carry".
+     *
+     * <p>This is what {@link ThumbnailHelper} uses: {@code ImageIO} applies EXIF for no format at
+     * all, so the Java side must bake the orientation whatever the container.</p>
+     *
+     * @param bytes the raw source file; may be {@code null} or truncated
+     * @return a value in 1..8, or {@link #NORMAL}
+     * @since 0.6.0
+     */
+    public static int readImage(byte[] bytes) {
+        if (bytes == null || bytes.length < 4) {
+            return NORMAL;
+        }
+        if (u8(bytes, 0) == 0xFF && u8(bytes, 1) == 0xD8) {
+            return read(bytes);
+        }
+        if (u8(bytes, 0) == 0x89 && u8(bytes, 1) == 0x50) {
+            return readPng(bytes);
+        }
+        return NORMAL;
+    }
+
+    /**
+     * {@link #readTiff(byte[], int, int)} over the whole array.
+     *
+     * @param b a bare TIFF structure; may be {@code null}
+     * @return a value in 1..8, or {@link #NORMAL}
+     * @since 0.6.0
+     */
+    public static int readTiff(byte[] b) {
+        return b == null ? NORMAL : readTiff(b, 0, b.length);
+    }
+
+    /**
+     * The orientation held by a bare TIFF structure — what a PNG {@code eXIf} chunk carries, or an
+     * EXIF APP1 payload after its {@code "Exif\0\0"} prefix. One parser for both containers.
+     * Same fail-OPEN contract as {@link #read(byte[])}.
+     *
+     * @param b    the bytes holding the structure (typically the whole file); may be {@code null}
+     * @param tiff offset of the byte-order mark inside {@code b}; every TIFF offset is relative to it
+     * @param end  the first byte past the structure; clamped to {@code b.length}
+     * @return a value in 1..8, or {@link #NORMAL}
+     * @since 0.6.0
+     */
+    public static int readTiff(byte[] b, int tiff, int end) {
+        if (b == null) {
+            return NORMAL;
+        }
+        if (end > b.length) {
+            end = b.length;
+        }
+        if (tiff < 0 || (long) tiff + 8L > end) {
             return NORMAL;
         }
 
@@ -183,6 +312,11 @@ public final class ExifOrientation {
             return (value >= 1 && value <= 8) ? value : NORMAL;
         }
         return NORMAL;
+    }
+
+    /** Whether the four bytes at {@code i} spell this chunk type; {@code false} past the end. */
+    private static boolean isChunk(byte[] b, int i, char c0, char c1, char c2, char c3) {
+        return u8(b, i) == c0 && u8(b, i + 1) == c1 && u8(b, i + 2) == c2 && u8(b, i + 3) == c3;
     }
 
     /**

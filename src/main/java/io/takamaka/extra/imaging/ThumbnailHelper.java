@@ -46,7 +46,7 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
  *
  * <pre>
  * if (source.length &lt;= maxPreviewBytes) -&gt; INLINE, generate NO preview      // rule 1
- * decode; bake EXIF orientation into the pixels (JPEG only; failure =&gt; 1)   // rule 3
+ * decode; bake EXIF orientation into the pixels (JPEG APP1 + PNG eXIf; failure =&gt; 1)   // rule 3
  * if (max(w,h) &gt; 256) scale the longest edge to 256   // NEVER upscale      // rule 2
  * encode: opaque -&gt; JPEG q0.80 ; has real alpha -&gt; PNG                      // rule 5
  * if (encoded &gt; maxPreviewBytes) -&gt; NO preview, and the caller LOGS it      // rule 6
@@ -223,7 +223,12 @@ public final class ThumbnailHelper {
 
             // Rule 3 — bake orientation BEFORE measuring, because orientations 5..8 exchange the
             // axes and it is the DISPLAYED dimensions that the scale rule is about.
-            final int orientation = ExifOrientation.read(source);
+            //
+            // C127 — for EVERY format, not only JPEG: ImageIO applies EXIF for none of them, so
+            // a PNG tagged in its eXIf chunk is as sideways as a tagged JPEG. (The Dart side
+            // bakes only the PNG case by hand, because its JPEG decoder pre-applies the tag;
+            // the outcome is the same: an upright preview and the tag reported.)
+            final int orientation = ExifOrientation.readImage(source);
             BufferedImage upright = applyOrientation(decoded, orientation);
 
             final int srcW = upright.getWidth();
