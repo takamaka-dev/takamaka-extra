@@ -1,0 +1,1491 @@
+{
+  "description" : "C120: what the metadata cleaner makes of a file. Compare the status, the output name, the detail line and the SHA3-256 of the output; for an Office package compare the entries (name, order, SHA3-256 of the uncompressed bytes), never the zip bytes.",
+  "generator" : "takamaka-extra MetadataCleanVectorTest (-Dc120.vectors.write=true)",
+  "javaReference" : "io.takamaka.extra.media.MediaMetadataCleaner.clean(src, outDir, MetadataCleanOptions.on())",
+  "inputEncoding" : "standard base64, padded",
+  "hash" : "SHA3-256, lower-case hex",
+  "suffix" : "_nolocation",
+  "vectors" : [ {
+    "name" : "jpeg_progressive_exif",
+    "description" : "the real camera JPEG of the Dart stripper test (SOF2, EXIF IFD0 with 6 entries): every scan copied",
+    "format" : "image",
+    "fileName" : "IMG_progressive.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 17367,
+    "inputSha3" : "171c735deaa8df19e9d32a94c1bdac81eaaa29f191bd9c7cd5eba8d919158552",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 1 kept",
+        "outputName" : "IMG_progressive_nolocation.jpg",
+        "outputLength" : 17143,
+        "outputSha3" : "c0c2baba8c1508ea10cebf86e0032434651ced8d0d6c9f7616946e6e1ddda6ea"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 1,
+        "mediaType" : "image/jpeg",
+        "length" : 17143,
+        "sha3" : "c0c2baba8c1508ea10cebf86e0032434651ced8d0d6c9f7616946e6e1ddda6ea"
+      }
+    },
+    "inputBase64" : "/9j/4QDeRXhpZgAASUkqAAgAAAAGABIBAwABAAAAAQAAABoBBQABAAAAVgAAABsBBQABAAAAXgAAACgBAwABAAAAAgAAABMCAwABAAAAAQAAAGmHBAABAAAAZgAAAAAAAABIAAAAAQAAAEgAAAABAAAABwAAkAcABAAAADAyMTABkQcABAAAAAECAwCGkgcAFgAAAMAAAAAAoAcABAAAADAxMDABoAMAAQAAAP//AAACoAQAAQAAABgCAAADoAQAAQAAAGIBAAAAAAAAQVNDSUkAAABQaWNzdW0gSUQ6IDIyMP/bAEMACAYGBwYFCAcHBwkJCAoMFA0MCwsMGRITDxQdGh8eHRocHCAkLicgIiwjHBwoNyksMDE0NDQfJzk9ODI8LjM0Mv/bAEMBCQkJDAsMGA0NGDIhHCEyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMv/CABEIAWICGAMBIgACEQEDEQH/xAAaAAADAQEBAQAAAAAAAAAAAAAAAQIDBAUG/8QAGQEBAQEBAQEAAAAAAAAAAAAAAAECAwQF/9oADAMBAAIQAxAAAAHwWn25sBW0DaYNOBpg0waYADABpgADAAAAAABggAABMEAgmCAEAICkNAmgTQJoE0iGhJoE0ICqYTQ0DJk1edxTTBpg0waYAwAGADTAAAAYAmABABSGgABNAAIBENAmgTQJqhNAmhDQgBJyNAIBLENCaVCCrzcauaG0waYNMGmAAwAacAANMAAAAAAAAEBYACAENAmgTQhoE1YJoEAgBJoU1ICYAFANKSVolxTijSs9EpoG0DacAMAYNAwBgADEwACAAEykMEAIAQFCaQTQJoEAIAQCBUIQTUCEinnQxCWNNwhSjTG0yqz0NKlyMAbTBgMAGAMIAYAxMIBghghhIykmCTVgmgTQJqkmiHIWgQRI1mrdJhFEIaSGJFEh05yTTAUaY2nBcM00w0TRJxTlpQAwYA5QGAMAYDBMcIYqVJENUlSJGrEmgSdiGhTU1jSasSRyMmLhUhUIQACTCRhohzRUsaCWhUA0U040IcW4o0cWjaYNMGNBpygwGNUxwikJUEqppKkkplimkSDsSaFNTWTVLI0iaVE0jNNUk0omgTQAF6Q86QMAatt5qLCXblh0kGUFFQUklidjAG0FOXK6TVsvNk3c1zLfKzNVNyk5uUkqomklq0hXFTNRWbnRUtJIVKyZqahOQQUgBAAAdK+m8vz9/JbfXE0Wbd8ej5uvi9W/XL43fz61nPVgazj0J0ct5y9XF08tnNSO3OxNlgLTVSulpK+qPT5biezDjebk9/ztzyc+nn75iLz1lJzY6zdj7eP6DnfJ5vU8yzPLTn6ZNce2b3y+m5OGvm8+jD0c84udZzTVqBUJpAAkYfWed1cfh9vA9F6OMdEb5vY89ePTeCcamdM95eVRYaZ1ZeOjHj3cpzK46YGncuppapaZr3np5637cfQ4uXn7MM3TDrdnicXqcXbXFn0Y9eec1OspC1L7PPrLqwhWHNtlqV28O+detjxRi1jefXCip1M5qaQ0IChNDAT3ufXHx+zJbTvJedJtrz641uZvOrkSKWtQGybEXIRjOkdMSUWFzpK9p3xrTTb3uT5vt9jkmfN5/V4s7L6eiT5nq+k5Os+b5vQ5Na5I2y7c8lU6ypc2MlWVBNj0xpdpgk0kixxKoTVAiwQDloAF9fPWvJ6+Z9lycNdXLUvPbWVtBLvXN05qdxLTbhml5uM7Z2YQo64ZDrXSNcW9s+jnvb0eXt45MOjGZjn32azeWq78vRmx5XN38nXpxZdOPfHPnthvCmo3JTVypapCVlOEmuakoh1RImkkhWc1qs2UIT6iPNXi9nfhz6azM7xqVpV5s7x0Y1OXSs3HojUE1EE8mpvzSdMsHTpXD1jbGtOjHp5a6enDfnzItJnrm1zvHSauQZ5OTt5d9OXn68O85cujHpjLPXPeM5qdZmaWpKasSaRIVAFMQjTZEtAIGAexi15/R0+z4np4zyZy2+qiue30c2+bZJmsMNTfjwz6YqU95bTVublq40zb1z1xrbo5+rk6tM7nOqOzWOHP0vOXm0zrn12RFzhz9PNd4Y7Y9WOW2XXOGe+PTGWekaxCqdSZqLBJXIJUySqICkJBDEMEMPUVz5+9aZaxnWrKrOc3qeFy9E8WdnVhmtNBKrcVFEVLdxUul56Z1ptjrzu3XydfObXk5nq7vM03z7/M05JctOHSdetcqjp5Yw1dMc8ujTCV0zOekbxz59UbzzLaNZxNJ1IVJJAsE1QIBNAmgAQEHq6b15fVy6dCkxnfoTh06uczwzOmQRU1TM60cua1qMq0pc3ppm5XpedZ666Yq33vEyjsjLJ7qOSOzJfJ7Q21pvGgmk5M9celzzvPpIz0z3jKNY1nKNI1mIudZmaWpKasSYiApDQgATQxCfXyp+d756UMvPPzdzflU9+VzOtS5oKRDE1pyRdRct1FZ1peeubr0cvfz10MrllGestS1JXJ08lvVyduQZdOFLPq5NWObu4tMc9M+siKjeZmo1lZaRrOcXOswqmxKlZKasE5sE0MSGAIBPq6vn+f7r8/GO3OQnrzTsh51SouSW2S2QMpS2Sqy816FY1p35d3K8+07YnF0TssrQyji9Hh024fXxQy6Ylz5uitOfn6jV8rLpy7ZwjWN5zm51mJtWZTtNmK0nWYVqzNVNgmEsVggGIAQnt8kvj3pQ7CyBscrakpIKJCnNRVTS0Rct3nrnWmmPXz13bRHF0Q+aNtcdJbSIvz+7z9PSxvKTeYlce3h664d8dtOTj9Py+kzz0z7ZhVGspObEmrlS1ZCpWZsKSasU0kQKwAEAnbC159gUw6llMgHLG5ChUNzUtpOWqipdNc3nWnqcHpcdb53PN53B3cXok9XLpZqnznoXxb4vK8NOmdycpZm409fS+Tz77vP9Dnjyo0z9GM5qd5SFYS1Yk1YpZcqaZnNKyU1Yk0gmqAE7c5rn1LSW2ZDaEokKJa05qKuVK6Tlqo0ltxtnXod3P0+bca8ffJ5PD6mnR5PR6ry8OPb6NTyZOPQz9Lh0x0XqL50e5z4dnH25c0vl6rrzOT1vJ7Yibz64SqLCR2JIsSYkjmwi1WZU2IaZSpUgE3qTHWqMYdosYlKxMpoHSuVE0rqaitYWdX6HB6/PfRcxx0ehx6Znn93n+jdU5MFzbZbzn5vXHbPPrp6GdeR6DwmuyGsVd/j+0z4ffx6ba+V6vLZ5c3Po5whWEVFjlq5E1STLEqkrNiQrmxArABNdgx1woLKQSgAMIdAVIFMJp0Eukhm9XqBx32+QHO+iBHF3g0MM3m80O3KAOmez0Q4618UG+ygzri9gLnh5w07Mwl8jEPRyhB0ypBlILEAEBpUggwMwLmQLEAf//EAC0QAAIBAgQGAgICAgMAAAAAAAABAgMREBIhMQQTICIwMkBBFDMjUEJwJGCA/9oACAEBAAEFAv8Ayuv9k3F/UsW3Xcv/AHL3W2L8t/7H7Xy08F/Svf8A6E/9EW+NbC2FuixYsW8tjKZRx8di2OyEW89ix940455VeEnSio3c+GqQjFXlXo0oRpU4ynWpxhOLgqNOCUrqFSPa+IWadVRTF4UiMTJ2046SpkojXgW6hclGw+iJGk2Sp2H5eH4fh5UuJpwhUftgkUId1eWdcuxWk5QUdZ6k/wBstcPonZRbJeJIjEp0sylHthHWVNzKq1kvBHejFKNdxbeC2KS1oQp5eJUCXlp9sau8l3YRRHQZ9PBj9n0VLtXH4UJEI3PxnnlBijLmZGz8aac4jH1Jkana5jZcWENo1rKpVuN+W+kxlixEWFy+Dwe+NrklDK0PrQkJEC8rMS79RudppkkMfVcvg8U9Ll/M2PqRfH6HvhY+/CkRROm5RpU5p2rjXEEHxDF+Qfzkoyba0khofjT+CyxLTruj66V4UhFKOaSSSsSVmUfYhG5Yr004yQx+S+LZfxtjwvhdGY5jLzYkadFhIy6KJlNSxp0oRFEE2SRsXKccksxeR3lTOSGPB+K5cuN+DToyxOVc5Ej8dnKghuJuJIS15aOShQsJDX8lokYxZy4lkj7k0hu+GW5lQlghEUIY0WJrRCLkiSGhjGa/Huc+mOvSOeypVnJ4JFiKMuFyLtjZFkbOVQv1IREj0z6GSGMY/k2axRYtrYiR3sWMqIq6xlJIlJvrQhESPTN6FxMYxjGP5N8KKi5V6cbH+ViK1hvbCxcsN2JVC/gQhCFjYsT26GMYxjGPz38NP2qzNxexHeG9y9jVmiJVLDm2XN/ChEcPpCVhq5LH6JDGMeD8Fy5cv5o75my4tHzGKozmMVSTM1h1WSqtly+G+G3ShCERwbIsTuN2Jak5ZYiZfVjGMY5IzxHIci5qali3wNEbkd1Bs5Zyyw4pmSxczl8dlv1rBCIiIn2i5cucTUjCkq1OUObElVOeSnJj5jMszlmQyoyRLfFsKwpRRzUc1HNRmucyKOZFDq3MxnM5zEjOcw5hnZmZmkZpl5l6heoLmn8pGNUy1RQqWUJnLkctjpu3JOK4ZunSouFLlxFTgRJYv5P4yPxkciJyoIVHOcmnE5USfKiNJvKjQy+VCIrB6RXQt+Ico0KFSVSgIejJDH0v4ly5n1XaruQ2ok618biRv5FhBC2W8xbH2Q9paqmv4z7kIkMfVb4cppChKZdRNCpWyqU3PC+Hqb438SwgtCJL2w+yHsU/1kt/aK3aJKz638JU5Uz+SQ5TiTrTO41LsSkXcTU1O4uzuO47juO47i8kdxeR3l5kOY5J1ByndOaSc75pmaZmnfNMpSnnnKqocHXqVKeaZKUiE5WnKSlndpydnMzGYzGYzGYzIui6Lly/ltGJUrWJVJT6EhvHcbv1roQimtFoXu56Rj00f2FP0HtB91VaRGSVn8idc3x3Nlv0N38sVdxHtG5VZDbBYUf2FP8AVhs2s0U7SZUQx9D6NB2+BcsXsbvFu/g26FhSREllvBwipyvOLVr4LCj+xvtjdQuxtkt6clknpJO6aJaP498Ehu3R9Xv4F1xVloXkcZ+xYOf8GdIqaT4eplIPJKtK7jKyn6155nhBf8amxlaI9342vHuJDlfo2G3J+B9CwpK8oj5loxqZuM/dsMf67ZE73p4VN1mtLWlPdaDKEc3CJ2ZKN1qh/G9Ru/Rsb+HZdG2FNWjHNacZMpRSOLi3VyVGcuoSpPk2qmSoyjS7aUXN16bVXug25SLNrJUMszhdOHqrLUg7xZWVn9v4ur6E8pdt+BG/RHCCzSRaRkjeKtGq7zp+uEjkSqUqsa9GVNpVala7bwjokVPahfJxCKb7ipHNHq3XwvU38K1G+l6YUVpG5KLajThe9kR9cJEuMr0nOrPi1JWrb1XTkJK8tJFTai7VKizQNxlWNpY64vwNvw+pv4tl0RwW8VosxKlKTp01F1Xamt8XJE5QktIEYQlxDprnaDhG9R6/T1gnZ7qqss6b0ZVjmitfJ9eGHiWy9n0/4lL9iHtJ3nw/pxHrH2xcmT3YpSRQnJ1G3b6qEfTCn+vifen7DP8AI++h7YPq++j/xAAjEQADAAEFAAICAwAAAAAAAAAAAREQAhIgMEAxQQMhUFFw/9oACAEDAQE/Af8AW4QnlhCEITlDaTwzK0m0hCYa4zCPknF4RB89RBLsSHUIrINckUfNkwupIerab7huC/ImNd8ZtY1OzUaS4WH3bjdiCROl4++DIPwLFLzY3DS7yffTcUvN41KmjTml4Tq2s2s2sj5whCEIQivjbg3/AAD1f11To++9u9v3yeH77hZfohBpLEFpNuWPyri/3hZeGPrXVpFzXxh5fQ8//8QAJREAAgIBBAICAgMAAAAAAAAAAAECERASITAxAyATQUBCIjJw/9oACAECAQE/Af8Ac7zfvZqE+G+BeS3WGSm9VD8m+w3uJ73hEPaUiyMhP0k6IvEmLyOxe8OyxvCELKfo2ORZYmRkJ5asSwxQF7ovD4mzdkk0WLcdkWLmtGuInZsMdZsQsMbLLxZqIsTFy/FE0pFljZY3hKxKstknivSImLml3ix94SFD1Y8RjZONZQhC5WWikUjQVXsx4jKicrNOxQosSFQqLL4taNUTVE1JlL2ssbNRqNRbNUtBbwhC5owsSrgZL0R9ZjhYXFuyMK74WMbw8LoTVdYsTFyqKXG8UPC6Z9ekGL8Zk8R/qd4cStisd2RdC/GYxmukfIz5Sm7ZGTolKheQT/kNbkHt+NN7H2PdksREOVF3iXY+rIOuR8Xk7EfsSxE+hke8T6P1ELj/AP/EADcQAAEBBQYCCQMEAgMAAAAAAAEAAhARITESIDJBcZEwQAMiQlBRYYGh4TOSoiNSsdHi8RNyoP/aAAgBAQAGPwL/AMGwAqotCTrTTMnCw3aUG2rIUGWrQUD0YteKZLQiCiWWRDwqmWoDFBRDMELINM+LOOyn/HcQLbfW/hfptWmULkVCJXRkeChaO95lzMu1xqwULZPqsRQ/U4doiIUhC9NS5AXmdOCNeNaisZRFs0WM7ImMe8pEx04kliU1a8lIrF7d1Dk6I2TZ9FjZ2WJnZNANCRzVWF2EZ90i+eGAoC50v/Z0S6OfP14EzymJrdYmt1m7pNXSaIX1CvqHnslR8ypB1EVms1m6rVMlUqvuqcide4sCwIWZeqhG6b9FSCiCVAcc69xTF8o63pLxU+ROvcRcbUaSRIlIXCmtbs9nS5I69yFHQODimtXVXgFLe7LkDr3LMvyf1Qv3FTmbk+Sa1RPhwahVVCvnlzd8V1j6LyUpC5Tk2tUYlA2gpROgWFr1kuz9y/pkrtewX+S7KrsFnuqcuZrJVCxBVVYLqx1gs9lms3/K+VRUVFRU9lT2VPZfC/0v9L5Cr+XwsX5/CxfkVi/IrEPf+1Ue/wDaqNk1MV/aoskS8kyC0aZFZnUrCNuexeyxHZdpVO6kDuqNNH1XWCwqgVAqB0uP83mtU0WREplpqvcPwuqyD6KYCpAaqi6u9yJuQHF+LzWrmdO4YtSZUGLO6iYR0U9rvmpvgOLU+iz9bzTh3BHqE+amei91IsbKUNVkslkslKEfFZLJZKElkslkslkqDdUCoN1QbrCN1QbrCN1hH3LDs0sA+5YB9ywD7lgH3LB+S+n+Sa6n5I2ejnqjFiMDovp+6+md1D/jO4X02l9NpYGlgKwtKhVCqHZZrPk6MxU15XYC5AU41QsZvtOFyKhzcGeF5cSCg6TCnD0QF4uZvx56b504sXRVYKbRVYR8VVVulFM6XKovhzcrkTxoPopdGNkNHssoACLmlFNlUiUGqFM6PYKg6PNQFLkSp8WLoukus17oaPCjCLSmi4q0ECaoaPD4I8vO7PjwfJTaA9UTGKBAyWErAdkxBk2s12lhaTVoELrQs6qABhFZhTQzWE7LCdkEXx5uOfgongxvh/W6QeigEbvVh6oW7IjmEwSmbKm5mVwNPI5rz5CDoqSrBQtxPk8XLNkWRSITP6dPBQjFAKYcy4Faoi5Hxuz5Pz/jkIug6SqIKNqKN3tLrMt7IQPSBkmlFMwY8U0AZChqu1sv8UHF5Chxq8M6cmHlHVDVC5UuCkSmotGgzVXh7OiGlw8r/8QALBAAAgEDAgUEAgMBAQEAAAAAAAERECExQVEgYXGBkTCh0fCx8VDB4UBgcP/aAAgBAQABPyH/AOFyT/4FskQv5ieOdKowL+WY/SmmH86ySapiYv5Rskb4mxcKJ/lGOxJJJNGN+gL+Id6DTxpMh3DGyaSTRjqqoS3F/DviJhkk+jI5cC4E9yZE6L+EYxgiSSaP0lgnhXCmSfwLXhdBYNeF+omaDzxKmgiSSf8ArZrwsyZpwtj6epqWHVDvRZpNhVQv+vXhY8sWOJj9LTigi/BHEvWgggjgfDr3q6NoeolbiMfo9eFCVEUJENiCGQKRMTkkYJ9JIUhVxodG0SSTyrrQw0QiFAMwoaIq/SUhwHhaqGoUtZIsbblcgFuSMLcJQm0luMaU9Ig6nhEnU+IgdWLb7iHakxI0n2USX9jJybRIpIle5z0iRfYkX5Fy5cuXLiToTk5SkrJBDgz6iDch0oQMfAsUHJg2QlG5VFuIMDs0IOjH6EyTE2u0mHZJgs9qSKSECSajYfgG0kHYabk+snfM3ESsaJmaWi/BBqSsWEOHoNltjwIvbQv0GhVisCVSWyfOPSWYNT6L3JY2haMuk88qLQx8EkIEHiLZJEjoIjGTe2ohDwLjGehooikYxj9FraETZ1CMF4eA0j8YvQk4E5svkZUmyJEs6x1MKGqySKiEdKckiyRVGwg/6UbSZ6CtvYCiBySQC3oYxjpANUCagxan1EPEx+YYZBjH6c0iSyAhAZEowQxOBpQ3kycDsTo5IKfzWCdzLhQkJSiJpptD3FrHhDN3aWNnoaITTQ7CUl7Q423miggx1kUaJGE7PqIxKWJsOjH6DoOakXIWgi241qJNaW9BDuxXH9SbDY+BCEqygwzvsefAHFYujM9Y7D+B+kG43fgPJ3ToWdUQdXSSaOpJNybEkjfCxcDOoW8SVib0kWBMkid6wS9ArseRKuQgjkNEEUQlQU5gMWkQhyUMtYy+gWmTYjshpVWe9JRBoYxjJJJGySaJpYLuJirpQZahO0l2omQa+DoIrQhObGqxiaRELoLAiBDJJe2xcjkPlGoNQN9oQ4DYhISEFOc10FlzNWDXldurknOBzD1PQKa3bCTKfbQ0YlWwgoo1QxjrpVupaSGvAsUbE4ZroTBPh7RO0FrDZcYvbvkTu0hRBU1xtTWrmLc0am87mLaIY2MEIM9+wyedy2K8u5skNTBrshHeOhPvRpu8iU5U+RCootJ4LqDP3OwjLBPBfWlEFGtyHMaHYfHI3I26Twskkm1Cdq9hZuL12G+U79WYys8LawlmVL6kXSGCkX+oQStgbb0CvgVjJKXzI3YRN8EWCUXlzNFfASEhBBBTQcjkka31wKKKlBRRRBoYxj9ZD4dUEpSJ2jmI22xjCIJcKJUI7mZUCjQmXCSyEru72L5c9EZXBJjqdaJC4Cgoh5o4SufQ7EqcC5C5XUUQQaGND9dNQ5Wg3wwSuNRK6izcRWqFhdENXItFRKmQiNTmGitedi7byCEjC2Rp3Pcd0tktuEYxkiqFwniJiodt0XfXimo8JjuuLCCUNDq/RkaEkk0vRiyWcpFpfpCG2PciRvR9dDYnchcxKZnnMlOhasJwfyzlK2GEuwnTAViY6iEIQqqyLBgKJQQlM8k4FdkJ6cUHQxj4GyA+qpf6i5BBBHoNDl5cZNjQOcC2gg27XJtkhhCBI825uEIOYbB9bBc5YwlaRPZtSe78CohcAypTl4LkEAhBCSxpByNSTghY4C9cII5R3HzHRSI/zg5K7hu9uybO/wADXN5Jcj7sRzZCI9VvmGroewF02J4kgtSJAJqU2SLU9iNoiy2oeaTmPUkyYG9mSriSS7nSY6iohUKpczAuZJYTobtDiwbWe0C5qTWruXbuoMgX9T8mXKy7pfgw0dx8Df4AbMz3+KG+vsb/ACy34iHrN+o5EaLCQxj/AOLqRDcmNxzM+RD8x+0HsxJlFvDEpBDuLnv+h+oI6rwGuzL3j3RoFfoEu3sF9GWYSd5/wX0P4PvTPvahL73yaEez5Fsvx8iTcJbn9ORAmXgLBLl93YbeA/vCev4wWSPr6kG/YJM0d7UFbsSnquUA25XUWQLGaHGBJQx0PYYxjGMf/D9yiT8D4I9fIeWNTYu84FavrIednT6zFSzsSyLoiH4hr/IJHokiystt9xKBXwTFk77irqIVlIhFly5wM2dhzOoehkbLjCtyTwKlhl5MmdC2LDMKGMYxBoYxrgfF04obew+RdxoNtxORflA1IScj4ktCdWNsoSchYwL8jfZtRJuyG7eRi4EJEyxUR7EzkiroL80HwuAPmxiJKlqOUOEJE4OKY0oSUWUMYxjLllDo6v1cnnZFzOULVrdiJXfc/IiBuwfXxtRhSy2V9hdpoVx9BuKk0Qh7IQjeJEKIbhQuwFd2yaX8CprGXq5iPzPyQJAa7qLYVob1GMfsMdT4IGPhfFlXXvka0p3CCxW6dDTaZ31FzltnvTYmniQ7SfYmwt9Gk3LqNtigKGnkJ7PInZ5E7PInZ5CYEKfdEyEMT+h/RHETL70GlNvX/Itp/XIbhJ/TY/Lb/I39j2PrPg+s+BSrRyXgYFfYNOzVrWJmdmkc74kefak59J1HGxrlfJP8D5HJY+nyYPwj/UH+mP8AToXR4ENvAfM8D53g+kESBDcbW5KJJRY78M0yfzBK3KdkObuNlGyW7HY5s6L+RKiTumEsswCziRzYJlyIRv2NxFPcsYBWc06JDy87Gc1WXRgk98/zS9iLrsWnYPKCkyh4GPBqO6knhijpFIIIpCIpB8wXaWTA2X6CFc/ZL6BUS1eNyzSsmhikk1Ww3ohUQ7QIAJ1Eeo6l6xUPyHGHJ7SjH4WTPNEQYC7QxkZTKVDGTBZwc0m1PcgZBBHopEjCZ5GnO9iXNIxRJZs/Il7LRVkmsYuYc2IQj2hXMnYLaSdoPRokdQi4UyEa6iC2eRJuSYEjkpM5MdFGgewauBsmQkqotdiqE7O6giWKaaYjYw7qjpm3EyLEemxLeDzibPISrEaDTmNn4UKm54RMuaIQ7JBXI1CarJiY5W5sWHu0pNCw8ignubRdJYLA1Mi2vdEKWmRPbE4IONJlIk0RgKXiku1bXuXHQxL0Y2VuxYx1yp142qG9aN+jcISl2W5Agj8hKnIUQ7C3J3+lJJvVKiUuENosKiEe0TLOiBHOBsGHyRAPBoNYV7jce5E6EdnKyLhynmOJHsbsRNk9B3rPE7ocDQ6m4iW8/kgWROpMMXUtODCKMZN5HyxV0tqySBqKNccK5ei3G59uQhHLUainqwhttd8Ei4PIxVQ7EE4I3d3FSxkaKE5iHFnqh1BqIsF/ajtZJYQ6KO9bH0JpI0mwkOBtknwMjfDYW8RxLNjfUmz2RIZ4GBGi005ZCO6I3dWphV1G8jKw5ozk8Mw4o6skY/QuS5c6iRH2KIvKdDf2OTJby3WeKy7BMjyeRdzdsZZCtBZdkWruF1HKcjuI6SDoqwvk64oTWU2rBQxMEKC22kIvMy79h07jIyh3NQxroSOsguVplFvsEcNxiNU0FENNX05DnujxwN9Re/BJnlSRjUUnh7M8k9Rxl27Eu4VqPiSUI0FhCFW0k7iwRvvFa6Damkt2QrcoHIeiG5bb1FipoLoFgOvXbbEWpFaVqNQW2ogsCWohZL6nnCRZBCdh0WJhyJwTWKNrBu83b3HyLjC1k10RjW5uVWRzo7FxrLkfF2M6DfLSL0JHi1eaeDweBMtoTLFlEyyBEsIWESgUpQm7IiR1a2h1RYugITJO1bJP+yGxVv8A7G3ZAEwXkWpYJbZG3mKwrh2zIvSTfdkThMoy0bEI1oJwNanVYnfZRI7q6E2Nj2J5k8yeZ3Ex2fBCiYdCcIXWC9Xwo1drDYQjSuvAYupk+tFRCx6izSYDwkDJLbvrXG99RYETXvbjNvNxvYYFdGTadwIZvJLeZk+x7AWXwYH46n7g8vqah5GMf9GAeKtaM0HhUavg/9oADAMBAAIAAwAAABC9QQCoggBUGkWAEUxEwBAlEmumFFRQGPZbzGGXcEmmlEEEEEWFEMHUEQCmFNNVVGGJYLIXhitQiiggQCpaoAwwgK0GmUADQVEmFVNMIASttkUSNNsUUFGU89mEiCgEEEkgqAzSOLOSylHi5SiRCSJgG8MMPhoUUIDAVksgDb+cJ9DEPG1q1VFppplGsJcVKX4mK3yFsox2NLNnV5l1U7pEyzEJWCvVsTLl5U5yqu2AnABYKpNQYVod8sdRCQ6Q8CS+saoOaBprrgdiigITYFp57Ilkk4vTpmi3IQZYCJpNhALuyQUHK0LZF6HaM1C7uxZ8McZz/t1/jMefdryahQHdY2EU8Qz0OLOrLb0S4xK2tVEFm90bI01nAx8qsUnhhqYlyd7S1vTuOncDniyZ5r5YQ7F5vRI0+Wc5ZQG0j1VwD3cA4atmDPzAXxL7Ibl5pHaBNfLhP5vE+gq3886RsJa+Lgyd5YLfrHMg0wBn6FiffyUaCPfP4vG2AsNEjRLP6Tp2Eabm7Ol+6NR4af56eEwWrJNI1MjQpY8YtqUi0nRXmxETfZttL1z7ByQDX4bcXQQANQI3fBWCd0B08k/UptKw8RE237IWFUalwD+2lFYVY/sFn3d0bhRpXSLM9DAjnmephrSD/jMdG61E1t02M2Ru4ttIVSW/Qpgh3tsD9Q/+RTkVzMPZ/lg3wNtVCR20TemRizPMKAdAKQaWb4XKCM4ZgMyQsFLhQ01mE4bOV1I9IQH30CKJ92D759/+PwGP9yL/APCfgfj/AHHYoQAP/8QAHxEBAQEBAAMAAwEBAAAAAAAAAQARECAhMTBBUWFA/9oACAEDAQE/EMss7n5s/Blkz5ZZ/wAWfhyyTucyyyyyyzmcyyyyyyzwyyz8GcCyyzucyyyyyyyyzwz8GdyyyCyyT8WWWWcyzuWSdyyyyyyDwySyyyzwyyyyyyTudyyzuWeGcyySyyyyzmWWeASSzj3LOnjnAsjg9KyyyyCCNcOZJLLJLILLLOZ4uZIJM2PWPWSECQIskssgiAHtkJtp8TEksgjENsfIZ4ZZzGZOOA8SeJsjJZBBwfwvj3OnqeBLOPg+3lnDDjZmzqWQcCxGuZHsh9kkMzIJJJk5ts9eHFOC/Vr+o2N/cnMmbIIL59S9e5A5IZffuTYe5JJOvg+CpTJE9HATKEu2QQc+4v0kgxiEwSWSfhWfpwPd8WzH+ekQT1tXAiSSEnH8SRtu1blPDhEd6rC03LIBP+J3+SMkxLPwH8e4le73G2MD/bH+wv7H+o/1PtHAGRVOpMkkzJx8MlLI4iweBER3MOB6tyPcfOMzMzZJx8EA1bbjOZZBBBBEST9SWQerHd2LEmSP9nf7Ozskje73ZPgvs8+R4HCImI9yy/vgmZnwSfA1t/RzcjxIj5z63y2H1arwnqXqTZ4Z6zM93eb4bwiL5PyLmA1bTDJO8H/Uenh98MzPGe7EuRbHCIiNt97kYygBIY59RHThnj19yZPPq/fTpEXxx+44/ufsfL7dHPiZmOPTz//EACQRAQEBAAICAwADAAMBAAAAAAEAERAhIDFBUWEwQHFggZHB/9oACAECAQE/EN/4Bv8AQ23w3+pvhttvjttv8W+B474b47bbb47b/AcZ4vlttvjvG28bbxvG/wBBedtt53jbbbbbeBt8Tk522WW3httiHeN42WZi0hiLbYdht4D5nDZRgJMHpKjGVh039tepJh9Q28LLZdHFD3aQ8v6Wx3FgcA9I8ijY6XVJ3BvaE9w4xe4bbeSQvd0bH3zA8rCI7DuwyPLrHwnuFkEW27ENsvGadfF3DHR6P/JKwCBOFQxHCWQcHiFftD6yCR/lh6bTclmpYPzKSspeymFxtHqE/PPKIjjLLOCyzjs3/wCw7ciM74MG8PA9LZeQzeHxZEuJwx4HmGW/SxJWNtmMj6su26nhZeFpz9pylDEc5HiWN74NvifiIHzB9OHhnkeL0ctdsh/XCx9sPtKAiD4ng/bbSH+wjAYC6lJT6tPqU+pH1P5vxJ/Eq1xKDvrY+zxhEMfwB8so9ZN+CHoT1PgzwWEzbejCwdhl8RwOBDbHhvAr0bB2HG/V6tv+uFtlI+o99S/GS79W/l7OoTGCb6gD6gH1Iz1GfUZGQwkeYGF/t7mO7LJ4Znhe2EsHeYEBk6GfW2nXAjgh5PB6g+5g2yzweD+L0beqQxsAsSv7AAQNGHuew/bZwI4OP98sybNnlmZuhPW6mEI+pZOoX1YtJAEuhhIuZdn9sJpiIjkjxYNl5Z4Z92WL/V6l1w4OOpsc1PU2MnUjpjgSOgWiIjg59Rz6R64PXD64Zjg95vvzfa9+B9t6o4Pbk4OTn//EACcQAQACAgEDBAIDAQEAAAAAAAEAESExQRBRYXGBkaGx0SDB8OHx/9oACAEBAAE/ECB0NYnM7dTodOZx14mOp/A/lxEplM46Y/g/wTq3NSpz0eidGbmur0Zy29GJD6hOIdLt6m5zD+B0JvqdT0nP8faVKz1T+XMer46PR9f4vr/B/g46fXRjCDiWdLzUwSUogw3/AAOh1Ohvrv8Aka67610SVE6vVM9HXR11ZxHphOjHXTPPVrp4jXXmLWmckUx5vfM0zvqdDodTodTOJx/A/h4689U1Oer111dx/i76PR/iuajQuLmXrv8AwdR5DPeOs1MJLWBBFVxXniEOh0OpnodTcOhD+Pp/NP4PR6u+rr+LHpqOuizb0lmiWWXiPEZqX3juNj3jvVQSoIMQW+8Tkwh0JuHQ65c9CHXmH8KlRISv4u+r36vV11ubjia6J0dx6MWOH0zEbMQf4PG08yzm45F1PSDba1Au+OCWbaCK4TjrXTUOg9DobnPXiV/PcrrXTiaP4u/5vRj1YkLsDtLtPSbi4nHRkz3iTJFg4xLwEHFQ22w4e0IdDUzf8AgdDodN9AhKlSrlQMSurE6V0f5Oui56PRi1Liy86iy8zbcth4hg9uYIauFHxKTFywXATzcFqOyBCD3g6qiLNrFZN9CGZzCG+huZ6aYdDXQlfwq+j0q5T0Zx05nP8GMUNwSCBiAu4x6LL7xcMfKCaURMb5izV4mA7w2GLTc3sl7nMQRFtS48dXECtEz30Doah15/hz1DpWddKzK6VKldKlZlROr0evHRiAziaihwxYTjpe5gqYLGHCLUvMWo97l5jFl1zGm2e1lwY8TTz0IOcYl6qg8DBz0OI1Mwh1IdCblZ6V0DpVypUrMrxKJXiVOOlZj0dx6XR01HMrWRqVt28xVLtl4za294LItdFnmLcdRQjddoim4aBt7y65cy+rmLqbgxBKYA8zjE0YsGGYfUISs9DpXQh5lYlMCpWJUplSomJUTibjGOosVx47dHozlBn6TT0LN4mo5IaYxSouMTM+WWRjDMq5k8wLp32ZRRxmACazDoduhuDJAufKPoILVcOpKhAvrxDUNQJUJXmVE94kSd4xIkfSJMJuUiR3Hopu4hoeI9CMA2xqUQj7eIhcY9HfTjpb0Ao1moYVXxM0fzB8SzlipGh9Y7aL8QIqDBKR9YNpNvEGEyb4j77hroQ5hDUOnEAqEDt0qVipUqJElF8R6Z6J0r7xjGO+h1j4gK+kaPBFOMzKcH3E75iVBibRzro7/g9Dco9NS4PQhAWUV6RWj8ynkhXpKWEA+0O0MQU9ILVxT2lw79CH8DUCBAGeiemKNR2ifMDcYosXPiWMdSrhWJUEYQ2PpGqwYiLa9MShx7sdzRGOprNo66Md9GerDzK7PiUhjJDL05gxLYUzUu8TXUExU5vlDPC++Yk1XxNLyesTSBcMRim4k1BVUCwp327TFT3hdXBbLJ7QgQIMfQiUKMtV1EFoZXcCPMwXmbVnzEb3PS/EV3QXt9zNaIC7m+0s8vxKNrKGs/MewQDPBURb6wrlFPEr1LVqO489K0sdR6cT2j6dOWLwYq0xIDtzKezXpDoWG0AZWByI1ZQezKQbdAJqQZkNX37RJ4QVx5lrVZTVdya6K8iXsBGI6RzIeyMsWJTYO3jEary1F5TKSqR1Sj3OECoErSgvOm8QS+KAU/ARRAoxXPiiLaqfMWtHzL7flPKvmHo+YiRxPZA0x8QPD4iMWX6RXn6jszn0jYbzLnsxSxhBaxUmdYtEGPuveAOi4jsS/tE8/cqsR3LZa7Mg1zDaLJHtdGUOo1eoDo3SkrGe8drWGWoi+YUwVcaiNRZnEai+SL5lwehY8ZgRi4NTs0bilBYG3wYcPe5i4iOO8dYupcdhYqkgnEhdtPrMkwoaQcIJslYqT1TEGopWXUZTM8PhBZQv0lFVRXpBBplNeWVNPiWgq41qzEX5SRwF6gLgG2AQ/y4GYHMBv+5/m5bLU38yn2mnb2zFWEYaMJQwKq3A8k5XiMZ+KihpRR4e0IX9ytYTj8wH+YhqP+zMXz8wxSt8zYJBNfldM/NxSGeNILLUBnEqCmcosM2PWKCCmiC3jDvUEkD4hM4IM6g56GMvHTXVKWpbYMQ+VcC2+WFXG7TMptBDiK9x36J9y9UEEa9uiUbJUPxNp5gZ3PgRdYLfWAGrk/1+ZZ1Czll3Kkzd4FMVOB94dx9z/MwQ4ginX3L0siCFVoJnQ08iu2Kjwref8AwgACXWslxqq4hlHX/OouxI0Fe+1VLCVK1hqCszad0UQS9SwQNdqNu3LYBticjajzBzSxlAi1txKEV30aRjrq76u4kaUuWG4NNZDEIBioA0zA7QFaBInTx3icQNHlmUDmoqu6qovkg26g4LeYPFwQdA+Eyxu6j6NxGj8QUqcEqpzC4QGMTN4nDLeIVLx6zEmZBTUVfN/riPKW5oPxCq1b1zK5u96N/M2YeZWkqVWqubMSu5k8w8Rbj2jKEQJeJmbjchJMVWbRUVCB/aYZuXsbdBmpOyOuiYjDo7iKKiVuXMQVC+UoBCR0EHCn8TCWFALjfQ/EtcQYeYne7lFYkWXrqXrXzAlWyLVow94N+j8mFKdsQZu4iW5qVmA34gglzjUsTEsrEMqArSeJkYUW3X8kFVXrHOMAaSE2Dn4blG/lQ11+i/cZtdLZq/EvwbBlEzTIy8bjiIuLMNRx1FszKGdXBnfaqLeYq3QYctx+cVLXbG+hkhxBiVLi4lmC7wgmwdpSWv0IJzHvBa4ICjdytZuzz0NiuMi4pQ5cxFFt82wdkSrCBls5hLLBzVsbt27zmLprAh5jlPOBB0koxNEpVyBfaUsAwECose8tuLkirmoyjWj9MCsko1QcHUp18EB8DbRpNkfiV3LrgpzBUw326GGGmuhgwBzD1xCcesHBKPLW4t5qWc3Fiy+jwTSOvMeipDKs2AK8wKBPDcVtb1Zk9pyLfKINJiCge0ZU0d8QAw8tzRFOCMYb1FmSxC736AX2GIQ0U1AMOhMhlBkw5xMlV3E3O4GWZ+5XV+J4IhVmZomjERpwG7VMCGtw4eD/AFc76vLL7mFdvaBotdfF/wBwHcXC5MexD0xLCsrX/KKbV2KL+o1uJv6G6DqL4jiLZF90uXWnM+SCqoWzcKqZY5g1Fy5eID8IuIPOpRXl6S+hld5eAs+X9zls8T2H6wRbqGgkBykdyOyzD3I4a+pWQiO03FqRmqFLmHinfj2uNbNq349//IQQQ8rUvGbvuypQKgLzm2UqO9k/0l52mFL9yn0l5T/ctXU6KMwsBavk93iYxTwdf9jo4HaUPpErwXm34hNA33TW37qwC8HQvYQnaEI+6WTxQBwy/wBcRywO0AC5QM2YniOjtxERqiX8bO0FXLmK3tEd69YuKKj6xi6izMwl6yjFagOfqW+IRcFUmaliXmPJeo5TDMO9A5sxALVDd2gBelWBb4zARAEoBO1LOxV2L6hFn81D9svsX6QH/kexevEtNxUEZlNvyjcfSCKby1nUQjC+V4g8vOZRZNrwP5gw2Cq38AgSsUJl5F6lQ0hy/wC3Lm1t7sS8rjiU44J2nIzmlkfUyk0QOG4LU1B2RXef4nZEHJBF1RKXWcTIZmZvm2L6TDjpEvEFLiaQDsInBFazGMWO4vaLcWXLuawS0H9xZY5c3NQixoNV2rMWju/Uroe6V6wmZkrs1BNzzG8T5Y/Ev8fQBSn6m+DHdhAjk7Mv6gGAY7Es1a3Wj1ZYtA+HtzKBQMpFbVdlxvgJWznsgO1mG9XcQbdwwXB8wTkqYrititxJYOlyhf8AcIVW1+socxZxzNblZms6GKbcEzsNTNmGMSOI79Zro1Gos4nmDi4CtzXaByGVZrPf/kselyyoOYXgWmKjm0fodp9F3xE1gqKO8QbLu5Srz/U8MtyaT8QUL1HkYgbW6DbDkF8HEaFZaBay25Dp8vqzGIHNQerMlv0D0IykK7uUQPrB0z5PaHJl1XK8QOXcG4Yb4guoJxCVIxLCuZZ4mlZmChCmyL9mPAj92bUwQ5hguAj3lhqA5gOYI3GC4x9Yx6LN8xfiANs7ouZul9phxMdVLX/yJTklPr6ssmoHCMY3kqO2tymLFWLmc5RMZIqxjJ+JfgOPmLGg8uxKaK3awpPg2X0IMqq8theYvn/FRmr/AMvmAEZK0clY2Kq5PLMER5dnadzlZpmZzecT5mGJpcuDwRUDvLKO8urzMQC+WUhM8MKU5/WYwQfjJaK4grMvOcy9ejzgr0hzL9+l1G9RgG0PVj3R9IDwvaOWvlJZ0n5irmvSK8/mpZ7e6z2/E81lP/WIHEwHmWy84lxcaD/esHPtLl4YjaVAL2MBAeKiihVdJKn7pUo3F+IGwd5TLldc1ghtA+Q+xNRRhGojml4ox6P3FItr3luCAWkOPPpL04GoGvWNmv8AX5nll8winlMM/HQMxaHEVAV5lKU/3tApAoe0AI+sTp7TCuP6TGduBe4YP3lrjcvXhiu8xZpnOaTMuvWfdoJYa92/CIyUd3+6B2fQ/q41i5/gxFWj4z8sW5PcT8EW2e5WYZsPQR/9kaMlynADGVF46ekeIxn+IMslzkrQpUopOIPkSuADq2F1jfYNTmzXq14O8Yri3CYZHOyW+9yzqbSUv3LhGyihfREtXRuV5wEKFdnJKTAcF2+ssWW/FQeDcXiN9/aKmDFncRcFvY2+kdp2NRajrPaCk+ZUsp8kpbZ7JGy7aiGodi5faZeU7e3EAUFSMq3ol6ewCD1OJdb/AAtggg0eQH0TUCnZXwGIWaP/AK7SZSj6fmKzf6+b+iMebzKa2wV/4ZHfasQbsfOfzAKIHYmEFrB3iPMdRI46esvE3G9TiLC/aNLjE9el4lwCUh6pKqsqNIwFzymBcF4rMev2RDRV3pfiFK3OmX6jYRmlNX6jih3JxyxnAuc/+L1gzSdsfuIDP/HmVa8twHpmZDRhZgD/AL4lijHwTUA0YHH/AK+kOCQ/9D9xDQpnM+YeB8BCoLHw/qIaMULaCvwfiKAKPd/UXSVbz+tHi+8n9kF38nH7CfzF4K9038uVRwnScebhhAuZ+VU36wmchRh8UEA/0FywuHe9FgMA8DEsjncyXgmNj0LFvbxLDX9RxLDz0aPQx15iSjtEmo41LZ9TbUujHV7E56HePof9T7pqIF/VPwQi7PBbMoCeSofc7s9dgPzKY4d7+0wXJ0xdX3iL0TAQ5QnhBau9EZWk21gikkOSAf09IXDMCqyWOe0tj8EFd4cQcEM8qmUfmOv3DRN46eGvWFAbZiVR2RVGHihEopziLF07noZw8MU61EaO38R/VkqtHb5ogA+I4cPvM2DMTYrzG2UnMJLJY9mK7c6ZlM5mXyGYqn2gSqDFwPQY5jUpMxLlTv0S/wCkplZj2hjEw8x7n3f7lmgAzZ+4XDnf/MvPrHZYl0I+6wf3HEX4f3BU3GWX7WXGHuj8Eu1W85VY1MallQQMjsYz6ItAKOhCIgZgiS/s/wCQVBrEGjO/MG8zbEJbXBlgr6xxFOEElFVtnmXHZgguLvzbMZO5iv2zLd5ha5pqF94DUviMMCQG1ha00puUSKB8TxK74lJvdQuA2YYNOVJc4bO8QqsR3UwUZjzFTcrs0/U0gvcSzRXd3HWCK9FKxSU4lXxmJXTHePepficy7yysY6cXHMwqV63P6gFHd6P795iJcry/GZSr32X2jIC8UCxrer4Ov+xQLd9ugF5qUOJ9H1/UWxWsE1AvGjLejzLh9Utv/IK7Qhwl3FU31l1FVNgyvdidVN4N01ryxzY32TMshrvK1BcG2AsW1lMc4YwAmdwz6EDwk3rOUKvvDQvFPhEfOZ05Lmh39kWVziWl1LgreSNXcYiuOojJeXNRUo7jwsdQXFmo7xHeLiKzaUIrhc4i5qeGbS5aTD+4jWpxBnKNgZ9WDSoMgn03UTVfYD8xYscg/sy3IG1cUu/gzVtvvC4KtFsy9jfYBf5+O8yravdZdNfJiLgAyVoIUCjLly94uw+r9SxX3v1DN+d+oLx+79Qo/v8A6iW/tfqGwSYzx9Qj/e/U4Hz/ANTW+3FkD5Bbi0F22w1eFrKbcqcRa+AXyQf525H/AB8H/OxYPr/qVL/u9piLG8Uf1DPXUmRWMVn0lzMCotaunkbiUepWB/zmOuVN+pFCZFCaiSl8ywZPKpO2p4aOfuNbu9P7i9v/AHzLMMbYpuNZStZr9cf+lnYE9c4PuvGrC/KId/hl7v6jfSJrgl3JA9z5izs+ZdtwTslg940cy5UKamHWI0Enda/tjTAaIJmAGhKAtKCU+CXaQdqA3wQGwTmu/V48QhzLbl4htHH7fEx0Gg5fL5gUYlyzFMvVQsd3LMBd6N/qZ6ijvMsW9aesSvKUiKcvaWtrbvbKq4WFBBpeCZvsINkGmOC7loesNIs1bX7RS4afiyVxwIu5Y2hquHHpBROGUiLWRO0zb2/EpK91/UU2uvBman3riZRu4scb+Im4o3qbdx58d4p4qOWJRqpTtEDgIjsRDsTBrMoQCtREuUcvu9u0uw27lMNsru+ZkzAAmhyHP+d4s4OAaJUNfFS6f+ywVo7/AKHmLRGgPzfL5hQol4m07INB9QZmgyuoZTYOe7O2DUWIgBxl9YgDhcsCwpBwdoHePfioS6UYAXftNY91Mm3zA8ww3Faxdx/CylXcVWcl+c/3FlI1q3ggEB3HrLA60wXDDKth4lLQO13MGtkRxVykPUOSC9bHJ5l3mNRTn6lWvBzRLFqDtDRwS1TKUI5ajiJyS4kK/wCR30ZUdu7MSpS0ZYqPPRNmA8nB6/qKjJdrzDSvzBLxlubEh22uxGxAOAcB/uYNaloNxtj7haX/AOwZTIDZaA4l5/8AgS93PV89Bpt6PWXS7lqvoiCI4bzP8wQ7gujoBimrj6AoEDD/AC1nCULpXe5WsIvrLFkSNhzLvRZaow31OKnje07NXdgMAetH9xcgt7JUWbWQElZS1isphd8MwyMJU2gDG+Uz7RezNm6jV7mi/Z8zxWSPrFzX4jqOSoM5jSwXFXqNLRKfaODENRNtY6XTib10WJcs7esRui9r7EEtF01r4l2W79J7fTHBj+4VbxuHPp8eZnNAYA4IYNB7Q15l28y1Ms2mnPpC8QmS/se0sybe8PeJwHMdGo6jjfrzLoAytEK50V7y7WAzb+o2sGbD+Y0eMHiuWC+Au6g0+JoTe5b3MsUG6XtAP0wQvUApYKb1hjMDCUDGvASC9R1eiW2D0jo27oWd6nBoaXAlC2LT37SgzZfKpWnnJ/cqm4g53+CPpHgUSmHWyLcWpd3bUVTg3+5ceY7b3GriGbYtXzAWFCxM+3rMBdMswxD/AJGqqeJuJ2mtRb6AsYNThR/rj+TRz5Mo9b7XCrsol5+2WOo2GbU/4Ioa2qAKBwBwQaP+QHv5j3JeGDbEq0K4zC2t1GDY8sFrxHnzADj6lOOZ5alS1rXHPEMjvG7A3rniFKBrjcSy85Ar5ijCK3KvsSzpY/lj1rPCvqHVKvjs8xfKhMFsbP8A1jWZctMzBfudHpJPuVhxVeSPpDDrGRTBk7xSITp0hVwq/wAyud4fUVRLtKcn5iRhIyzmEqXZRRVgp86gy5GSKcR1z9xI3evMWZMzBHZrxLGLPhHeICGwrVFy2BcGrcEA71DTGrLmTE9YtYjLDmUyomAZLFz+hGuAYAY9Ep2F9ZUCnLxcLvYHCwQbYtHZ3fH5jtse8oDefSL6ME12mnaK24Oa8yy4a4+IuJoLPg7SjlT3glYr5gmr+4gjpHJv1lTP3M9xleJYEDl3lDDP9ENwQKMEwUQJTyxxaDdCLFPwoPdygVN7OI7ZvIxq/sWtuXskmS2uzuUTQ5Engyv6iEQR2bxe4mgc0pPqXhfFw96pVyU6Yv55JZLyYMuFppPMqMoX2GVx7qZM4pYLfMyMDPe5hXRyZiTm44w3uZNwayVydvMRRGRzLUr8z6RPiNAdp3XCmFs7QYwrBnUDDUZuMriJiXUVdpk8mUYtzxVzarL7NJ788EfDbi4HuOfT5jpbbRlYNd4ueZWvEtyPHDLZeDVy+IVWd+srgKNHdirG3OcwuuyGb/oS0Clevs8QbFdTEPc+hFIS3UKBWHNKgbKNoLQMUCxdtxs6zH7SlPMBy3DLxqW9yBBsevtxAYRbmq3kNxuaCrWsNQ+KKWwGWfuNeT33dwVB3guAmgBfXvM9VXi2M72DA0zLNjhl4uFf5Ijtwa95mYlCCxeHPEyu402oRhOQE/qNbhDTREw4PmNnaBUVVh7JdckWXB8U+uY1e0RorcLhTG4M4yMamE9SNylZm3WI1dxe8SAVo9GCkKa/tKIi1kTfqfMsWVXa8ylLBO0fzrMVsvFvS7ohiOYoYO72lydiP3FRwxZ0fMEHFfMFcUMRtQe5dzEXUwgW6PQmWGMWM0sYuolBHEGH8wEdCtH/ACLvSVlO8Ww7wSOwXKZVUI44yTEER1ivLuMQh2aw4i0QV1bAqEcLdouUJWYsBXwxlHR/Qi+MVGNyDTK8oAf0lMbbB5MwrnY3B2oXDVxkDTL35jOZDlZlxtYcmPqNBz6QDDUBVgDGS35itG3s1B4h2dmXiN19wMRXceIW7/MK6ucEUziYFwavM+VRjfeNu5VzcKP+plAWXAbgXMvHX/X4l2teZ5J8S8xb/qWpv2g5MQg1LN/cwxfwRWX5PDxDd2F8MErceGB1/SZtLXy8RsrmvuI1LKCoOLBUxIVyYuJgJvmjc+WDi0ul5we8wO5qICoNYnKGURO/1mDKASWlJj/PmJzAsW8GVvrL5VcMGsmnmUt7MAqt4StajbCnb/3KLHYynrqOntUKxpBibHIs9om1KyHoQElOFGQeHMshy8ejBZuOAb0kUpT7G4FFCOwltbekWfsTan3RS+Uoa2JmUotR0y81/US5QZl1dnduNyT8MvmIis94P3siXi4KxmI/EY9Bn3m3Mqu2tTb0tiO3qx4hvoN+3Qbc9KSo90AoxxAXrmVBPuZqIDTw/joNYJjiFBg6tcBo/wAJhR/lT6KGponP1g69jlERKdq3EDNwWOWvaWpBM0oEe8UoLjIu8ULTjlnwo+qn0mGoRRLaQhUB/wBMeX+cTiA7TCnFOvmb3Ns+8fsY8oshxMGYBUfaZq6iOGJuMfIMx09Yydzjp//Z"
+  }, {
+    "name" : "jpeg_geotagged_o6_mm",
+    "description" : "EXIF (MM) with Make, DateTime, GPS IFD and orientation 6: replaced by the orientation-only APP1",
+    "format" : "image",
+    "fileName" : "IMG_1.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 299,
+    "inputSha3" : "9d1adcc8c458465b3e8772027954761b6a28a4d35a3ef8df72afcaf0247760f2",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 6 kept",
+        "outputName" : "IMG_1_nolocation.jpg",
+        "outputLength" : 183,
+        "outputSha3" : "db40c6064ae53848919241bf7c0fa542664de6ac27e16338a213dd73f4405e61"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 6,
+        "mediaType" : "image/jpeg",
+        "length" : 183,
+        "sha3" : "db40c6064ae53848919241bf7c0fa542664de6ac27e16338a213dd73f4405e61"
+      }
+    },
+    "inputBase64" : "/9j/4AAQSkZJRgABAQAAAQABAAD/4QCWRXhpZgAATU0AKgAAAAgABAEPAAIAAAAFAAAAPgESAAMAAAABAAYAAAEyAAIAAAAUAAAARIglAAQAAAABAAAAWAAAAABTb255AAAyMDI2OjA5OjE2IDEwOjAwOjAwAAACAAEAAgAAAAJOAAAAAAIABQAAAAMAAAB2AAAAAAAAAC0AAAABAAAAGwAAAAEAAAAMAAAAAf/bAEMAAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhscHR4fICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQf/AAAsIABAAEAEBEQD/xAATAAAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AEjT/AFb/0Hia/wC8/9k="
+  }, {
+    "name" : "jpeg_geotagged_o8_ii",
+    "description" : "the same EXIF in II byte order, orientation 8; the re-emitted block is always MM; .JPEG becomes .jpg",
+    "format" : "image",
+    "fileName" : "IMG_2.JPEG",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 299,
+    "inputSha3" : "27e37ad0cc29d379b94ca53da4187744dd11bfb0dfdbf0ba18a947fa66de7027",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 8 kept",
+        "outputName" : "IMG_2_nolocation.jpg",
+        "outputLength" : 183,
+        "outputSha3" : "ecf0a1bb3f165eca4c8f6ee1dc6d8536aaace66b902bb8fa1eac098a634cfb3a"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 8,
+        "mediaType" : "image/jpeg",
+        "length" : 183,
+        "sha3" : "ecf0a1bb3f165eca4c8f6ee1dc6d8536aaace66b902bb8fa1eac098a634cfb3a"
+      }
+    },
+    "inputBase64" : "/9j/4AAQSkZJRgABAQAAAQABAAD/4QCWRXhpZgAASUkqAAgAAAAEAA8BAgAFAAAAPgAAABIBAwABAAAACAAAADIBAgAUAAAARAAAACWIBAABAAAAWAAAAAAAAABTb255AAAyMDI2OjA5OjE2IDEwOjAwOjAwAAIAAQACAAIAAABOAAAAAgAFAAMAAAB2AAAAAAAAAC0AAAABAAAAGwAAAAEAAAAMAAAAAQAAAP/bAEMAAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhscHR4fICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQf/AAAsIABAAEAEBEQD/xAATAAAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AEjT/AFb/0Hia/wC8/9k="
+  }, {
+    "name" : "jpeg_orientation_1_gps",
+    "description" : "orientation 1: the EXIF block is dropped and NO EXIF is written back",
+    "format" : "image",
+    "fileName" : "IMG_3.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 299,
+    "inputSha3" : "76b4f7dce2e7c7bbdf3b047caf4b889f6983a127eb6e89d2001ab0725a29df0b",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 1 kept",
+        "outputName" : "IMG_3_nolocation.jpg",
+        "outputLength" : 147,
+        "outputSha3" : "d2aa5bf5e97d8b31e1fa55b531e3d8b436b8f245cbfdba1dcbcbc84dcdbece41"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 1,
+        "mediaType" : "image/jpeg",
+        "length" : 147,
+        "sha3" : "d2aa5bf5e97d8b31e1fa55b531e3d8b436b8f245cbfdba1dcbcbc84dcdbece41"
+      }
+    },
+    "inputBase64" : "/9j/4AAQSkZJRgABAQAAAQABAAD/4QCWRXhpZgAATU0AKgAAAAgABAEPAAIAAAAFAAAAPgESAAMAAAABAAEAAAEyAAIAAAAUAAAARIglAAQAAAABAAAAWAAAAABTb255AAAyMDI2OjA5OjE2IDEwOjAwOjAwAAACAAEAAgAAAAJOAAAAAAIABQAAAAMAAAB2AAAAAAAAAC0AAAABAAAAGwAAAAEAAAAMAAAAAf/bAEMAAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhscHR4fICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQf/AAAsIABAAEAEBEQD/xAATAAAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AEjT/AFb/0Hia/wC8/9k="
+  }, {
+    "name" : "jpeg_xmp_before_exif_com",
+    "description" : "XMP APP1, then EXIF (orientation 3), then COM: the orientation APP1 lands where the FIRST APP1 was",
+    "format" : "image",
+    "fileName" : "IMG_4.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 416,
+    "inputSha3" : "b49eff8b2f3fee726003c92e5826aaa12c3bf82888123d6e02c92858e2ab82fd",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 3 kept",
+        "outputName" : "IMG_4_nolocation.jpg",
+        "outputLength" : 183,
+        "outputSha3" : "64e5bd6723ec058ff0044839ccd10b4d7f23f17f451ed89b789952e573b3451a"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 3,
+        "mediaType" : "image/jpeg",
+        "length" : 183,
+        "sha3" : "64e5bd6723ec058ff0044839ccd10b4d7f23f17f451ed89b789952e573b3451a"
+      }
+    },
+    "inputBase64" : "/9j/4AAQSkZJRgABAQAAAQABAAD/4QBjaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8eDp4bXBtZXRhPjxleGlmOkdQU0xhdGl0dWRlPjQ1LDI3LjJOPC9leGlmOkdQU0xhdGl0dWRlPjwveDp4bXBtZXRhPv/hAJZFeGlmAABNTQAqAAAACAAEAQ8AAgAAAAUAAAA+ARIAAwAAAAEAAwAAATIAAgAAABQAAABEiCUABAAAAAEAAABYAAAAAFNvbnkAADIwMjY6MDk6MTYgMTA6MDA6MDAAAAIAAQACAAAAAk4AAAAAAgAFAAAAAwAAAHYAAAAAAAAALQAAAAEAAAAbAAAAAQAAAAwAAAAB//4ADnNob3QgYXQgaG9tZf/bAEMAAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhscHR4fICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQf/AAAsIABAAEAEBEQD/xAATAAAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AEjT/AFb/0Hia/wC8/9k="
+  }, {
+    "name" : "jpeg_icc_adobe_kept",
+    "description" : "ICC_PROFILE (APP2) and Adobe (APP14) kept; MPF (APP2), IPTC (APP13), vendor APP10, EXIF dropped",
+    "format" : "image",
+    "fileName" : "IMG_5.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 492,
+    "inputSha3" : "64b3c832cd3d3d9cbd06fe039461e5213211da6c147d35c011d6e7e7ba0b3161",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 6 kept",
+        "outputName" : "IMG_5_nolocation.jpg",
+        "outputLength" : 257,
+        "outputSha3" : "4db62276960185f4dfdc17e0e545425211de474ce6443307ff1865cc1c84822d"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 6,
+        "mediaType" : "image/jpeg",
+        "length" : 257,
+        "sha3" : "4db62276960185f4dfdc17e0e545425211de474ce6443307ff1865cc1c84822d"
+      }
+    },
+    "inputBase64" : "/9j/4AAQSkZJRgABAQAAAQABAAD/4gA4SUNDX1BST0ZJTEUAAQFaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpa/+IAJE1QRgARERERERERERERERERERERERERERERERERERERERH/4QCWRXhpZgAATU0AKgAAAAgABAEPAAIAAAAFAAAAPgESAAMAAAABAAYAAAEyAAIAAAAUAAAARIglAAQAAAABAAAAWAAAAABTb255AAAyMDI2OjA5OjE2IDEwOjAwOjAwAAACAAEAAgAAAAJOAAAAAAIABQAAAAMAAAB2AAAAAAAAAC0AAAABAAAAGwAAAAEAAAAMAAAAAf/tAChQaG90b3Nob3AgMy4wADhCSU0zMzMzMzMzMzMzMzMzMzMzMzMzM//uAA5BZG9iZQBkAAAAAAH/6gAlQVJPVAAiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiL/2wBDAAIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEH/wAALCAAQABABAREA/8QAEwAAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAA/ABI0/wBW/9B4mv8AvP/Z"
+  }, {
+    "name" : "jpeg_plain",
+    "description" : "JFIF + coding segments only: nothing to remove",
+    "format" : "image",
+    "fileName" : "plain.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 147,
+    "inputSha3" : "d2aa5bf5e97d8b31e1fa55b531e3d8b436b8f245cbfdba1dcbcbc84dcdbece41",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "unchanged",
+        "detail" : "nothing to remove",
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : false,
+        "orientation" : 1,
+        "mediaType" : "image/jpeg",
+        "length" : 147,
+        "sha3" : "d2aa5bf5e97d8b31e1fa55b531e3d8b436b8f245cbfdba1dcbcbc84dcdbece41"
+      }
+    },
+    "inputBase64" : "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEH/wAALCAAQABABAREA/8QAEwAAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAA/ABI0/wBW/9B4mv8AvP/Z"
+  }, {
+    "name" : "jpeg_icc_only",
+    "description" : "only kept segments (ICC, Adobe): nothing to remove",
+    "format" : "image",
+    "fileName" : "icc.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 221,
+    "inputSha3" : "337d5f657497c8eb908207709d6849cd89d8e0287f0b3dd090785f5de62c888b",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "unchanged",
+        "detail" : "nothing to remove",
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : false,
+        "orientation" : 1,
+        "mediaType" : "image/jpeg",
+        "length" : 221,
+        "sha3" : "337d5f657497c8eb908207709d6849cd89d8e0287f0b3dd090785f5de62c888b"
+      }
+    },
+    "inputBase64" : "/9j/4AAQSkZJRgABAQAAAQABAAD/4gA4SUNDX1BST0ZJTEUAAQFaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpa/+4ADkFkb2JlAGQAAAAAAf/bAEMAAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhscHR4fICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQf/AAAsIABAAEAEBEQD/xAATAAAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AEjT/AFb/0Hia/wC8/9k="
+  }, {
+    "name" : "jpeg_trailer_after_eoi",
+    "description" : "no metadata segment, but a motion-photo trailer after the EOI: cut off",
+    "format" : "image",
+    "fileName" : "motion.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 359,
+    "inputSha3" : "40893794cf4dbabac5d2ba91531080a6da3f0596e8e48044767017a05e392271",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 1 kept",
+        "outputName" : "motion_nolocation.jpg",
+        "outputLength" : 147,
+        "outputSha3" : "d2aa5bf5e97d8b31e1fa55b531e3d8b436b8f245cbfdba1dcbcbc84dcdbece41"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 1,
+        "mediaType" : "image/jpeg",
+        "length" : 147,
+        "sha3" : "d2aa5bf5e97d8b31e1fa55b531e3d8b436b8f245cbfdba1dcbcbc84dcdbece41"
+      }
+    },
+    "inputBase64" : "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEH/wAALCAAQABABAREA/8QAEwAAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAA/ABI0/wBW/9B4mv8AvP/ZLi4uLmZ0eXBtcDQyMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM="
+  }, {
+    "name" : "jpeg_truncated_scan",
+    "description" : "the entropy-coded data ends without an EOI: kept as it is, EOI supplied",
+    "format" : "image",
+    "fileName" : "cut.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 294,
+    "inputSha3" : "2d58eecdfcaaa61ac73b97abe2480368a6a93ad0e33b50b1007d9bbbd8a65f58",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 6 kept",
+        "outputName" : "cut_nolocation.jpg",
+        "outputLength" : 180,
+        "outputSha3" : "3ae5165848180d7193d63335b5611f4a6206adaa95966e4aadf22d688acbc393"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 6,
+        "mediaType" : "image/jpeg",
+        "length" : 180,
+        "sha3" : "3ae5165848180d7193d63335b5611f4a6206adaa95966e4aadf22d688acbc393"
+      }
+    },
+    "inputBase64" : "/9j/4AAQSkZJRgABAQAAAQABAAD/4QCWRXhpZgAATU0AKgAAAAgABAEPAAIAAAAFAAAAPgESAAMAAAABAAYAAAEyAAIAAAAUAAAARIglAAQAAAABAAAAWAAAAABTb255AAAyMDI2OjA5OjE2IDEwOjAwOjAwAAACAAEAAgAAAAJOAAAAAAIABQAAAAMAAAB2AAAAAAAAAC0AAAABAAAAGwAAAAEAAAAMAAAAAf/bAEMAAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhscHR4fICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQf/AAAsIABAAEAEBEQD/xAATAAAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AEjT/AFb/0Hia"
+  }, {
+    "name" : "jpeg_fill_bytes_unchanged",
+    "description" : "a fill byte (FF FF) and a standalone RST0 between header segments, no metadata: reported unchanged, the input is used as it is",
+    "format" : "image",
+    "fileName" : "fill.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 150,
+    "inputSha3" : "5d466e60b8653018ed07e1eaafbede2a68dd0428cce373198e6cea214fffd601",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "unchanged",
+        "detail" : "nothing to remove",
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : false,
+        "orientation" : 1,
+        "mediaType" : "image/jpeg",
+        "length" : 150,
+        "sha3" : "5d466e60b8653018ed07e1eaafbede2a68dd0428cce373198e6cea214fffd601"
+      }
+    },
+    "inputBase64" : "/9j//+AAEEpGSUYAAQEAAAEAAQAA/9D/2wBDAAIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEH/wAALCAAQABABAREA/8QAEwAAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAA/ABI0/wBW/9B4mv8AvP/Z"
+  }, {
+    "name" : "jpeg_fill_bytes_with_com",
+    "description" : "the same with a COM: the rebuilt file also loses the fill byte and the standalone marker",
+    "format" : "image",
+    "fileName" : "fill_com.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 166,
+    "inputSha3" : "6e1d1ee32c9cbf0f8cc4ba589b975c0005e62fe255cc7a70b7c4a0eec2305496",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 1 kept",
+        "outputName" : "fill_com_nolocation.jpg",
+        "outputLength" : 147,
+        "outputSha3" : "d2aa5bf5e97d8b31e1fa55b531e3d8b436b8f245cbfdba1dcbcbc84dcdbece41"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 1,
+        "mediaType" : "image/jpeg",
+        "length" : 147,
+        "sha3" : "d2aa5bf5e97d8b31e1fa55b531e3d8b436b8f245cbfdba1dcbcbc84dcdbece41"
+      }
+    },
+    "inputBase64" : "/9j//+AAEEpGSUYAAQEAAAEAAQAA/9D//gAOc2hvdCBhdCBob21l/9sAQwACAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BB/8AACwgAEAAQAQERAP/EABMAAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAAPwASNP8AVv/QeJr/ALz/2Q=="
+  }, {
+    "name" : "jpeg_multi_scan",
+    "description" : "two scans with a DHT between them, FF FF fill inside the entropy data, a DNL before the EOI",
+    "format" : "image",
+    "fileName" : "scans.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 344,
+    "inputSha3" : "68fa4137f9586ac329f4e5b84021c4058d5628c758941ceb7cdbf3c8271b7013",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 5 kept",
+        "outputName" : "scans_nolocation.jpg",
+        "outputLength" : 228,
+        "outputSha3" : "cab57db91fe939ba9424011d987096263c81caa8ae7e5f285e804f94418793be"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 5,
+        "mediaType" : "image/jpeg",
+        "length" : 228,
+        "sha3" : "cab57db91fe939ba9424011d987096263c81caa8ae7e5f285e804f94418793be"
+      }
+    },
+    "inputBase64" : "/9j/4AAQSkZJRgABAQAAAQABAAD/4QCWRXhpZgAASUkqAAgAAAAEAA8BAgAFAAAAPgAAABIBAwABAAAABQAAADIBAgAUAAAARAAAACWIBAABAAAAWAAAAAAAAABTb255AAAyMDI2OjA5OjE2IDEwOjAwOjAwAAIAAQACAAIAAABOAAAAAgAFAAMAAAB2AAAAAAAAAC0AAAABAAAAGwAAAAEAAAAMAAAAAQAAAP/bAEMAAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhscHR4fICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQf/AAAsIABAAEAEBEQD/xAATAAAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AEjT/AFb/0Hia/wC8/8QAExAAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAA/AAH//wAC/9cD/9wABAAQ/9k="
+  }, {
+    "name" : "jpeg_lying_segment_length",
+    "description" : "APP1 claims 65535 bytes in an 8-byte file",
+    "format" : "image",
+    "fileName" : "bad.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 8,
+    "inputSha3" : "4d2b71847579dd537367d9a2f080a7f92731be0b6264de1af5aeafff6845dbbf",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "malformed"
+      }
+    },
+    "inputBase64" : "/9j/4f//RXg="
+  }, {
+    "name" : "jpeg_eoi_before_scan",
+    "description" : "SOI, JFIF, EOI: no scan",
+    "format" : "image",
+    "fileName" : "empty_scan.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 22,
+    "inputSha3" : "5c28fc1ffe43f07952309755e0c585e4ff2e9f22e8bb12140ac3652b29e15b23",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "malformed"
+      }
+    },
+    "inputBase64" : "/9j/4AAQSkZJRgABAQAAAQABAAD/2Q=="
+  }, {
+    "name" : "png_text_and_exif",
+    "description" : "an unreadable eXIf, tEXt, iTXt (XMP) and zTXt after IHDR: all dropped, the rest byte-identical",
+    "format" : "image",
+    "fileName" : "shot.png",
+    "mediaType" : "image/png",
+    "inputLength" : 224,
+    "inputSha3" : "0313d259d2ea043a180acdff72929c0d92edec84ba3ba1cf7f4ab721a2d56aa0",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 1 kept",
+        "outputName" : "shot_nolocation.png",
+        "outputLength" : 68,
+        "outputSha3" : "f3176630cb4aea4d143fafcfa804bf030d1c9e817492063263ff6298702f4861"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 1,
+        "mediaType" : "image/png",
+        "length" : 68,
+        "sha3" : "f3176630cb4aea4d143fafcfa804bf030d1c9e817492063263ff6298702f4861"
+      }
+    },
+    "inputBase64" : "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAHmVYSWZFeGlmAABNTQAqAQEBAQEBAQEBAQEBAQEBAQEBAQEfVXaoAAAAFXRFWHRDb21tZW50AHRha2VuIGF0IGhvbWV2YxoJAAAALmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSBHUFNMYXRpdHVkZS8+ZlFEVQAAAAt6VFh0U29mdHdhcmUAAHgBYkIaAAAAC0lEQVR4nAECAwQFBgcICVW5WqMAAAAASUVORK5CYII="
+  }, {
+    "name" : "png_orientation_6_gps",
+    "description" : "eXIf = {Orientation 6, GPS IFD}: replaced by a 26-byte orientation-only eXIf",
+    "format" : "image",
+    "fileName" : "rotated.png",
+    "mediaType" : "image/png",
+    "inputLength" : 136,
+    "inputSha3" : "c02522d9d613364b6b5cde043a06b95aa327a0c2eece39fd338fc717c5ba581c",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 6 kept",
+        "outputName" : "rotated_nolocation.png",
+        "outputLength" : 106,
+        "outputSha3" : "96714006bb39a2ca5998e76d43594a580c0dfcd9e409c770e7e58c6d14573384"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 6,
+        "mediaType" : "image/png",
+        "length" : 106,
+        "sha3" : "96714006bb39a2ca5998e76d43594a580c0dfcd9e409c770e7e58c6d14573384"
+      }
+    },
+    "inputBase64" : "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAOGVYSWZNTQAqAAAACAACARIAAwAAAAEABgAAiCUABAAAAAEAAAAmAAAAAAABAAEAAgAAAAJOAAAAAAAAAMA11/QAAAALSURBVHicAQIDBAUGBwgJVblaowAAAABJRU5ErkJggg=="
+  }, {
+    "name" : "png_orientation_5_ii",
+    "description" : "an II eXIf with orientation 5: the replacement is MM",
+    "format" : "image",
+    "fileName" : "rotated_ii.png",
+    "mediaType" : "image/png",
+    "inputLength" : 106,
+    "inputSha3" : "6d82db26f231dfe1b4259d56250befbd6e0fc2002fd7a42d0c4c1611a73eef8a",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 5 kept",
+        "outputName" : "rotated_ii_nolocation.png",
+        "outputLength" : 106,
+        "outputSha3" : "a4628866d312493ecf5a19867b6878b43dc35210c31efcbb2d14e2aa09634373"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 5,
+        "mediaType" : "image/png",
+        "length" : 106,
+        "sha3" : "a4628866d312493ecf5a19867b6878b43dc35210c31efcbb2d14e2aa09634373"
+      }
+    },
+    "inputBase64" : "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAGmVYSWZJSSoACAAAAAEAEgEDAAEAAAAFAAAAAAAAADnHFsoAAAALSURBVHicAQIDBAUGBwgJVblaowAAAABJRU5ErkJggg=="
+  }, {
+    "name" : "png_three_exif",
+    "description" : "eXIf (1), eXIf (7), eXIf (3): the first non-normal one is kept as orientation-only, the others dropped",
+    "format" : "image",
+    "fileName" : "three.png",
+    "mediaType" : "image/png",
+    "inputLength" : 182,
+    "inputSha3" : "d7300708813300111931a897145bbd824aad614a9fbbffd523e1dfda90a4033d",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 7 kept",
+        "outputName" : "three_nolocation.png",
+        "outputLength" : 106,
+        "outputSha3" : "8664c5e645911b6bd59b57c4a5923851f28cc0676e26037a8059938b26f13416"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 7,
+        "mediaType" : "image/png",
+        "length" : 106,
+        "sha3" : "8664c5e645911b6bd59b57c4a5923851f28cc0676e26037a8059938b26f13416"
+      }
+    },
+    "inputBase64" : "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAGmVYSWZNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAABPAdecAAAAaZVhJZk1NACoAAAAIAAEBEgADAAAAAQAHAAAAAAAAcBBA3QAAABplWElmTU0AKgAAAAgAAQESAAMAAAABAAMAAAAAAACEX2TOAAAAC0lEQVR4nAECAwQFBgcICVW5WqMAAAAASUVORK5CYII="
+  }, {
+    "name" : "png_plain",
+    "description" : "IHDR, IDAT, IEND: nothing to remove",
+    "format" : "image",
+    "fileName" : "plain.png",
+    "mediaType" : "image/png",
+    "inputLength" : 68,
+    "inputSha3" : "f3176630cb4aea4d143fafcfa804bf030d1c9e817492063263ff6298702f4861",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "unchanged",
+        "detail" : "nothing to remove",
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : false,
+        "orientation" : 1,
+        "mediaType" : "image/png",
+        "length" : 68,
+        "sha3" : "f3176630cb4aea4d143fafcfa804bf030d1c9e817492063263ff6298702f4861"
+      }
+    },
+    "inputBase64" : "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAC0lEQVR4nAECAwQFBgcICVW5WqMAAAAASUVORK5CYII="
+  }, {
+    "name" : "png_trailer_and_late_text",
+    "description" : "a tEXt between IDAT and IEND, and 50 bytes after IEND: both gone",
+    "format" : "image",
+    "fileName" : "tail.png",
+    "mediaType" : "image/png",
+    "inputLength" : 139,
+    "inputSha3" : "961c3844a4c1ee068ea0200f6f5be3126d2407d5bcb075b579e9fbc9de6473c6",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 1 kept",
+        "outputName" : "tail_nolocation.png",
+        "outputLength" : 68,
+        "outputSha3" : "f3176630cb4aea4d143fafcfa804bf030d1c9e817492063263ff6298702f4861"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 1,
+        "mediaType" : "image/png",
+        "length" : 68,
+        "sha3" : "f3176630cb4aea4d143fafcfa804bf030d1c9e817492063263ff6298702f4861"
+      }
+    },
+    "inputBase64" : "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAC0lEQVR4nAECAwQFBgcICVW5WqMAAAAJdEVYdEF1dGhvcgBtZQYgcPoAAAAASUVORK5CYIJERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERA=="
+  }, {
+    "name" : "png_lying_chunk_length",
+    "description" : "a chunk length of 0x7F000003, far past the end",
+    "format" : "image",
+    "fileName" : "bad.png",
+    "mediaType" : "image/png",
+    "inputLength" : 83,
+    "inputSha3" : "811dae36d472c337a8e1477db5e878e95da2428a233a57fb1fd2ff0be893e96b",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "malformed"
+      }
+    },
+    "inputBase64" : "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpfwAAA3RFWHRhAGLcSaI7AAAAC0lEQVR4nAECAwQFBgcICVW5WqMAAAAASUVORK5CYII="
+  }, {
+    "name" : "png_no_iend",
+    "description" : "the file ends before IEND",
+    "format" : "image",
+    "fileName" : "cut.png",
+    "mediaType" : "image/png",
+    "inputLength" : 56,
+    "inputSha3" : "f8e2c9f8379190d3a7440264624d7d65f88084f58430a7723fc90d4149052b0f",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "malformed"
+      }
+    },
+    "inputBase64" : "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAC0lEQVR4nAECAwQFBgcICVW5WqM="
+  }, {
+    "name" : "gif_comment_and_xmp",
+    "description" : "a Comment extension and an XMP application extension: dropped",
+    "format" : "image",
+    "fileName" : "anim.gif",
+    "mediaType" : "image/gif",
+    "inputLength" : 134,
+    "inputSha3" : "b29bec7b1b452d8d39feb6407e98c04c1df92e631f5c1ad5c5ca6233bdbca5de",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 1 kept",
+        "outputName" : "anim_nolocation.gif",
+        "outputLength" : 35,
+        "outputSha3" : "f45624e3ab0c55452f40a8df0790427e8afc5e18af96d838318076defc895dc9"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 1,
+        "mediaType" : "image/gif",
+        "length" : 35,
+        "sha3" : "f45624e3ab0c55452f40a8df0790427e8afc5e18af96d838318076defc895dc9"
+      }
+    },
+    "inputBase64" : "R0lGODlhAgACAIAAAAAAAP///yH+DXRha2VuIGF0IGhvbWUAIf8LWE1QIERhdGFYTVBCPHg6eG1wbWV0YT48ZXhpZjpHUFNMYXRpdHVkZT40NSwyN048L2V4aWY6R1BTTGF0aXR1ZGU+PC94OnhtcG1ldGE+ACwAAAAAAgACAAACAkwBADs="
+  }, {
+    "name" : "gif_loop_extensions_kept",
+    "description" : "NETSCAPE2.0 and ANIMEXTS1.0 kept, a 300-byte comment (two sub-blocks) dropped",
+    "format" : "image",
+    "fileName" : "loop.gif",
+    "mediaType" : "image/gif",
+    "inputLength" : 378,
+    "inputSha3" : "68d6c8111eb0c183770c9dc0f2f4c16613aeea57c33ee5682d93e72fcef49646",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 1 kept",
+        "outputName" : "loop_nolocation.gif",
+        "outputLength" : 73,
+        "outputSha3" : "a62bc5b132c670ea160e55d5e184d5e3a4d64cf82c7289da71e88da08c1e7d28"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 1,
+        "mediaType" : "image/gif",
+        "length" : 73,
+        "sha3" : "a62bc5b132c670ea160e55d5e184d5e3a4d64cf82c7289da71e88da08c1e7d28"
+      }
+    },
+    "inputBase64" : "R0lGODlhAgACAIAAAAAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/wtBTklNRVhUUzEuMAMBAAAAIf7/eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4LXh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eAAsAAAAAAIAAgAAAgJMAQA7"
+  }, {
+    "name" : "gif_other_blocks",
+    "description" : "a graphic control and a plain-text extension kept, an application extension with a 5-byte identifier dropped, a second image with a local colour table kept",
+    "format" : "image",
+    "fileName" : "blocks.gif",
+    "mediaType" : "image/gif",
+    "inputLength" : 92,
+    "inputSha3" : "526c8d56da29583f0a4a4e20bd5e18cf751d0fe1e1522ea49b5640547527d88f",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 1 kept",
+        "outputName" : "blocks_nolocation.gif",
+        "outputLength" : 83,
+        "outputSha3" : "11fdce9be87113f3cb4edd686e207862c1e5a8800154455b09e4482b73470600"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 1,
+        "mediaType" : "image/gif",
+        "length" : 83,
+        "sha3" : "11fdce9be87113f3cb4edd686e207862c1e5a8800154455b09e4482b73470600"
+      }
+    },
+    "inputBase64" : "R0lGODlhAgACAIAAAAAAAP///yH5BAAKAAAAIQEMAAAAAAAAAAAAAAAAAmhpACH/BVNIT1JUACwAAAAAAgACAIABAgMEBQYCAkwBACwAAAAAAgACAAACAkwBADs="
+  }, {
+    "name" : "gif87a_truncated",
+    "description" : "a GIF87a that ends without its trailer: the trailer is supplied",
+    "format" : "image",
+    "fileName" : "old.gif",
+    "mediaType" : "image/gif",
+    "inputLength" : 34,
+    "inputSha3" : "76a5d035c4c94303c03aa6ccd4e89d9ccb6a0a0a564a5d6fbea811d5751ce57e",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 1 kept",
+        "outputName" : "old_nolocation.gif",
+        "outputLength" : 35,
+        "outputSha3" : "fd1dc488af2f2cc3557d4184db8887f779023c1571ea0a3708699c5949cc2d0a"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 1,
+        "mediaType" : "image/gif",
+        "length" : 35,
+        "sha3" : "fd1dc488af2f2cc3557d4184db8887f779023c1571ea0a3708699c5949cc2d0a"
+      }
+    },
+    "inputBase64" : "R0lGODdhAgACAIAAAAAAAP///ywAAAAAAgACAAACAkwBAA=="
+  }, {
+    "name" : "gif_plain",
+    "description" : "nothing to remove",
+    "format" : "image",
+    "fileName" : "plain.gif",
+    "mediaType" : "image/gif",
+    "inputLength" : 35,
+    "inputSha3" : "f45624e3ab0c55452f40a8df0790427e8afc5e18af96d838318076defc895dc9",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "unchanged",
+        "detail" : "nothing to remove",
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : false,
+        "orientation" : 1,
+        "mediaType" : "image/gif",
+        "length" : 35,
+        "sha3" : "f45624e3ab0c55452f40a8df0790427e8afc5e18af96d838318076defc895dc9"
+      }
+    },
+    "inputBase64" : "R0lGODlhAgACAIAAAAAAAP///ywAAAAAAgACAAACAkwBADs="
+  }, {
+    "name" : "gif_junk_after_trailer",
+    "description" : "bytes after the trailer: cut off",
+    "format" : "image",
+    "fileName" : "junk.gif",
+    "mediaType" : "image/gif",
+    "inputLength" : 45,
+    "inputSha3" : "707b2fd197bc0ca95718421d7330c025a0097c24a6a569a37a0440230c9ae9ec",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "EXIF/XMP removed, orientation 1 kept",
+        "outputName" : "junk_nolocation.gif",
+        "outputLength" : 35,
+        "outputSha3" : "f45624e3ab0c55452f40a8df0790427e8afc5e18af96d838318076defc895dc9"
+      },
+      "core" : {
+        "result" : "stripped",
+        "changed" : true,
+        "orientation" : 1,
+        "mediaType" : "image/gif",
+        "length" : 35,
+        "sha3" : "f45624e3ab0c55452f40a8df0790427e8afc5e18af96d838318076defc895dc9"
+      }
+    },
+    "inputBase64" : "R0lGODlhAgACAIAAAAAAAP///ywAAAAAAgACAAACAkwBADtqdW5rIGFmdGVy"
+  }, {
+    "name" : "gif_unknown_block",
+    "description" : "a block introducer that is none of 21 / 2C / 3B",
+    "format" : "image",
+    "fileName" : "bad.gif",
+    "mediaType" : "image/gif",
+    "inputLength" : 38,
+    "inputSha3" : "985c31c5f788e34c6f420aa07ea139f475065fb1bfb2124f0fdf462990242717",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "malformed"
+      }
+    },
+    "inputBase64" : "R0lGODlhAgACAIAAAAAAAP///5kBAiwAAAAAAgACAAACAkwBADs="
+  }, {
+    "name" : "gif_sub_blocks_past_end",
+    "description" : "a comment whose sub-block length runs past the end of the file",
+    "format" : "image",
+    "fileName" : "cut.gif",
+    "mediaType" : "image/gif",
+    "inputLength" : 19,
+    "inputSha3" : "d800f5c73b82d8244878a7e45d9a5b25b682bcc6248586f0047d226fe0578473",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "malformed"
+      }
+    },
+    "inputBase64" : "R0lGODlhAgACAAAAACH+yAECAw=="
+  }, {
+    "name" : "webp",
+    "description" : "RIFF/WEBP: refused, never passed through",
+    "format" : "image",
+    "fileName" : "sticker.webp",
+    "mediaType" : "image/webp",
+    "inputLength" : 40,
+    "inputSha3" : "68cdfc1ccb21eaeba80c0f569f351b525547c18b0bcc7f16d39766ed4d85cf8b",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "unsupported"
+      }
+    },
+    "inputBase64" : "UklGRiQAAABXRUJQVlA4IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+  }, {
+    "name" : "tiff",
+    "description" : "TIFF: refused",
+    "format" : "image",
+    "fileName" : "scan.tiff",
+    "mediaType" : "image/tiff",
+    "inputLength" : 24,
+    "inputSha3" : "17cdb007f1288084a1ebde172f57744dc079d66173bcaf4764e4a72abaedeb1e",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "unsupported"
+      }
+    },
+    "inputBase64" : "SUkqAAgAAAAAAAAAAAAAAAAAAAAAAAAA"
+  }, {
+    "name" : "heic_named_jpg",
+    "description" : "ftyp brand heic under a .jpg name: the bytes decide — a still image, refused",
+    "format" : "image",
+    "fileName" : "photo.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 76,
+    "inputSha3" : "e7e2d06344b396773b2d909b43d5501070c6b9972e68d97ed2d3b5bb231d37c2",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "unsupported"
+      }
+    },
+    "inputBase64" : "AAAAGGZ0eXBoZWljAAAAAG1pZjFoZWljAAAANG1ldGEAAAAAAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ=="
+  }, {
+    "name" : "garbage_named_png",
+    "description" : "text under an image name: no cleaner can vouch for it",
+    "format" : "image",
+    "fileName" : "notes.png",
+    "mediaType" : "image/png",
+    "inputLength" : 12,
+    "inputSha3" : "9182472b303a1eb973b15322dd0441475dd5bc9a562f40276b7933706204768d",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "unsupported"
+      }
+    },
+    "inputBase64" : "bm90IGFuIGltYWdl"
+  }, {
+    "name" : "empty_named_jpg",
+    "description" : "a zero-byte file under an image name",
+    "format" : "image",
+    "fileName" : "empty.jpg",
+    "mediaType" : "image/jpeg",
+    "inputLength" : 0,
+    "inputSha3" : "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "unsupported"
+      }
+    },
+    "inputBase64" : ""
+  }, {
+    "name" : "mp4_android_camera",
+    "description" : "ftyp, moov(mvhd, udta(©xyz), meta, trak(tkhd, mdia(mdhd))), mdat: udta and meta become free, 6 times zeroed",
+    "format" : "mp4",
+    "fileName" : "clip.mp4",
+    "mediaType" : "video/mp4",
+    "inputLength" : 4580,
+    "inputSha3" : "b03c27062fc9c6bddf587f8615e6d43af48a0d51b38c1e5eac7690ae1df71503",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "blanked moov/udta@140, moov/meta@178; 6 timestamps zeroed",
+        "outputName" : "clip_nolocation.mp4",
+        "outputLength" : 4580,
+        "outputSha3" : "d8ed49597a1aca33b6221f9ddea5d629468a3b69e16c42afa0a5f49f4a84aa9f"
+      },
+      "core" : {
+        "result" : "cleaned",
+        "changed" : true,
+        "blanked" : [ "moov/udta@140", "moov/meta@178" ],
+        "timestampsZeroed" : 6,
+        "length" : 4580,
+        "sha3" : "d8ed49597a1aca33b6221f9ddea5d629468a3b69e16c42afa0a5f49f4a84aa9f"
+      }
+    },
+    "inputBase64" : "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"
+  }, {
+    "name" : "mp4_trak_udta_uuid_as_bin",
+    "description" : "a top-level XMP uuid box and a trak-level udta, picked under a .bin name: a video by its bytes",
+    "format" : "mp4",
+    "fileName" : "clip.bin",
+    "mediaType" : "application/octet-stream",
+    "inputLength" : 4690,
+    "inputSha3" : "81fc40aa8d9242f4577f82de7117387f509676aee8c3ad150e1d5c913b77de05",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "blanked uuid@24, moov/udta@229, moov/meta@258, moov/trak/udta@480; 6 timestamps zeroed",
+        "outputName" : "clip_nolocation.bin",
+        "outputLength" : 4690,
+        "outputSha3" : "0bef15871f251224668d88a95d187fbbd9aa2190e29de32ecce4bbb47113e0a2"
+      },
+      "core" : {
+        "result" : "cleaned",
+        "changed" : true,
+        "blanked" : [ "uuid@24", "moov/udta@229", "moov/meta@258", "moov/trak/udta@480" ],
+        "timestampsZeroed" : 6,
+        "length" : 4690,
+        "sha3" : "0bef15871f251224668d88a95d187fbbd9aa2190e29de32ecce4bbb47113e0a2"
+      }
+    },
+    "inputBase64" : "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"
+  }, {
+    "name" : "mp4_clean",
+    "description" : "no udta, no meta, times already zero: nothing to remove",
+    "format" : "mp4",
+    "fileName" : "clean.mp4",
+    "mediaType" : "video/mp4",
+    "inputLength" : 4420,
+    "inputSha3" : "aa5c6994b262ef45b31d10eede44f18f2566deceef1591a8b428236a16978a14",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "unchanged",
+        "detail" : "nothing to remove",
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "cleaned",
+        "changed" : false,
+        "blanked" : [ ],
+        "timestampsZeroed" : 0,
+        "length" : 4420,
+        "sha3" : "aa5c6994b262ef45b31d10eede44f18f2566deceef1591a8b428236a16978a14"
+      }
+    },
+    "inputBase64" : "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"
+  }, {
+    "name" : "mov_version1_and_64bit_size",
+    "description" : "a uuid box with a 64-bit size, a version-1 mvhd (64-bit times) whose modification time is already zero",
+    "format" : "mp4",
+    "fileName" : "movie.mov",
+    "mediaType" : "video/quicktime",
+    "inputLength" : 104,
+    "inputSha3" : "aff298d8ff032b12c11fb13598a447e2ecf6d144f61a3d631fb72cd01056125e",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "blanked uuid@20; 1 timestamps zeroed",
+        "outputName" : "movie_nolocation.mov",
+        "outputLength" : 104,
+        "outputSha3" : "e756a88a3952255b1a57e3a52b25f4a35b9ed728798e64f084d805579a0fdc3f"
+      },
+      "core" : {
+        "result" : "cleaned",
+        "changed" : true,
+        "blanked" : [ "uuid@20" ],
+        "timestampsZeroed" : 1,
+        "length" : 104,
+        "sha3" : "e756a88a3952255b1a57e3a52b25f4a35b9ed728798e64f084d805579a0fdc3f"
+      }
+    },
+    "inputBase64" : "AAAAFGZ0eXBpc29tAAAAAGlzb20AAAABdXVpZAAAAAAAAAAkenp6enp6enp6enp6enp6enp6enoAAAAwbW9vdgAAAChtdmhkAQAAABERERERERERAAAAAAAAAAAAAAPoIiIiIiIiIiI="
+  }, {
+    "name" : "3gp_size_zero_last_box_no_extension",
+    "description" : "trak-level meta, a moov too short to hold times, and a top-level udta of size 0 (to the end of the file); no extension, so the copy is named .mp4",
+    "format" : "mp4",
+    "fileName" : "video",
+    "mediaType" : "application/octet-stream",
+    "inputLength" : 105,
+    "inputSha3" : "ce719fd16c5910a9b698639480be3608e4adb3311c471f9e736550dc090c1329",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "blanked moov/trak/meta@50, udta@83; 0 timestamps zeroed",
+        "outputName" : "video_nolocation.mp4",
+        "outputLength" : 105,
+        "outputSha3" : "0c288c4e5c9b5a71d5a36d2b025bc2b78f2ffd7795cb0bc5d59491d3f2e47719"
+      },
+      "core" : {
+        "result" : "cleaned",
+        "changed" : true,
+        "blanked" : [ "moov/trak/meta@50", "udta@83" ],
+        "timestampsZeroed" : 0,
+        "length" : 105,
+        "sha3" : "0c288c4e5c9b5a71d5a36d2b025bc2b78f2ffd7795cb0bc5d59491d3f2e47719"
+      }
+    },
+    "inputBase64" : "AAAAFGZ0eXAzZ3A1AAAAADNncDUAAAA/bW9vdgAAAA5tdmhkAAAAAAECAAAAKXRyYWsAAAAWbWV0YQAAAABBQUFBQUFBQUFBAAAAC3RraGQAAAAAAAAAdWR0YWxvY2kgc29tZXdoZXJl"
+  }, {
+    "name" : "mp4_lying_moov_size",
+    "description" : "the moov box claims to run far past the file",
+    "format" : "mp4",
+    "fileName" : "bad.mp4",
+    "mediaType" : "video/mp4",
+    "inputLength" : 4571,
+    "inputSha3" : "fa356b67d5e968f1466651a82e310a93713e29ca11c3c1066a7f1c5b0271bffa",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "malformed"
+      }
+    },
+    "inputBase64" : "AAAAGGZ0eXBtcDQyAAAAAGlzb21tcDQyfwABu21vb3YAAABsbXZoZAAAAADQAAAB0AAAAQAAA+gAABOIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAddWR0YQAAABWpeHl6AAkVxysxLjArMi4wLwAAAHptZXRhAAAAAAAAACFoZGxyAAAAAAAAAABtZHRhAAAAAAAAAAAAAAAAAAAAACtrZXlzAAAAAAAAAAEAAAAbbWR0YWNvbS5hbmRyb2lkLnZlcnNpb24AAAAiaWxzdAAAABoAAAABAAAAEmRhdGEAAAABAAAAADEzAAAAsHRyYWsAAABcdGtoZAAAAADQAAAB0AAAAQAAAAEAAAAAAAATiAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAExtZGlhAAAAIG1kaGQAAAAA0AAAAdAAAAEAAV+QAAbd0FXEAAAAAAAkbWluZgAAABxzdGJsAAAAFHN0Y28AAAAAAAAAAQAAAAAAABAIbWRhdAcmRWSDosHg/x49XHuaudj3FjVUc5Kx0O8OLUxriqnI5wYlRGOCocDf/h08W3qZuNf2FTRTcpGwz+4NLEtqiajH5gUkQ2KBoL/e/Rw7WnmYt9b1FDNScZCvzu0MK0ppiKfG5QQjQmGAn77d/Bs6WXiXttX0EzJRcI+uzewLKkloh6bF5AMiQWB/nr3c+xo5WHeWtdTzEjFQb46tzOsKKUhnhqXE4wIhQF9+nbzb+hk4V3aVtNPyETBPbo2sy+oJKEdmhaTD4gEgP159nLva+Rg3VnWUs9LxEC9ObYyryukIJ0ZlhKPC4QAfPl18m7rZ+Bc2VXSTstHwDy5NbIuqyegHJkVkg6LB4P8ePVx7mrnY9xY1VHOSsdDvDi1Ma4qpyOcGJURjgqHA3/4dPFt6mbjX9hU0U3KRsM/uDSxLaomox+YFJENigaC/3v0cO1p5mLfW9RQzUnGQr87tDCtKaYinxuUEI0JhgJ++3fwbOll4l7bV9BMyUXCPrs3sCypJaIemxeQDIkFgf5693PsaOVh3lrXU8xIxUG+OrczrCilIZ4alxOMCIUBffp282/oZOFd2lbTT8hEwT26NrMvqCShHZoWkw+IBID9efZy72vkYN1Z1lLPS8RAvTm2Mq8rpCCdGZYSjwuEAHz5dfJu62fgXNlV0k7LR8A8uTWyLqsnoByZFZIOiweD/Hj1ce5q52PcWNVRzkrHQ7w4tTGuKqcjnBiVEY4KhwN/+HTxbepm41/YVNFNykbDP7g0sS2qJqMfmBSRDYoGgv979HDtaeZi31vUUM1JxkK/O7QwrSmmIp8blBCNCYYCfvt38GzpZeJe21fQTMlFwj67N7AsqSWiHpsXkAyJBYH+evdz7GjlYd5a11PMSMVBvjq3M6wopSGeGpcTjAiFAX36dvNv6GThXdpW00/IRME9ujazL6gkoR2aFpMPiASA/Xn2cu9r5GDdWdZSz0vEQL05tjKvK6QgnRmWEo8LhAB8+XXybutn4FzZVdJOy0fAPLk1si6rJ6AcmRWSDosHg/x49XHuaudj3FjVUc5Kx0O8OLUxriqnI5wYlRGOCocDf/h08W3qZuNf2FTRTcpGwz+4NLEtqiajH5gUkQ2KBoL/e/Rw7WnmYt9b1FDNScZCvzu0MK0ppiKfG5QQjQmGAn77d/Bs6WXiXttX0EzJRcI+uzewLKkloh6bF5AMiQWB/nr3c+xo5WHeWtdTzEjFQb46tzOsKKUhnhqXE4wIhQF9+nbzb+hk4V3aVtNPyETBPbo2sy+oJKEdmhaTD4gEgP159nLva+Rg3VnWUs9LxEC9ObYyryukIJ0ZlhKPC4QAfPl18m7rZ+Bc2VXSTstHwDy5NbIuqyegHJkVkg6LB4P8ePVx7mrnY9xY1VHOSsdDvDi1Ma4qpyOcGJURjgqHA3/4dPFt6mbjX9hU0U3KRsM/uDSxLaomox+YFJENigaC/3v0cO1p5mLfW9RQzUnGQr87tDCtKaYinxuUEI0JhgJ++3fwbOll4l7bV9BMyUXCPrs3sCypJaIemxeQDIkFgf5693PsaOVh3lrXU8xIxUG+OrczrCilIZ4alxOMCIUBffp282/oZOFd2lbTT8hEwT26NrMvqCShHZoWkw+IBID9efZy72vkYN1Z1lLPS8RAvTm2Mq8rpCCdGZYSjwuEAHz5dfJu62fgXNlV0k7LR8A8uTWyLqsnoByZFZIOiweD/Hj1ce5q52PcWNVRzkrHQ7w4tTGuKqcjnBiVEY4KhwN/+HTxbepm41/YVNFNykbDP7g0sS2qJqMfmBSRDYoGgv979HDtaeZi31vUUM1JxkK/O7QwrSmmIp8blBCNCYYCfvt38GzpZeJe21fQTMlFwj67N7AsqSWiHpsXkAyJBYH+evdz7GjlYd5a11PMSMVBvjq3M6wopSGeGpcTjAiFAX36dvNv6GThXdpW00/IRME9ujazL6gkoR2aFpMPiASA/Xn2cu9r5GDdWdZSz0vEQL05tjKvK6QgnRmWEo8LhAB8+XXybutn4FzZVdJOy0fAPLk1si6rJ6AcmRWSDosHg/x49XHuaudj3FjVUc5Kx0O8OLUxriqnI5wYlRGOCocDf/h08W3qZuNf2FTRTcpGwz+4NLEtqiajH5gUkQ2KBoL/e/Rw7WnmYt9b1FDNScZCvzu0MK0ppiKfG5QQjQmGAn77d/Bs6WXiXttX0EzJRcI+uzewLKkloh6bF5AMiQWB/nr3c+xo5WHeWtdTzEjFQb46tzOsKKUhnhqXE4wIhQF9+nbzb+hk4V3aVtNPyETBPbo2sy+oJKEdmhaTD4gEgP159nLva+Rg3VnWUs9LxEC9ObYyryukIJ0ZlhKPC4QAfPl18m7rZ+Bc2VXSTstHwDy5NbIuqyegHJkVkg6LB4P8ePVx7mrnY9xY1VHOSsdDvDi1Ma4qpyOcGJURjgqHA3/4dPFt6mbjX9hU0U3KRsM/uDSxLaomox+YFJENigaC/3v0cO1p5mLfW9RQzUnGQr87tDCtKaYinxuUEI0JhgJ++3fwbOll4l7bV9BMyUXCPrs3sCypJaIemxeQDIkFgf5693PsaOVh3lrXU8xIxUG+OrczrCilIZ4alxOMCIUBffp282/oZOFd2lbTT8hEwT26NrMvqCShHZoWkw+IBID9efZy72vkYN1Z1lLPS8RAvTm2Mq8rpCCdGZYSjwuEAHz5dfJu62fgXNlV0k7LR8A8uTWyLqsnoByZFZIOiweD/Hj1ce5q52PcWNVRzkrHQ7w4tTGuKqcjnBiVEY4KhwN/+HTxbepm41/YVNFNykbDP7g0sS2qJqMfmBSRDYoGgv979HDtaeZi31vUUM1JxkK/O7QwrSmmIp8blBCNCYYCfvt38GzpZeJe21fQTMlFwj67N7AsqSWiHpsXkAyJBYH+evdz7GjlYd5a11PMSMVBvjq3M6wopSGeGpcTjAiFAX36dvNv6GThXdpW00/IRME9ujazL6gkoR2aFpMPiASA/Xn2cu9r5GDdWdZSz0vEQL05tjKvK6QgnRmWEo8LhAB8+XXybutn4FzZVdJOy0fAPLk1si6rJ6AcmRWSDosHg/x49XHuaudj3FjVUc5Kx0O8OLUxriqnI5wYlRGOCocDf/h08W3qZuNf2FTRTcpGwz+4NLEtqiajH5gUkQ2KBoL/e/Rw7WnmYt9b1FDNScZCvzu0MK0ppiKfG5QQjQmGAn77d/Bs6WXiXttX0EzJRcI+uzewLKkloh6bF5AMiQWB/nr3c+xo5WHeWtdTzEjFQb46tzOsKKUhnhqXE4wIhQF9+nbzb+hk4V3aVtNPyETBPbo2sy+oJKEdmhaTD4gEgP159nLva+Rg3VnWUs9LxEC9ObYyryukIJ0ZlhKPC4QAfPl18m7rZ+Bc2VXSTstHwDy5NbIuqyegHJkVkg6LB4P8ePVx7mrnY9xY1VHOSsdDvDi1Ma4qpyOcGJURjgqHA3/4dPFt6mbjX9hU0U3KRsM/uDSxLaomox+YFJENigaC/3v0cO1p5mLfW9RQzUnGQr87tDCtKaYinxuUEI0JhgJ++3fwbOll4l7bV9BMyUXCPrs3sCypJaIemxeQDIkFgf5693PsaOVh3lrXU8xIxUG+OrczrCilIZ4alxOMCIUBffp282/oZOFd2lbTT8hEwT26NrMvqCShHZoWkw+IBID9efZy72vkYN1Z1lLPS8RAvTm2Mq8rpCCdGZYSjwuEAHz5dfJu62fgXNlV0k7LR8A8uTWyLqsnoByZFZIOiweD/Hj1ce5q52PcWNVRzkrHQ7w4tTGuKqcjnBiVEY4KhwN/+HTxbepm41/YVNFNykbDP7g0sS2qJqMfmBSRDYoGgv979HDtaeZi31vUUM1JxkK/O7QwrSmmIp8blBCNCYYCfvt38GzpZeJe21fQTMlFwj67N7AsqSWiHpsXkAyJBYH+evdz7GjlYd5a11PMSMVBvjq3M6wopSGeGpcTjAiFAX36dvNv6GThXdpW00/IRME9ujazL6gkoR2aFpMPiASA/Xn2cu9r5GDdWdZSz0vEQL05tjKvK6QgnRmWEo8LhAB8+XXybutn4FzZVdJOy0fAPLk1si6rJ6AcmRWSDosHg/x49XHuaudj3FjVUc5Kx0O8OLUxriqnI5wYlRGOCocDf/h08W3qZuNf2FTRTcpGwz+4NLEtqiajH5gUkQ2KBoL/e/Rw7WnmYt9b1FDNScZCvzu0MK0ppiKfG5QQjQmGAn77d/Bs6WXiXttX0EzJRcI+uzewLKkloh6bF5AMiQWB/nr3c+xo5WHeWtdTzEjFQb46tzOsKKUhnhqXE4wIhQF9+nbzb+hk4V3aVtNPyETBPbo2sy+oJKEdmhaTD4gEgP159nLva+Rg3VnWUs9LxEC9ObYyryukIJ0ZlhKPC4QAfPl18m7rZ+Bc2VXSTstHwDy5NbIuqyegHJkVkg6LB4P8ePVx7mrnY9xY1VHOSsdDvDi1Ma4qpyOcGJURjgqHA3/4dPFt6mbjX9hU0U3KRsM/uDSxLaomox+YFJENigaC/3v0cO1p5mLfW9RQzUnGQr87tDCtKaYinxuUEI0JhgJ++3fwbOll4l7bV9BMyUXCPrs3sCypJaIemxeQDIkFgf5693PsaOVh3lrXU8xIxUG+OrczrCilIZ4alxOMCIUBffp282/oZOFd2lbTT8hEwT26NrMvqCShHZoWkw+IBID9efZy72vkYN1Z1lLPS8RAvTm2Mq8rpCCdGZYSjwuEAHz5dfJu62fgXNlV0k7LR8A8uTWyLqsnoByZFZIOiweD/Hj1ce5q52PcWNVRzkrHQ7w4tTGuKqcjnBiVEY4KhwN/+HTxbepm41/YVNFNykbDP7g0sS2qJqMfmBSRDYoGgv979HDtaeZi31vUUM1JxkK/O7QwrSmmIp8blBCNCYYCfvt38GzpZeJe21fQTMlFwj67N7AsqSWiHpsXkAyJBYH+evdz7GjlYd5a11PMSMVBvjq3M6wopSGeGpcTjAiFAX36dvNv6GThXdpW00/IRME9ujazL6gkoR2aFpMPiASA/Xn2cu9r5GDdWdZSz0vEQL05tjKvK6QgnRmWEo8LhAB8+XXybutn4FzZVdJOy0fAPLk1si6rJ6AcmRWSDosHg/x49XHuaudj3FjVUc5Kx0O8OLUxriqnI5wYlRGOCocDf/h08W3qZuNf2FTRTcpGwz+4NLEtqiajH5gUkQ2KBoL/e/Rw7WnmYt9b1FDNScZCvzu0MK0ppiKfG5QQjQmGAn77d/Bs6WXiXttX0EzJRcI+uzewLKkloh6bF5AMiQWB/nr3c+xo5WHeWtdTzEjFQb46tzOsKKUhnhqXE4wIhQF9+nbzb+hk4V3aVtNPyETBPbo2sy+oJKEdmhaTD4gEgP159nLva+Rg3VnWUs9LxEC9ObYyryukIJ0ZlhKPC4QAfPl18m7rZ+Bc2VXSTstHwDy5NbIuqyeg="
+  }, {
+    "name" : "webm",
+    "description" : "EBML, no ftyp: refused",
+    "format" : "mp4",
+    "fileName" : "clip.webm",
+    "mediaType" : "video/webm",
+    "inputLength" : 64,
+    "inputSha3" : "479681118027e8878922d13ea2fa5f62fbc59ff4a86d112438415ac71a102330",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "unsupported"
+      }
+    },
+    "inputBase64" : "GkXfoxEREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREQ=="
+  }, {
+    "name" : "pdf_info_and_xmp",
+    "description" : "a valid one-page PDF: 7 Info values blanked (Title kept), /Metadata reference, XMP stream and packet gone",
+    "format" : "pdf",
+    "fileName" : "notes.pdf",
+    "mediaType" : "application/pdf",
+    "inputLength" : 1047,
+    "inputSha3" : "718f213a182c618942b88015d1934785c3607c94123c352e8f94f958b8f0a68b",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "7 info values, 1 XMP refs, 1 XMP streams, 1 packets",
+        "outputName" : "notes_nolocation.pdf",
+        "outputLength" : 1047,
+        "outputSha3" : "c0ef3e5dd65cf3d717b02134a67191c76064822978adc61a1ce4313f849c6111"
+      },
+      "core" : {
+        "changed" : true,
+        "infoValuesBlanked" : 7,
+        "metadataRefsBlanked" : 1,
+        "metadataStreamsZeroed" : 1,
+        "xpacketsBlanked" : 1,
+        "length" : 1047,
+        "sha3" : "c0ef3e5dd65cf3d717b02134a67191c76064822978adc61a1ce4313f849c6111"
+      }
+    },
+    "inputBase64" : "JVBERi0xLjQKJeLjz9MKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgL01ldGFkYXRhIDYgMCBSID4+CmVuZG9iagoyIDAgb2JqCjw8IC9UeXBlIC9QYWdlcyAvS2lkcyBbMyAwIFJdIC9Db3VudCAxID4+CmVuZG9iagozIDAgb2JqCjw8IC9UeXBlIC9QYWdlIC9QYXJlbnQgMiAwIFIgL01lZGlhQm94IFswIDAgMjAwIDEwMF0gL0NvbnRlbnRzIDQgMCBSID4+CmVuZG9iago0IDAgb2JqCjw8IC9MZW5ndGggMzUgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyMCA1MCBUZCAoaGVsbG8pIFRqIEVUCmVuZHN0cmVhbQplbmRvYmoKNSAwIG9iago8PCAvVGl0bGUgKFF1YXJ0ZXJseSBub3RlcykgL0F1dGhvciAoR2lvdmFubmkgQS4pIC9DcmVhdG9yIChQYWdlcyAxMy4yKSAvUHJvZHVjZXIgKG1hY09TKSAvQ3JlYXRpb25EYXRlIChEOjIwMjYwOTE2MTAwMDAwKzAyJzAwJykgL01vZERhdGUgKEQ6MjAyNjA5MTYxMDE1MDArMDInMDAnKSAvU3ViamVjdCA8NEQ2OTZDNjE2RTZGPiAvS2V5d29yZHMgKGhvbWUsIGdhcmRlbikgPj4KZW5kb2JqCjYgMCBvYmoKPDwgL1R5cGUgL01ldGFkYXRhIC9TdWJ0eXBlIC9YTUwgL0xlbmd0aCAyMTAgPj4Kc3RyZWFtCjw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+PHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyI+PHJkZjpSREY+PHJkZjpEZXNjcmlwdGlvbiBkYzpjcmVhdG9yPSJHaW92YW5uaSBBLiIgZXhpZjpHUFNMYXRpdHVkZT0iNDUsMjcuMk4iLz48L3JkZjpSREY+PC94OnhtcG1ldGE+PD94cGFja2V0IGVuZD0idyI/PgplbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCA3CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAxNSAwMDAwMCBuIAowMDAwMDAwMDgwIDAwMDAwIG4gCjAwMDAwMDAxMzcgMDAwMDAgbiAKMDAwMDAwMDIyNCAwMDAwMCBuIAowMDAwMDAwMzA5IDAwMDAwIG4gCjAwMDAwMDA1NDEgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA3IC9Sb290IDEgMCBSIC9JbmZvIDUgMCBSID4+CnN0YXJ0eHJlZgo4MzIKJSVFT0YK"
+  }, {
+    "name" : "pdf_no_xmp",
+    "description" : "the same without the XMP stream",
+    "format" : "pdf",
+    "fileName" : "plain.pdf",
+    "mediaType" : "application/pdf",
+    "inputLength" : 705,
+    "inputSha3" : "f51686c5b9775cf6f6e67fd4f8fe37b810200332e88edff4669b920e4ee9d6a5",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "7 info values, 0 XMP refs, 0 XMP streams, 0 packets",
+        "outputName" : "plain_nolocation.pdf",
+        "outputLength" : 705,
+        "outputSha3" : "b5bdb2e253926c410889894e7282cf998fcd6573f94070fe35a228f3b4cc80a9"
+      },
+      "core" : {
+        "changed" : true,
+        "infoValuesBlanked" : 7,
+        "metadataRefsBlanked" : 0,
+        "metadataStreamsZeroed" : 0,
+        "xpacketsBlanked" : 0,
+        "length" : 705,
+        "sha3" : "b5bdb2e253926c410889894e7282cf998fcd6573f94070fe35a228f3b4cc80a9"
+      }
+    },
+    "inputBase64" : "JVBERi0xLjQKJeLjz9MKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAyMDAgMTAwXSAvQ29udGVudHMgNCAwIFIgPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAzNSA+PgpzdHJlYW0KQlQgL0YxIDEyIFRmIDIwIDUwIFRkIChoZWxsbykgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UaXRsZSAoTWludXRlcykgL0F1dGhvciAoTWFyaW8gUi4pIC9DcmVhdG9yIChQYWdlcyAxMy4yKSAvUHJvZHVjZXIgKG1hY09TKSAvQ3JlYXRpb25EYXRlIChEOjIwMjYwOTE2MTAwMDAwKzAyJzAwJykgL01vZERhdGUgKEQ6MjAyNjA5MTYxMDE1MDArMDInMDAnKSAvU3ViamVjdCA8NTI2RjZENjE+IC9LZXl3b3JkcyAoaG9tZSwgZ2FyZGVuKSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDE1IDAwMDAwIG4gCjAwMDAwMDAwNjQgMDAwMDAgbiAKMDAwMDAwMDEyMSAwMDAwMCBuIAowMDAwMDAwMjA4IDAwMDAwIG4gCjAwMDAwMDAyOTMgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSIC9JbmZvIDUgMCBSID4+CnN0YXJ0eHJlZgo1MTAKJSVFT0YK"
+  }, {
+    "name" : "pdf_already_clean",
+    "description" : "the output of pdf_info_and_xmp: a second pass finds nothing",
+    "format" : "pdf",
+    "fileName" : "clean.pdf",
+    "mediaType" : "application/pdf",
+    "inputLength" : 1047,
+    "inputSha3" : "c0ef3e5dd65cf3d717b02134a67191c76064822978adc61a1ce4313f849c6111",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "unchanged",
+        "detail" : "nothing to remove",
+        "outputName" : null
+      },
+      "core" : {
+        "changed" : false,
+        "infoValuesBlanked" : 0,
+        "metadataRefsBlanked" : 0,
+        "metadataStreamsZeroed" : 0,
+        "xpacketsBlanked" : 0,
+        "length" : 1047,
+        "sha3" : "c0ef3e5dd65cf3d717b02134a67191c76064822978adc61a1ce4313f849c6111"
+      }
+    },
+    "inputBase64" : "JVBERi0xLjQKJeLjz9MKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgICAgICAgICAgICAgICAgID4+CmVuZG9iagoyIDAgb2JqCjw8IC9UeXBlIC9QYWdlcyAvS2lkcyBbMyAwIFJdIC9Db3VudCAxID4+CmVuZG9iagozIDAgb2JqCjw8IC9UeXBlIC9QYWdlIC9QYXJlbnQgMiAwIFIgL01lZGlhQm94IFswIDAgMjAwIDEwMF0gL0NvbnRlbnRzIDQgMCBSID4+CmVuZG9iago0IDAgb2JqCjw8IC9MZW5ndGggMzUgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyMCA1MCBUZCAoaGVsbG8pIFRqIEVUCmVuZHN0cmVhbQplbmRvYmoKNSAwIG9iago8PCAvVGl0bGUgKFF1YXJ0ZXJseSBub3RlcykgL0F1dGhvciAoICAgICAgICAgICApIC9DcmVhdG9yICggICAgICAgICAgKSAvUHJvZHVjZXIgKCAgICAgKSAvQ3JlYXRpb25EYXRlICggICAgICAgICAgICAgICAgICAgICAgICkgL01vZERhdGUgKCAgICAgICAgICAgICAgICAgICAgICAgKSAvU3ViamVjdCA8MjIyMjIyMjIyMjIyPiAvS2V5d29yZHMgKCAgICAgICAgICAgICkgPj4KZW5kb2JqCjYgMCBvYmoKPDwgL1R5cGUgL01ldGFkYXRhIC9TdWJ0eXBlIC9YTUwgL0xlbmd0aCAyMTAgPj4Kc3RyZWFtCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABlbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCA3CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAxNSAwMDAwMCBuIAowMDAwMDAwMDgwIDAwMDAwIG4gCjAwMDAwMDAxMzcgMDAwMDAgbiAKMDAwMDAwMDIyNCAwMDAwMCBuIAowMDAwMDAwMzA5IDAwMDAwIG4gCjAwMDAwMDA1NDEgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA3IC9Sb290IDEgMCBSIC9JbmZvIDUgMCBSID4+CnN0YXJ0eHJlZgo4MzIKJSVFT0YK"
+  }, {
+    "name" : "pdf_pattern_edges",
+    "description" : "not a valid PDF: one line per corner of the three patterns (escapes, NBSP as whitespace, hex strings with whitespace, ids matched exactly, obj before a Latin-1 letter, CRLF after stream, the shortest xpacket, unterminated values) — the Dart regular expressions and the Java scanners must agree byte for byte",
+    "format" : "pdf",
+    "fileName" : "edges.pdf",
+    "mediaType" : "application/pdf",
+    "inputLength" : 957,
+    "inputSha3" : "771f9e117cff322ef9d0f3a686c5331abaf5c82cb573a8d142b7afd56a658bc0",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "6 info values, 5 XMP refs, 5 XMP streams, 3 packets",
+        "outputName" : "edges_nolocation.pdf",
+        "outputLength" : 957,
+        "outputSha3" : "527efe35596073c25bcc251aa964c2804dc90355705aa3de7a914ac318624072"
+      },
+      "core" : {
+        "changed" : true,
+        "infoValuesBlanked" : 6,
+        "metadataRefsBlanked" : 5,
+        "metadataStreamsZeroed" : 5,
+        "xpacketsBlanked" : 3,
+        "length" : 957,
+        "sha3" : "527efe35596073c25bcc251aa964c2804dc90355705aa3de7a914ac318624072"
+      }
+    },
+    "inputBase64" : "JVBERi0xLjcKL0F1dGhvciAoYSBcKSBiIFxcIGMpIC9YCi9LZXl3b3Jkc6AKKGFiKQovVGl0bGUgKGtlcHQpIC9BdXRob3JzIChrZXB0KQovQ3JlYXRvcih0aWdodCkvUHJvZHVjZXIJDCh0YWJzKQovQ3JlYXRpb25EYXRlIChEOjIwMjYgKG5lc3RlZFwpIG9ubHkgZXNjYXBlZCkpCi9TdWJqZWN0IDw0RCA2OQo2Qw02MQk2RT4KL1N1YmplY3QgPDRHPiAvU3ViamVjdCA8PC9BIDE+PiAvU3ViamVjdCA8MjIyMj4gL01vZERhdGUgPD4KL01ldGFkYXRhCjcJMA1SCjE3IDAgb2JqCjw8Pj4Kc3RyZWFtCktFRVAtMTcKZW5kc3RyZWFtCmVuZG9iago3IDAgb2Jq6Tw8Pj4Kc3RyZWFtDQpHT05FLUEKZW5kc3RyZWFtCmVuZG9iago3IDAgb2JqCjw8IC9Ob1N0cmVhbSB0cnVlID4+CmVuZG9iago3IDAgb2JqCjw8Pj5zdHJlYW0KR09ORS1CCmVuZHN0cmVhbQplbmRvYmoKNyAwIG9ianggc3RyZWFtCktFRVAtWAplbmRzdHJlYW0KNyAwIG9ial8gc3RyZWFtCktFRVAtVU5ERVJTQ09SRQplbmRzdHJlYW0KNyAgMCBvYmoKc3RyZWFtCktFRVAtU1BBQ0VTCmVuZHN0cmVhbQovTWV0YWRhdGEgNyAwIFJ4IC9NZXRhZGF0YTcgMCBSIC9NZXRhZGF0YSAwMDcgMCBSIC9NZXRhZGF0YSA4IDAgUiAvTWV0YWRhdGEgOSAxIFIKMDA3IDAgb2JqIHN0cmVhbQpHT05FLTAwNwplbmRzdHJlYW0gZW5kb2JqCjkgMSBvYmoKc3RyZWFtDVpFUk9FRC1DUi1PTkxZCmVuZHN0cmVhbSBlbmRvYmoKeDw/eHBhY2tldCBiZWdpbj0nJyBpZD0nMSc/PkFBQTw/eHBhY2tldCBlbmQ9J3cnPz5NSUQ8P3hwYWNrZXQgYmVnaW49Jyc/PkI8P3hwYWNrZXQgZW5kPT5DPD94cGFja2V0IGVuZD0ncic/PlRBSUwKOCAwIG9iaiBzdHJlYW0KPD94cGFja2V0IGJlZ2luPScnPz5JTlNJREU8P3hwYWNrZXQgZW5kPSd3Jz8+CmVuZHN0cmVhbSBlbmRvYmoKPD94cGFja2V0IGJlZ2luPScnPz5vcGVuIC9BdXRob3IgKG5ldmVyIGNsb3NlZCBc"
+  }, {
+    "name" : "docx_full",
+    "description" : "core + app scrubbed, custom.xml removed with its Override and Relationship (both parts move to the end), the embedded photo stripped, the body identical",
+    "format" : "ooxml",
+    "fileName" : "report.docx",
+    "mediaType" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "inputLength" : 2394,
+    "inputSha3" : "87f2ebd9b89efc9ccd7f9e71c1fd2968b89b0c0d9cc56e77335f1b8ce2fbbee3",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "parts docProps/core.xml, docProps/app.xml, docProps/custom.xml (removed); images 1",
+        "outputName" : "report_nolocation.docx",
+        "entries" : [ {
+          "name" : "docProps/core.xml",
+          "length" : 345,
+          "sha3" : "e9a8c4fb9ea4898ff85f8117dde951a17244c423df005b562fddc5cdf2432f8b"
+        }, {
+          "name" : "docProps/app.xml",
+          "length" : 231,
+          "sha3" : "ccad9842631115a7126ecbf80021a6ffb17871e3265009458a3f330245cd66b0"
+        }, {
+          "name" : "word/document.xml",
+          "length" : 108,
+          "sha3" : "3dbcc898cee8fc2c1c7f6f62143217496d01d058c2161ec43043d09f206629d1"
+        }, {
+          "name" : "word/media/image1.jpeg",
+          "length" : 183,
+          "sha3" : "db40c6064ae53848919241bf7c0fa542664de6ac27e16338a213dd73f4405e61"
+        }, {
+          "name" : "[Content_Types].xml",
+          "length" : 548,
+          "sha3" : "f746a2ad2b5244085ec09ba0b9421e1877da03c7d39e5197c70a7724c3c6a464"
+        }, {
+          "name" : "_rels/.rels",
+          "length" : 571,
+          "sha3" : "9177ba8c901ca0e329ebbf5dc4ee44e706d1e56f29e2e88f3a2978a6dbd09eb2"
+        } ]
+      },
+      "core" : {
+        "changed" : true,
+        "propertyParts" : [ "docProps/core.xml", "docProps/app.xml", "docProps/custom.xml (removed)" ],
+        "imagesStripped" : [ "word/media/image1.jpeg" ],
+        "entries" : [ {
+          "name" : "docProps/core.xml",
+          "length" : 345,
+          "sha3" : "e9a8c4fb9ea4898ff85f8117dde951a17244c423df005b562fddc5cdf2432f8b"
+        }, {
+          "name" : "docProps/app.xml",
+          "length" : 231,
+          "sha3" : "ccad9842631115a7126ecbf80021a6ffb17871e3265009458a3f330245cd66b0"
+        }, {
+          "name" : "word/document.xml",
+          "length" : 108,
+          "sha3" : "3dbcc898cee8fc2c1c7f6f62143217496d01d058c2161ec43043d09f206629d1"
+        }, {
+          "name" : "word/media/image1.jpeg",
+          "length" : 183,
+          "sha3" : "db40c6064ae53848919241bf7c0fa542664de6ac27e16338a213dd73f4405e61"
+        }, {
+          "name" : "[Content_Types].xml",
+          "length" : 548,
+          "sha3" : "f746a2ad2b5244085ec09ba0b9421e1877da03c7d39e5197c70a7724c3c6a464"
+        }, {
+          "name" : "_rels/.rels",
+          "length" : 571,
+          "sha3" : "9177ba8c901ca0e329ebbf5dc4ee44e706d1e56f29e2e88f3a2978a6dbd09eb2"
+        } ]
+      }
+    },
+    "inputBase64" : "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"
+  }, {
+    "name" : "docx_no_custom",
+    "description" : "no custom.xml: the entry order is the source's",
+    "format" : "ooxml",
+    "fileName" : "letter.docx",
+    "mediaType" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "inputLength" : 2173,
+    "inputSha3" : "4eb1e60139de8742952f96f8c6a796d0cd77ee015eff2917c90796e6d87bb3b9",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "parts docProps/core.xml, docProps/app.xml; images 1",
+        "outputName" : "letter_nolocation.docx",
+        "entries" : [ {
+          "name" : "[Content_Types].xml",
+          "length" : 673,
+          "sha3" : "02070a47e724f0da59a97bde62683be703ffd27bcfccfd26cbf828b0ab03541d"
+        }, {
+          "name" : "_rels/.rels",
+          "length" : 718,
+          "sha3" : "86b95af2459cad74445028946b48718f48c85038b9e8344649fae855e8845331"
+        }, {
+          "name" : "docProps/core.xml",
+          "length" : 345,
+          "sha3" : "e9a8c4fb9ea4898ff85f8117dde951a17244c423df005b562fddc5cdf2432f8b"
+        }, {
+          "name" : "docProps/app.xml",
+          "length" : 231,
+          "sha3" : "ccad9842631115a7126ecbf80021a6ffb17871e3265009458a3f330245cd66b0"
+        }, {
+          "name" : "word/document.xml",
+          "length" : 108,
+          "sha3" : "3dbcc898cee8fc2c1c7f6f62143217496d01d058c2161ec43043d09f206629d1"
+        }, {
+          "name" : "word/media/image1.jpeg",
+          "length" : 183,
+          "sha3" : "db40c6064ae53848919241bf7c0fa542664de6ac27e16338a213dd73f4405e61"
+        } ]
+      },
+      "core" : {
+        "changed" : true,
+        "propertyParts" : [ "docProps/core.xml", "docProps/app.xml" ],
+        "imagesStripped" : [ "word/media/image1.jpeg" ],
+        "entries" : [ {
+          "name" : "[Content_Types].xml",
+          "length" : 673,
+          "sha3" : "02070a47e724f0da59a97bde62683be703ffd27bcfccfd26cbf828b0ab03541d"
+        }, {
+          "name" : "_rels/.rels",
+          "length" : 718,
+          "sha3" : "86b95af2459cad74445028946b48718f48c85038b9e8344649fae855e8845331"
+        }, {
+          "name" : "docProps/core.xml",
+          "length" : 345,
+          "sha3" : "e9a8c4fb9ea4898ff85f8117dde951a17244c423df005b562fddc5cdf2432f8b"
+        }, {
+          "name" : "docProps/app.xml",
+          "length" : 231,
+          "sha3" : "ccad9842631115a7126ecbf80021a6ffb17871e3265009458a3f330245cd66b0"
+        }, {
+          "name" : "word/document.xml",
+          "length" : 108,
+          "sha3" : "3dbcc898cee8fc2c1c7f6f62143217496d01d058c2161ec43043d09f206629d1"
+        }, {
+          "name" : "word/media/image1.jpeg",
+          "length" : 183,
+          "sha3" : "db40c6064ae53848919241bf7c0fa542664de6ac27e16338a213dd73f4405e61"
+        } ]
+      }
+    },
+    "inputBase64" : "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"
+  }, {
+    "name" : "pptx_odd_entries",
+    "description" : "a directory entry, a broken embedded JPEG (kept as it is), a STORED PNG with a tEXt (stripped), a clean GIF, a non-image and an empty file under media/, app.xml only",
+    "format" : "ooxml",
+    "fileName" : "deck.pptx",
+    "mediaType" : "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "inputLength" : 1339,
+    "inputSha3" : "d3e6d1710e81c336f60955c449c938c831c7f57ffc337aee5c94a073a94ea6b7",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "parts docProps/app.xml; images 1",
+        "outputName" : "deck_nolocation.pptx",
+        "entries" : [ {
+          "name" : "[Content_Types].xml",
+          "length" : 8,
+          "sha3" : "5187b6b0e133a263372e10c0577c1abe81e24162b47cb8e03d0a8620f0b08ca2"
+        }, {
+          "name" : "ppt/media/",
+          "length" : 0,
+          "sha3" : "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"
+        }, {
+          "name" : "ppt/media/broken.jpg",
+          "length" : 8,
+          "sha3" : "4d2b71847579dd537367d9a2f080a7f92731be0b6264de1af5aeafff6845dbbf"
+        }, {
+          "name" : "ppt/media/pic.png",
+          "length" : 68,
+          "sha3" : "f3176630cb4aea4d143fafcfa804bf030d1c9e817492063263ff6298702f4861"
+        }, {
+          "name" : "ppt/media/clean.gif",
+          "length" : 35,
+          "sha3" : "f45624e3ab0c55452f40a8df0790427e8afc5e18af96d838318076defc895dc9"
+        }, {
+          "name" : "ppt/media/notes.bin",
+          "length" : 12,
+          "sha3" : "9182472b303a1eb973b15322dd0441475dd5bc9a562f40276b7933706204768d"
+        }, {
+          "name" : "ppt/media/empty.jpg",
+          "length" : 0,
+          "sha3" : "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"
+        }, {
+          "name" : "docProps/app.xml",
+          "length" : 231,
+          "sha3" : "ccad9842631115a7126ecbf80021a6ffb17871e3265009458a3f330245cd66b0"
+        } ]
+      },
+      "core" : {
+        "changed" : true,
+        "propertyParts" : [ "docProps/app.xml" ],
+        "imagesStripped" : [ "ppt/media/pic.png" ],
+        "entries" : [ {
+          "name" : "[Content_Types].xml",
+          "length" : 8,
+          "sha3" : "5187b6b0e133a263372e10c0577c1abe81e24162b47cb8e03d0a8620f0b08ca2"
+        }, {
+          "name" : "ppt/media/",
+          "length" : 0,
+          "sha3" : "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"
+        }, {
+          "name" : "ppt/media/broken.jpg",
+          "length" : 8,
+          "sha3" : "4d2b71847579dd537367d9a2f080a7f92731be0b6264de1af5aeafff6845dbbf"
+        }, {
+          "name" : "ppt/media/pic.png",
+          "length" : 68,
+          "sha3" : "f3176630cb4aea4d143fafcfa804bf030d1c9e817492063263ff6298702f4861"
+        }, {
+          "name" : "ppt/media/clean.gif",
+          "length" : 35,
+          "sha3" : "f45624e3ab0c55452f40a8df0790427e8afc5e18af96d838318076defc895dc9"
+        }, {
+          "name" : "ppt/media/notes.bin",
+          "length" : 12,
+          "sha3" : "9182472b303a1eb973b15322dd0441475dd5bc9a562f40276b7933706204768d"
+        }, {
+          "name" : "ppt/media/empty.jpg",
+          "length" : 0,
+          "sha3" : "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"
+        }, {
+          "name" : "docProps/app.xml",
+          "length" : 231,
+          "sha3" : "ccad9842631115a7126ecbf80021a6ffb17871e3265009458a3f330245cd66b0"
+        } ]
+      }
+    },
+    "inputBase64" : "UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbLMJqSxILda3AwBQSwcIxxwXPAoAAAAIAAAAUEsDBAoAAAgAAAAAIVwAAAAAAAAAAAAAAAAKAAAAcHB0L21lZGlhL1BLAwQUAAgICAAAACFcAAAAAAAAAAAAAAAAFAAAAHBwdC9tZWRpYS9icm9rZW4uanBn+3/j/8P//10rAFBLBwhcoXiZCgAAAAgAAABQSwMECgAACAAAAAAhXDTefv9ZAAAAWQAAABEAAABwcHQvbWVkaWEvcGljLnBuZ4lQTkcNChoKAAAADUlIRFIAAAAEAAAABAgCAAAAJpMJKQAAAAl0RVh0QXV0aG9yAG1lBiBw+gAAAAtJREFUeJwBAgMEBQYHCAlVuVqjAAAAAElFTkSuQmCCUEsDBAoAAAgAAAAAIVz5NWJbIwAAACMAAAATAAAAcHB0L21lZGlhL2NsZWFuLmdpZkdJRjg5YQIAAgCAAAAAAAD///8sAAAAAAIAAgAAAgJMAQA7UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAATAAAAcHB0L21lZGlhL25vdGVzLmJpbsvLL1FIzFPIzE1MTwUAUEsHCC/dsscOAAAADAAAAFBLAwQUAAgICAAAACFcAAAAAAAAAAAAAAAAEwAAAHBwdC9tZWRpYS9lbXB0eS5qcGcDAFBLBwgAAAAAAgAAAAAAAABQSwMEFAAICAgAAAAhXAAAAAAAAAAAAAAAABAAAABkb2NQcm9wcy9hcHAueG1sTU9NawIxEP0rIXeddSmllGxELOJFKnRLzyGZ1cBmJiRT0X9vKLT2+D55z6yvaVYXLDUyDXq17LRC8hwinQb9Oe4WL1pVcRTczISDvmHVa2uOhTMWiVhVK6A66LNIfgWo/ozJ1WWTqSkTl+SkwXICnqbo8Y39d0IS6LvuGfAqSAHDIv8Vams2Oc/RO2mb7CH6wpUnUe8/efXFJRj4bzFbTtnRze77UW05kvrYGPglzcji5jEmtE+r3sADGnjcsHdQSwcI6I5wp78AAAAKAQAAUEsBAhQAFAAICAgAAAAhXMccFzwKAAAACAAAABMAAAAAAAAAAAAAAAAAAAAAAFtDb250ZW50X1R5cGVzXS54bWxQSwECCgAKAAAIAAAAACFcAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAAAABLAAAAcHB0L21lZGlhL1BLAQIUABQACAgIAAAAIVxcoXiZCgAAAAgAAAAUAAAAAAAAAAAAAAAAAHMAAABwcHQvbWVkaWEvYnJva2VuLmpwZ1BLAQIKAAoAAAgAAAAAIVw03n7/WQAAAFkAAAARAAAAAAAAAAAAAAAAAL8AAABwcHQvbWVkaWEvcGljLnBuZ1BLAQIKAAoAAAgAAAAAIVz5NWJbIwAAACMAAAATAAAAAAAAAAAAAAAAAEcBAABwcHQvbWVkaWEvY2xlYW4uZ2lmUEsBAhQAFAAICAgAAAAhXC/dsscOAAAADAAAABMAAAAAAAAAAAAAAAAAmwEAAHBwdC9tZWRpYS9ub3Rlcy5iaW5QSwECFAAUAAgICAAAACFcAAAAAAIAAAAAAAAAEwAAAAAAAAAAAAAAAADqAQAAcHB0L21lZGlhL2VtcHR5LmpwZ1BLAQIUABQACAgIAAAAIVzojnCnvwAAAAoBAAAQAAAAAAAAAAAAAAAAAC0CAABkb2NQcm9wcy9hcHAueG1sUEsFBgAAAAAIAAgA+wEAACoDAAAAAA=="
+  }, {
+    "name" : "xlsm_macro_enabled",
+    "description" : "application/vnd.ms-excel.sheet.macroenabled.12 is an Office type: cleaned",
+    "format" : "ooxml",
+    "fileName" : "book.xlsm",
+    "mediaType" : "application/vnd.ms-excel.sheet.macroenabled.12",
+    "inputLength" : 742,
+    "inputSha3" : "e0c2a9908baa0d01e9676e7189587795ff1e2ffaa1ca5355c4984cd677555d19",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "parts docProps/core.xml; images 0",
+        "outputName" : "book_nolocation.xlsm",
+        "entries" : [ {
+          "name" : "[Content_Types].xml",
+          "length" : 8,
+          "sha3" : "5187b6b0e133a263372e10c0577c1abe81e24162b47cb8e03d0a8620f0b08ca2"
+        }, {
+          "name" : "docProps/core.xml",
+          "length" : 345,
+          "sha3" : "e9a8c4fb9ea4898ff85f8117dde951a17244c423df005b562fddc5cdf2432f8b"
+        }, {
+          "name" : "xl/workbook.xml",
+          "length" : 11,
+          "sha3" : "5c6cf2e2e0abbc27d183029ab422aa3cf44e32f545c1cce6640acfa9699697a6"
+        } ]
+      },
+      "core" : {
+        "changed" : true,
+        "propertyParts" : [ "docProps/core.xml" ],
+        "imagesStripped" : [ ],
+        "entries" : [ {
+          "name" : "[Content_Types].xml",
+          "length" : 8,
+          "sha3" : "5187b6b0e133a263372e10c0577c1abe81e24162b47cb8e03d0a8620f0b08ca2"
+        }, {
+          "name" : "docProps/core.xml",
+          "length" : 345,
+          "sha3" : "e9a8c4fb9ea4898ff85f8117dde951a17244c423df005b562fddc5cdf2432f8b"
+        }, {
+          "name" : "xl/workbook.xml",
+          "length" : 11,
+          "sha3" : "5c6cf2e2e0abbc27d183029ab422aa3cf44e32f545c1cce6640acfa9699697a6"
+        } ]
+      }
+    },
+    "inputBase64" : "UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbLMJqSxILda3AwBQSwcIxxwXPAoAAAAIAAAAUEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAARAAAAZG9jUHJvcHMvY29yZS54bWxtUdFOwzAM/JUq723SDU2jajsYaLwwCYkhEG9R4nURbRIl3rr9PWnYiiaQ8nK58/lsl4tj1yYHcF4ZXZE8YyQBLYxUuqnI22aVzknikWvJW6OhIifwZFGXwhbCOHhxxoJDBT4JPtoXwlZkh2gLSr3YQcd9FhQ6kFvjOo4BuoZaLr54A3TC2Ix2gFxy5HQwTO3oSM6WUoyWdu/aaCAFhRY60OhpnuX0V4vgOv9vQWRG5dGrUdX3fdZPoy4kyunH+vk1hk+VHmYXQOpSigIVtlAv97IBLOn4MVDCAUfj6idlDlxrldxrVNpE1YUbltZyj+uw3a0CuTzVCGJ3B0fe2RaG/iX9qynPQ/34gExC9AJPNhzjwrxPHx43K1JP2GSWsts0n23YvGAsvM8hwlV9zOHgoIaT1/lN7DniiK5PW38DUEsHCLbGWh4/AQAAJQIAAFBLAwQUAAgICAAAACFcAAAAAAAAAAAAAAAADwAAAHhsL3dvcmtib29rLnhtbLMpzy/KTsrPz9a3AwBQSwcIzp6YEw0AAAALAAAAUEsBAhQAFAAICAgAAAAhXMccFzwKAAAACAAAABMAAAAAAAAAAAAAAAAAAAAAAFtDb250ZW50X1R5cGVzXS54bWxQSwECFAAUAAgICAAAACFctsZaHj8BAAAlAgAAEQAAAAAAAAAAAAAAAABLAAAAZG9jUHJvcHMvY29yZS54bWxQSwECFAAUAAgICAAAACFczp6YEw0AAAALAAAADwAAAAAAAAAAAAAAAADJAQAAeGwvd29ya2Jvb2sueG1sUEsFBgAAAAADAAMAvQAAABMCAAAAAA=="
+  }, {
+    "name" : "xlsx_nothing_to_scrub",
+    "description" : "no docProps, no media: the package is used as it is",
+    "format" : "ooxml",
+    "fileName" : "empty.xlsx",
+    "mediaType" : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "inputLength" : 297,
+    "inputSha3" : "d0ad7daf2e4a99942a85948f2e22376fe64a5e433ca4347f55846e4dbe03a38d",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "unchanged",
+        "detail" : "nothing to remove",
+        "outputName" : null
+      },
+      "core" : {
+        "changed" : false,
+        "propertyParts" : [ ],
+        "imagesStripped" : [ ]
+      }
+    },
+    "inputBase64" : "UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbLMJqSxILda3AwBQSwcIxxwXPAoAAAAIAAAAUEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAAPAAAAeGwvd29ya2Jvb2sueG1ssynPL8pOys/P1rcDAFBLBwjOnpgTDQAAAAsAAABQSwECFAAUAAgICAAAACFcxxwXPAoAAAAIAAAAEwAAAAAAAAAAAAAAAAAAAAAAW0NvbnRlbnRfVHlwZXNdLnhtbFBLAQIUABQACAgIAAAAIVzOnpgTDQAAAAsAAAAPAAAAAAAAAAAAAAAAAEsAAAB4bC93b3JrYm9vay54bWxQSwUGAAAAAAIAAgB+AAAAlQAAAAAA"
+  }, {
+    "name" : "zip_named_docx",
+    "description" : "a zip without [Content_Types].xml under a .docx name: not an Office document",
+    "format" : "other",
+    "fileName" : "fake.docx",
+    "mediaType" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "inputLength" : 138,
+    "inputSha3" : "f0b6882601456b88d864c912bba8b18c29ec468224c5634a303f5fc34b20cb91",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "passthrough",
+        "detail" : "a zip, not an Office document",
+        "outputName" : null
+      }
+    },
+    "inputBase64" : "UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAAKAAAAcmVhZG1lLnR4dMvIBABQSwcIrCqT2AQAAAACAAAAUEsBAhQAFAAICAgAAAAhXKwqk9gEAAAAAgAAAAoAAAAAAAAAAAAAAAAAAAAAAHJlYWRtZS50eHRQSwUGAAAAAAEAAQA4AAAAPAAAAAAA"
+  }, {
+    "name" : "zip_plain",
+    "description" : "a plain zip — even one that holds a core.xml — is never opened",
+    "format" : "other",
+    "fileName" : "bundle.zip",
+    "mediaType" : "application/zip",
+    "inputLength" : 607,
+    "inputSha3" : "79f9243cc56824ee25c604bb9702e673001061906b1b5ce23ec156f89dbaefc9",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "passthrough",
+        "detail" : "no cleaner for this file type",
+        "outputName" : null
+      }
+    },
+    "inputBase64" : "UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbLMJqSxILda3AwBQSwcIxxwXPAoAAAAIAAAAUEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAARAAAAZG9jUHJvcHMvY29yZS54bWxtUdFOwzAM/JUq723SDU2jajsYaLwwCYkhEG9R4nURbRIl3rr9PWnYiiaQ8nK58/lsl4tj1yYHcF4ZXZE8YyQBLYxUuqnI22aVzknikWvJW6OhIifwZFGXwhbCOHhxxoJDBT4JPtoXwlZkh2gLSr3YQcd9FhQ6kFvjOo4BuoZaLr54A3TC2Ix2gFxy5HQwTO3oSM6WUoyWdu/aaCAFhRY60OhpnuX0V4vgOv9vQWRG5dGrUdX3fdZPoy4kyunH+vk1hk+VHmYXQOpSigIVtlAv97IBLOn4MVDCAUfj6idlDlxrldxrVNpE1YUbltZyj+uw3a0CuTzVCGJ3B0fe2RaG/iX9qynPQ/34gExC9AJPNhzjwrxPHx43K1JP2GSWsts0n23YvGAsvM8hwlV9zOHgoIaT1/lN7DniiK5PW38DUEsHCLbGWh4/AQAAJQIAAFBLAQIUABQACAgIAAAAIVzHHBc8CgAAAAgAAAATAAAAAAAAAAAAAAAAAAAAAABbQ29udGVudF9UeXBlc10ueG1sUEsBAhQAFAAICAgAAAAhXLbGWh4/AQAAJQIAABEAAAAAAAAAAAAAAAAASwAAAGRvY1Byb3BzL2NvcmUueG1sUEsFBgAAAAACAAIAgAAAAMkBAAAAAA=="
+  }, {
+    "name" : "docm_not_an_office_type",
+    "description" : "application/vnd.ms-word.document.macroenabled.12 matches none of the four Office hints (officedocument, msword, ms-excel, ms-powerpoint): passed through, as on the Dart side",
+    "format" : "other",
+    "fileName" : "macro.docm",
+    "mediaType" : "application/vnd.ms-word.document.macroenabled.12",
+    "inputLength" : 607,
+    "inputSha3" : "79f9243cc56824ee25c604bb9702e673001061906b1b5ce23ec156f89dbaefc9",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "passthrough",
+        "detail" : "no cleaner for this file type",
+        "outputName" : null
+      }
+    },
+    "inputBase64" : "UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbLMJqSxILda3AwBQSwcIxxwXPAoAAAAIAAAAUEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAARAAAAZG9jUHJvcHMvY29yZS54bWxtUdFOwzAM/JUq723SDU2jajsYaLwwCYkhEG9R4nURbRIl3rr9PWnYiiaQ8nK58/lsl4tj1yYHcF4ZXZE8YyQBLYxUuqnI22aVzknikWvJW6OhIifwZFGXwhbCOHhxxoJDBT4JPtoXwlZkh2gLSr3YQcd9FhQ6kFvjOo4BuoZaLr54A3TC2Ix2gFxy5HQwTO3oSM6WUoyWdu/aaCAFhRY60OhpnuX0V4vgOv9vQWRG5dGrUdX3fdZPoy4kyunH+vk1hk+VHmYXQOpSigIVtlAv97IBLOn4MVDCAUfj6idlDlxrldxrVNpE1YUbltZyj+uw3a0CuTzVCGJ3B0fe2RaG/iX9qynPQ/34gExC9AJPNhzjwrxPHx43K1JP2GSWsts0n23YvGAsvM8hwlV9zOHgoIaT1/lN7DniiK5PW38DUEsHCLbGWh4/AQAAJQIAAFBLAQIUABQACAgIAAAAIVzHHBc8CgAAAAgAAAATAAAAAAAAAAAAAAAAAAAAAABbQ29udGVudF9UeXBlc10ueG1sUEsBAhQAFAAICAgAAAAhXLbGWh4/AQAAJQIAABEAAAAAAAAAAAAAAAAASwAAAGRvY1Byb3BzL2NvcmUueG1sUEsFBgAAAAACAAIAgAAAAMkBAAAAAA=="
+  }, {
+    "name" : "text",
+    "description" : "no cleaner for this type: used unchanged, the user is told",
+    "format" : "other",
+    "fileName" : "notes.txt",
+    "mediaType" : "application/octet-stream",
+    "inputLength" : 5,
+    "inputSha3" : "3338be694f50c5f338814986cdf0686453a888b84f424d792af4b9202398f392",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "passthrough",
+        "detail" : "no cleaner for this file type",
+        "outputName" : null
+      }
+    },
+    "inputBase64" : "aGVsbG8="
+  } ]
+}
