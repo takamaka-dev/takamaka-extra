@@ -1021,6 +1021,63 @@
     },
     "inputBase64" : "GkXfoxEREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREQ=="
   }, {
+    "name" : "mp4_64bit_size_near_2_63_uuid",
+    "description" : "a top-level uuid box whose 64-bit size is 2^63-1: refused, nothing blanked",
+    "format" : "mp4",
+    "fileName" : "huge.mp4",
+    "mediaType" : "video/mp4",
+    "inputLength" : 56,
+    "inputSha3" : "df56f9c79b348828d1faf5c577ec499d03ef5b379ba9925e6f886b43ee0869a2",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "malformed"
+      }
+    },
+    "inputBase64" : "AAAAFGZ0eXBpc29tAAAAAGlzb20AAAABdXVpZH//////////enp6enp6enp6enp6enp6enp6eno="
+  }, {
+    "name" : "mp4_64bit_size_near_2_63_moov_udta",
+    "description" : "the same lie on a udta inside a well-formed moov",
+    "format" : "mp4",
+    "fileName" : "huge_udta.mp4",
+    "mediaType" : "video/mp4",
+    "inputLength" : 56,
+    "inputSha3" : "629769ff44966762e23e25e5fca66ca499e151acc06e4526ecb0701175f150a6",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "malformed"
+      }
+    },
+    "inputBase64" : "AAAAFGZ0eXBpc29tAAAAAGlzb20AAAAkbW9vdgAAAAF1ZHRhf/////////9BQUFBQUFBQUFBQUE="
+  }, {
+    "name" : "mp4_64bit_size_near_2_63_mdat",
+    "description" : "and on a box that is only walked past (mdat)",
+    "format" : "mp4",
+    "fileName" : "huge_mdat.mp4",
+    "mediaType" : "video/mp4",
+    "inputLength" : 44,
+    "inputSha3" : "52fb46827b2e56ebe32cbb10d140fa12b92ddd42c493da12737756d43b0e0ffa",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "malformed"
+      }
+    },
+    "inputBase64" : "AAAAFGZ0eXBpc29tAAAAAGlzb20AAAABbWRhdH/////////wAQEBAQEBAQE="
+  }, {
     "name" : "pdf_info_and_xmp",
     "description" : "a valid one-page PDF: 7 Info values blanked (Title kept), /Metadata reference, XMP stream and packet gone",
     "format" : "pdf",
@@ -1423,6 +1480,157 @@
       }
     },
     "inputBase64" : "UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbLMJqSxILda3AwBQSwcIxxwXPAoAAAAIAAAAUEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAAPAAAAeGwvd29ya2Jvb2sueG1ssynPL8pOys/P1rcDAFBLBwjOnpgTDQAAAAsAAABQSwECFAAUAAgICAAAACFcxxwXPAoAAAAIAAAAEwAAAAAAAAAAAAAAAAAAAAAAW0NvbnRlbnRfVHlwZXNdLnhtbFBLAQIUABQACAgIAAAAIVzOnpgTDQAAAAsAAAAPAAAAAAAAAAAAAAAAAEsAAAB4bC93b3JrYm9vay54bWxQSwUGAAAAAAIAAgB+AAAAlQAAAAAA"
+  }, {
+    "name" : "docx_no_central_directory",
+    "description" : "the file stops after the entries (PK magic and [Content_Types].xml are there, the central directory and the end record are not)",
+    "format" : "ooxml",
+    "fileName" : "cut.docx",
+    "mediaType" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "inputLength" : 596,
+    "inputSha3" : "5ac4b6730fb61b362e574c7e4fc17aa02b2f60a8740c214504fc7f5e873baa1d",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "unreadable"
+      }
+    },
+    "inputBase64" : "UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbLMJqSxILda3AwBQSwcIxxwXPAoAAAAIAAAAUEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAARAAAAZG9jUHJvcHMvY29yZS54bWxtUdFOwzAM/JUq723SDU2jajsYaLwwCYkhEG9R4nURbRIl3rr9PWnYiiaQ8nK58/lsl4tj1yYHcF4ZXZE8YyQBLYxUuqnI22aVzknikWvJW6OhIifwZFGXwhbCOHhxxoJDBT4JPtoXwlZkh2gLSr3YQcd9FhQ6kFvjOo4BuoZaLr54A3TC2Ix2gFxy5HQwTO3oSM6WUoyWdu/aaCAFhRY60OhpnuX0V4vgOv9vQWRG5dGrUdX3fdZPoy4kyunH+vk1hk+VHmYXQOpSigIVtlAv97IBLOn4MVDCAUfj6idlDlxrldxrVNpE1YUbltZyj+uw3a0CuTzVCGJ3B0fe2RaG/iX9qynPQ/34gExC9AJPNhzjwrxPHx43K1JP2GSWsts0n23YvGAsvM8hwlV9zOHgoIaT1/lN7DniiK5PW38DUEsHCLbGWh4/AQAAJQIAAFBLAwQUAAgICAAAACFcAAAAAAAAAAAAAAAAEQAAAHdvcmQvZG9jdW1lbnQueG1ss7GvyM1RKEstKs7Mz7NVMtQzULK3sym3SslPLs1NzSsBsZPyUypBdAGIKAIRJXYeqTk5+QpJpSnpqSU2+iAREFkEJgvAJESXPpJRAFBLBwhQ7daSTAAAAGwAAAA="
+  }, {
+    "name" : "docx_end_record_cut",
+    "description" : "the last 10 bytes of the end record are missing",
+    "format" : "ooxml",
+    "fileName" : "cut_end.docx",
+    "mediaType" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "inputLength" : 799,
+    "inputSha3" : "0462e7ac4ef5f418c1e62f57355539f04e8f1914b83daa45344fb80679949e68",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "unreadable"
+      }
+    },
+    "inputBase64" : "UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbLMJqSxILda3AwBQSwcIxxwXPAoAAAAIAAAAUEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAARAAAAZG9jUHJvcHMvY29yZS54bWxtUdFOwzAM/JUq723SDU2jajsYaLwwCYkhEG9R4nURbRIl3rr9PWnYiiaQ8nK58/lsl4tj1yYHcF4ZXZE8YyQBLYxUuqnI22aVzknikWvJW6OhIifwZFGXwhbCOHhxxoJDBT4JPtoXwlZkh2gLSr3YQcd9FhQ6kFvjOo4BuoZaLr54A3TC2Ix2gFxy5HQwTO3oSM6WUoyWdu/aaCAFhRY60OhpnuX0V4vgOv9vQWRG5dGrUdX3fdZPoy4kyunH+vk1hk+VHmYXQOpSigIVtlAv97IBLOn4MVDCAUfj6idlDlxrldxrVNpE1YUbltZyj+uw3a0CuTzVCGJ3B0fe2RaG/iX9qynPQ/34gExC9AJPNhzjwrxPHx43K1JP2GSWsts0n23YvGAsvM8hwlV9zOHgoIaT1/lN7DniiK5PW38DUEsHCLbGWh4/AQAAJQIAAFBLAwQUAAgICAAAACFcAAAAAAAAAAAAAAAAEQAAAHdvcmQvZG9jdW1lbnQueG1ss7GvyM1RKEstKs7Mz7NVMtQzULK3sym3SslPLs1NzSsBsZPyUypBdAGIKAIRJXYeqTk5+QpJpSnpqSU2+iAREFkEJgvAJESXPpJRAFBLBwhQ7daSTAAAAGwAAABQSwECFAAUAAgICAAAACFcxxwXPAoAAAAIAAAAEwAAAAAAAAAAAAAAAAAAAAAAW0NvbnRlbnRfVHlwZXNdLnhtbFBLAQIUABQACAgIAAAAIVy2xloePwEAACUCAAARAAAAAAAAAAAAAAAAAEsAAABkb2NQcm9wcy9jb3JlLnhtbFBLAQIUABQACAgIAAAAIVxQ7daSTAAAAGwAAAARAAAAAAAAAAAAAAAAAMkBAAB3b3JkL2RvY3VtZW50LnhtbFBLBQYAAAAAAwADAA=="
+  }, {
+    "name" : "docx_bad_central_header",
+    "description" : "the second central-directory header has a wrong signature",
+    "format" : "ooxml",
+    "fileName" : "bad_dir.docx",
+    "mediaType" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "inputLength" : 809,
+    "inputSha3" : "5e7b7f22c13cbed87777113d0587e5a85f29e4e423a4df5452ba07b520dcfd2e",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "failed",
+        "detail" : null,
+        "outputName" : null
+      },
+      "core" : {
+        "result" : "unreadable"
+      }
+    },
+    "inputBase64" : "UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbLMJqSxILda3AwBQSwcIxxwXPAoAAAAIAAAAUEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAARAAAAZG9jUHJvcHMvY29yZS54bWxtUdFOwzAM/JUq723SDU2jajsYaLwwCYkhEG9R4nURbRIl3rr9PWnYiiaQ8nK58/lsl4tj1yYHcF4ZXZE8YyQBLYxUuqnI22aVzknikWvJW6OhIifwZFGXwhbCOHhxxoJDBT4JPtoXwlZkh2gLSr3YQcd9FhQ6kFvjOo4BuoZaLr54A3TC2Ix2gFxy5HQwTO3oSM6WUoyWdu/aaCAFhRY60OhpnuX0V4vgOv9vQWRG5dGrUdX3fdZPoy4kyunH+vk1hk+VHmYXQOpSigIVtlAv97IBLOn4MVDCAUfj6idlDlxrldxrVNpE1YUbltZyj+uw3a0CuTzVCGJ3B0fe2RaG/iX9qynPQ/34gExC9AJPNhzjwrxPHx43K1JP2GSWsts0n23YvGAsvM8hwlV9zOHgoIaT1/lN7DniiK5PW38DUEsHCLbGWh4/AQAAJQIAAFBLAwQUAAgICAAAACFcAAAAAAAAAAAAAAAAEQAAAHdvcmQvZG9jdW1lbnQueG1ss7GvyM1RKEstKs7Mz7NVMtQzULK3sym3SslPLs1NzSsBsZPyUypBdAGIKAIRJXYeqTk5+QpJpSnpqSU2+iAREFkEJgvAJESXPpJRAFBLBwhQ7daSTAAAAGwAAABQSwECFAAUAAgICAAAACFcxxwXPAoAAAAIAAAAEwAAAAAAAAAAAAAAAAAAAAAAW0NvbnRlbnRfVHlwZXNdLnhtbFBLfwIUABQACAgIAAAAIVy2xloePwEAACUCAAARAAAAAAAAAAAAAAAAAEsAAABkb2NQcm9wcy9jb3JlLnhtbFBLAQIUABQACAgIAAAAIVxQ7daSTAAAAGwAAAARAAAAAAAAAAAAAAAAAMkBAAB3b3JkL2RvY3VtZW50LnhtbFBLBQYAAAAAAwADAL8AAABUAgAAAAA="
+  }, {
+    "name" : "docx_non_ascii_around_custom",
+    "description" : "custom.xml removed from a package whose [Content_Types].xml and _rels/.rels hold Latin-1 and UTF-8 non-ASCII bytes: only the Override and the Relationship go, every other byte is kept",
+    "format" : "ooxml",
+    "fileName" : "accents.docx",
+    "mediaType" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "inputLength" : 1004,
+    "inputSha3" : "289072e76161a42cd1410d02e3b1d118368282ed136b267a28b8086dd2ff4955",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "parts docProps/custom.xml (removed); images 0",
+        "outputName" : "accents_nolocation.docx",
+        "entries" : [ {
+          "name" : "word/document.xml",
+          "length" : 108,
+          "sha3" : "3dbcc898cee8fc2c1c7f6f62143217496d01d058c2161ec43043d09f206629d1"
+        }, {
+          "name" : "[Content_Types].xml",
+          "length" : 143,
+          "sha3" : "70def61884d4cc6c2005ed89c279af731e0b5001d53adbe432f213ddb0836f33"
+        }, {
+          "name" : "_rels/.rels",
+          "length" : 100,
+          "sha3" : "680c8ffb3c1c4d96f752f7f2d12744b2ebccc45de9d9c80cfbd9464952e6992f"
+        } ]
+      },
+      "core" : {
+        "changed" : true,
+        "propertyParts" : [ "docProps/custom.xml (removed)" ],
+        "imagesStripped" : [ ],
+        "entries" : [ {
+          "name" : "word/document.xml",
+          "length" : 108,
+          "sha3" : "3dbcc898cee8fc2c1c7f6f62143217496d01d058c2161ec43043d09f206629d1"
+        }, {
+          "name" : "[Content_Types].xml",
+          "length" : 143,
+          "sha3" : "70def61884d4cc6c2005ed89c279af731e0b5001d53adbe432f213ddb0836f33"
+        }, {
+          "name" : "_rels/.rels",
+          "length" : 100,
+          "sha3" : "680c8ffb3c1c4d96f752f7f2d12744b2ebccc45de9d9c80cfbd9464952e6992f"
+        } ]
+      }
+    },
+    "inputBase64" : "UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbH3PQQ4CIQwF0KsgW8OgCxNNmHGhLkyMmugFkCmGZKAEGKNH8hyexltYnb3btv+1Vcu779gNUnYYaj6tJpxBMNi6cK359nQQ8/lsIaZ82ajzI0Ju1EgIZrR9PZkQjVqD1X1X2OZeIAwIiZytMFChfDM11zF2zuhCbfnr7vQFupqnd+79m8tGHeiE5FpgR53KXnsKyRbNMWHM0vS5oK/+u7fQVhgh0JTF5HXJAq11BojpPUWqgRGRTEjFQR5/RVouh88+UEsHCGaAkaHCAAAADAEAAFBLAwQUAAgICAAAACFcAAAAAAAAAAAAAAAACwAAAF9yZWxzLy5yZWxzswlKzUksyczPK87ILCi2s0HmKnim2CoVeaYYKimEJBalp5bYKpXnF6Xop+Qnl+am5pXoVeTmKCn4JCal5tgq5SW+L0tVOLxeSR+7ISZAQyoLUm2VkkuLS/JzdQuK8gtSi0oyU4sRpgMNDgAKF+tD1IDNBxqnj+pGAFBLBwjAfaOeeQAAALMAAABQSwMEFAAICAgAAAAhXAAAAAAAAAAAAAAAABMAAABkb2NQcm9wcy9jdXN0b20ueG1ss7GvyM1RKEstKs7Mz7NVMtQzULK3swkoyi9ILSrJTC22symAsCsV8hJzU22V/NPSMpNTlRQKMlNslYyU7GzKSqxyCsqLS4rsfErTE/PybfQRIjb6MN1AJpKhAFBLBwhcekbmWwAAAHYAAABQSwMEFAAICAgAAAAhXAAAAAAAAAAAAAAAABEAAAB3b3JkL2RvY3VtZW50LnhtbLOxr8jNUShLLSrOzM+zVTLUM1Cyt7Mpt0rJTy7NTc0rAbGT8lMqQXQBiCgCESV2Hqk5OfkKSaUp6aklNvogERBZBCYLwCRElz6SUQBQSwcIUO3WkkwAAABsAAAAUEsBAhQAFAAICAgAAAAhXGaAkaHCAAAADAEAABMAAAAAAAAAAAAAAAAAAAAAAFtDb250ZW50X1R5cGVzXS54bWxQSwECFAAUAAgICAAAACFcwH2jnnkAAACzAAAACwAAAAAAAAAAAAAAAAADAQAAX3JlbHMvLnJlbHNQSwECFAAUAAgICAAAACFcXHpG5lsAAAB2AAAAEwAAAAAAAAAAAAAAAAC1AQAAZG9jUHJvcHMvY3VzdG9tLnhtbFBLAQIUABQACAgIAAAAIVxQ7daSTAAAAGwAAAARAAAAAAAAAAAAAAAAAFECAAB3b3JkL2RvY3VtZW50LnhtbFBLBQYAAAAABAAEAPoAAADcAgAAAAA="
+  }, {
+    "name" : "docx_repeated_entry_name",
+    "description" : "word/a.txt is in the package twice (\"first\", then \"second\"): the first one is kept",
+    "format" : "ooxml",
+    "fileName" : "twice.docx",
+    "mediaType" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "inputLength" : 846,
+    "inputSha3" : "e8b671002163f7d90dc9bbbf5d4a47a69f1dc0876e7a088d2d453e2c8a3559d1",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "parts docProps/core.xml; images 0",
+        "outputName" : "twice_nolocation.docx",
+        "entries" : [ {
+          "name" : "[Content_Types].xml",
+          "length" : 8,
+          "sha3" : "5187b6b0e133a263372e10c0577c1abe81e24162b47cb8e03d0a8620f0b08ca2"
+        }, {
+          "name" : "word/a.txt",
+          "length" : 5,
+          "sha3" : "5fdbf98ad6ebaca45ff0cc60361778b8b5eecfd76f44c11bcd8b558a5364b2ca"
+        }, {
+          "name" : "docProps/core.xml",
+          "length" : 345,
+          "sha3" : "e9a8c4fb9ea4898ff85f8117dde951a17244c423df005b562fddc5cdf2432f8b"
+        } ]
+      },
+      "core" : {
+        "changed" : true,
+        "propertyParts" : [ "docProps/core.xml" ],
+        "imagesStripped" : [ ],
+        "entries" : [ {
+          "name" : "[Content_Types].xml",
+          "length" : 8,
+          "sha3" : "5187b6b0e133a263372e10c0577c1abe81e24162b47cb8e03d0a8620f0b08ca2"
+        }, {
+          "name" : "word/a.txt",
+          "length" : 5,
+          "sha3" : "5fdbf98ad6ebaca45ff0cc60361778b8b5eecfd76f44c11bcd8b558a5364b2ca"
+        }, {
+          "name" : "docProps/core.xml",
+          "length" : 345,
+          "sha3" : "e9a8c4fb9ea4898ff85f8117dde951a17244c423df005b562fddc5cdf2432f8b"
+        } ]
+      }
+    },
+    "inputBase64" : "UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbLMJqSxILda3AwBQSwcIxxwXPAoAAAAIAAAAUEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAAKAAAAd29yZC9hLnR4dEvLLCouAQBQSwcIV+5xkgcAAAAFAAAAUEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAAKAAAAd29yZC9hLnR4dCtOTc7PSwEAUEsHCGkRH7YIAAAABgAAAFBLAwQUAAgICAAAACFcAAAAAAAAAAAAAAAAEQAAAGRvY1Byb3BzL2NvcmUueG1sbVHRTsMwDPyVKu9t0g1No2o7GGi8MAmJIRBvUeJ1EW0SJd66/T1p2IomkPJyufP5bJeLY9cmB3BeGV2RPGMkAS2MVLqpyNtmlc5J4pFryVujoSIn8GRRl8IWwjh4ccaCQwU+CT7aF8JWZIdoC0q92EHHfRYUOpBb4zqOAbqGWi6+eAN0wtiMdoBccuR0MEzt6EjOllKMlnbv2mggBYUWOtDoaZ7l9FeL4Dr/b0FkRuXRq1HV933WT6MuJMrpx/r5NYZPlR5mF0DqUooCFbZQL/eyASzp+DFQwgFH4+onZQ5ca5Xca1TaRNWFG5bWco/rsN2tArk81QhidwdH3tkWhv4l/aspz0P9+IBMQvQCTzYc48K8Tx8eNytST9hklrLbNJ9t2LxgLLzPIcJVfczh4KCGk9f5Tew54oiuT1t/A1BLBwi2xloePwEAACUCAABQSwECFAAUAAgICAAAACFcxxwXPAoAAAAIAAAAEwAAAAAAAAAAAAAAAAAAAAAAW0NvbnRlbnRfVHlwZXNdLnhtbFBLAQIUABQACAgIAAAAIVxX7nGSBwAAAAUAAAAKAAAAAAAAAAAAAAAAAEsAAAB3b3JkL2EudHh0UEsBAhQAFAAICAgAAAAhXGkRH7YIAAAABgAAAAoAAAAAAAAAAAAAAAAAigAAAHdvcmQvYS50eHRQSwECFAAUAAgICAAAACFctsZaHj8BAAAlAgAAEQAAAAAAAAAAAAAAAADKAAAAZG9jUHJvcHMvY29yZS54bWxQSwUGAAAAAAQABADwAAAASAIAAAAA"
   }, {
     "name" : "zip_named_docx",
     "description" : "a zip without [Content_Types].xml under a .docx name: not an Office document",

@@ -54,7 +54,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * order, with the SHA3-256 of its uncompressed bytes.</li>
  * <li>{@code expected.core} — the format's own cleaner called directly
  * ({@link ImageLocationStripper}, {@link Mp4MetadataCleaner}, {@link PdfMetadataCleaner},
- * {@link OoxmlMetadataCleaner}), with its counters.</li>
+ * {@link OoxmlMetadataCleaner}), with its counters; {@code "result": "unreadable"} alone for an
+ * Office package whose zip cannot be read (the cleaner throws).</li>
  * </ul>
  *
  * <p>Dart consumers (each reads a byte-identical copy at {@code test/fixtures/}):
@@ -283,6 +284,19 @@ public class MetadataCleanVectorTest {
         all.add(new Case("webm", mp4, "clip.webm", FAILED, "EBML, no ftyp: refused",
                 cat(bytes(0x1A, 0x45, 0xDF, 0xA3), filled(60, 0x11))));
 
+        // 64-bit box sizes close to 2^63: "pos + size" overflows, "size > end - pos" does not. The
+        // Dart cleaner used the sum, took the box for a valid one and blanked it without end
+        // (fixed 2026-11-11, tkmChat fix/C120-cleaner-edge-cases).
+        all.add(new Case("mp4_64bit_size_near_2_63_uuid", mp4, "huge.mp4", FAILED,
+                "a top-level uuid box whose 64-bit size is 2^63-1: refused, nothing blanked",
+                cat(isom, cat(u32(1), l1("uuid"), u32(0x7FFFFFFFL), u32(0xFFFFFFFFL), filled(20, 0x7A)))));
+        all.add(new Case("mp4_64bit_size_near_2_63_moov_udta", mp4, "huge_udta.mp4", FAILED,
+                "the same lie on a udta inside a well-formed moov",
+                cat(isom, box("moov", cat(u32(1), l1("udta"), u32(0x7FFFFFFFL), u32(0xFFFFFFFFL), filled(12, 0x41))))));
+        all.add(new Case("mp4_64bit_size_near_2_63_mdat", mp4, "huge_mdat.mp4", FAILED,
+                "and on a box that is only walked past (mdat)",
+                cat(isom, cat(u32(1), l1("mdat"), u32(0x7FFFFFFFL), u32(0xFFFFFFF0L), filled(8, 1)))));
+
         // ---- PDF ----
         final String pdf = "pdf";
         all.add(new Case("pdf_info_and_xmp", pdf, "notes.pdf", CLEANED,
@@ -348,6 +362,43 @@ public class MetadataCleanVectorTest {
         all.add(new Case("xlsx_nothing_to_scrub", ooxml, "empty.xlsx", UNCHANGED,
                 "no docProps, no media: the package is used as it is",
                 zip(z("[Content_Types].xml", "<Types/>"), z("xl/workbook.xml", "<workbook/>"))));
+        // A zip that cannot be read is FAILED — never "unchanged": it was not inspected.
+        byte[] small = zip(z("[Content_Types].xml", "<Types/>"), z("docProps/core.xml", CORE), z("word/document.xml", DOCUMENT));
+        int firstCen = indexOf(small, bytes(0x50, 0x4B, 0x01, 0x02));
+        all.add(new Case("docx_no_central_directory", ooxml, "cut.docx", FAILED,
+                "the file stops after the entries (PK magic and [Content_Types].xml are there, the central "
+                + "directory and the end record are not)",
+                Arrays.copyOf(small, firstCen)));
+        all.add(new Case("docx_end_record_cut", ooxml, "cut_end.docx", FAILED,
+                "the last 10 bytes of the end record are missing", Arrays.copyOf(small, small.length - 10)));
+        byte[] badHeader = small.clone();
+        badHeader[firstCen + 4 + indexOf(Arrays.copyOfRange(small, firstCen + 4, small.length), bytes(0x50, 0x4B, 0x01, 0x02)) + 2] = 0x7F;
+        all.add(new Case("docx_bad_central_header", ooxml, "bad_dir.docx", FAILED,
+                "the second central-directory header has a wrong signature", badHeader));
+        // custom.xml removed: the two rewritten parts keep every byte outside the removed element,
+        // whatever their encoding (Latin-1 E9 / EF next to UTF-8 C3 A9 / C3 AF).
+        byte[] override = l1("<Override PartName=\"/docProps/custom.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.custom-properties+xml\"/>");
+        byte[] relationship = l1("<Relationship Id=\"rId4\" Type=\"custom-properties\" Target=\"docProps/custom.xml\"/>");
+        all.add(new Case("docx_non_ascii_around_custom", ooxml, "accents.docx", CLEANED,
+                "custom.xml removed from a package whose [Content_Types].xml and _rels/.rels hold Latin-1 and "
+                + "UTF-8 non-ASCII bytes: only the Override and the Relationship go, every other byte is kept",
+                zip(z("[Content_Types].xml", cat(l1("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><Types><!-- caf"),
+                                bytes(0xC3, 0xA9), l1(" --><Default Extension=\"xml\" ContentType=\"application/xml\" Label=\"r"),
+                                bytes(0xE9), l1("sum"), bytes(0xE9), l1("\"/>"), override, l1("</Types>"))),
+                        z("_rels/.rels", cat(l1("<Relationships><Relationship Id=\"rId1\" Target=\"word/document.xml\" Label=\"na"),
+                                bytes(0xEF), l1("ve "), bytes(0xC3, 0xAF), l1("\"/>"), relationship, l1("</Relationships>"))),
+                        z("docProps/custom.xml", CUSTOM),
+                        z("word/document.xml", DOCUMENT))));
+        // A repeated entry name: both sides keep the FIRST entry.
+        byte[] repeated = zip(z("[Content_Types].xml", "<Types/>"), z("word/a.txt", "first"), z("word/b.txt", "second"),
+                z("docProps/core.xml", CORE));
+        byte[] nameB = l1("word/b.txt");
+        for (int at = indexOf(repeated, nameB); at >= 0; at = indexOf(repeated, nameB)) {
+            repeated[at + 5] = 'a';
+        }
+        all.add(new Case("docx_repeated_entry_name", ooxml, "twice.docx", CLEANED,
+                "word/a.txt is in the package twice (\"first\", then \"second\"): the first one is kept",
+                repeated));
         all.add(new Case("zip_named_docx", "other", "fake.docx", PASSTHROUGH,
                 "a zip without [Content_Types].xml under a .docx name: not an Office document",
                 zip(z("readme.txt", "hi"))));
@@ -468,12 +519,17 @@ public class MetadataCleanVectorTest {
                 c.put("sha3", sha3(p.getBytes()));
             } else if (format.equals("ooxml")) {
                 ObjectNode c = expected.putObject("core");
-                OoxmlMetadataCleaner.OoxmlCleanResult o = OoxmlMetadataCleaner.clean(src);
-                c.put("changed", o.isChanged());
-                c.set("propertyParts", strings(o.getPropertyParts()));
-                c.set("imagesStripped", strings(o.getImagesStripped()));
-                if (o.isChanged()) {
-                    c.set("entries", entries(o.getBytes()));
+                try {
+                    OoxmlMetadataCleaner.OoxmlCleanResult o = OoxmlMetadataCleaner.clean(src);
+                    c.put("changed", o.isChanged());
+                    c.set("propertyParts", strings(o.getPropertyParts()));
+                    c.set("imagesStripped", strings(o.getImagesStripped()));
+                    if (o.isChanged()) {
+                        c.set("entries", entries(o.getBytes()));
+                    }
+                } catch (IOException e) {
+                    // not a readable zip (only such a vector carries "result")
+                    c.put("result", "unreadable");
                 }
             }
         } finally {
