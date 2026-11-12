@@ -579,6 +579,43 @@ final class SyntheticMedia {
         throw new IllegalStateException(name + " is not in the zip");
     }
 
+    /** Offset of the central-directory header of {@code name}. */
+    private static int centralHeader(byte[] zip, String name) {
+        byte[] n = name.getBytes(StandardCharsets.UTF_8);
+        for (int cen = indexOf(zip, bytes(0x50, 0x4B, 0x01, 0x02)); cen >= 0 && le(zip, cen, 4) == 0x02014b50;) {
+            int nameLen = le(zip, cen + 28, 2);
+            if (nameLen == n.length && java.util.Arrays.equals(java.util.Arrays.copyOfRange(zip, cen + 46, cen + 46 + nameLen), n)) {
+                return cen;
+            }
+            cen += 46 + nameLen + le(zip, cen + 30, 2) + le(zip, cen + 32, 2);
+        }
+        throw new IllegalStateException(name + " is not in the zip");
+    }
+
+    /**
+     * A copy of {@code zip} whose entry {@code name} is marked as a Unix SYMBOLIC LINK in the
+     * central directory (made by Unix, {@code S_IFLNK | 0777} in the external attributes) — the
+     * mark that makes some zip readers read the entry at once, as the link's target.
+     */
+    static byte[] asUnixSymlink(byte[] zip, String name) {
+        byte[] out = zip.clone();
+        int cen = centralHeader(out, name);
+        out[cen + 4] = 30;
+        out[cen + 5] = 3;
+        System.arraycopy(ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(0xA1FF << 16).array(), 0, out, cen + 38, 4);
+        return out;
+    }
+
+    /** A copy of {@code zip} whose entry {@code name} has every compressed byte set to 0xFF: it cannot be inflated. */
+    static byte[] withBrokenData(byte[] zip, String name) {
+        byte[] out = zip.clone();
+        int cen = centralHeader(out, name);
+        int loc = le(out, cen + 42, 4);
+        int data = loc + 30 + le(out, loc + 26, 2) + le(out, loc + 28, 2);
+        java.util.Arrays.fill(out, data, data + le(out, cen + 20, 4), (byte) 0xFF);
+        return out;
+    }
+
     /** name → uncompressed bytes, in archive order (directories included, empty). */
     static java.util.LinkedHashMap<String, byte[]> unzip(byte[] zip) {
         try {

@@ -436,6 +436,24 @@ public class MetadataCleanVectorTest {
                 withDeclaredSize(zip(z("[Content_Types].xml", "<Types/>"), z("docProps/core.xml", CORE),
                         z("word/document.xml", DOCUMENT), z("word/big.xml", filled(mega, 0x20))),
                         "word/big.xml", 10)).capped(read, read - 1, 1000));
+        // The ceiling counts a STORED entry by the bytes it holds (nothing to inflate).
+        final byte[] plain = filled(2000, 0x41);
+        final long readStored = "<Types/>".length() + DOCUMENT.length() + plain.length;
+        all.add(new Case("docx_stored_entry_against_ceiling", ooxml, "stored.docx", CLEANED,
+                "word/media/blob.bin is STORED (method 0), 2000 bytes: read under a ceiling of exactly the bytes "
+                + "read, unreadable one byte lower",
+                zip(z("[Content_Types].xml", "<Types/>"), z("docProps/core.xml", CORE),
+                        z("word/document.xml", DOCUMENT), stored("word/media/blob.bin", plain)))
+                .capped(readStored, readStored - 1));
+        // An entry the cleaner never reads is never inflated — not even when the central directory
+        // marks it as a Unix symbolic link (a zip reader that resolves links reads it at once, as
+        // the target: unbounded, and here not inflatable at all).
+        all.add(new Case("docx_symlink_flagged_custom_broken", ooxml, "link.docx", CLEANED,
+                "docProps/custom.xml is marked as a Unix symbolic link and its deflate stream is broken (all 0xFF): "
+                + "the part is removed without being inflated, the package is cleaned",
+                asUnixSymlink(withBrokenData(zip(z("[Content_Types].xml", CONTENT_TYPES), z("_rels/.rels", RELS),
+                        z("docProps/custom.xml", CUSTOM), z("word/document.xml", DOCUMENT)),
+                        "docProps/custom.xml"), "docProps/custom.xml")));
         all.add(new Case("zip_named_docx", "other", "fake.docx", PASSTHROUGH,
                 "a zip without [Content_Types].xml under a .docx name: not an Office document",
                 zip(z("readme.txt", "hi"))));
