@@ -59,8 +59,10 @@ public final class OoxmlMetadataCleaner {
     }
 
     /**
-     * Ceiling on the total INFLATED size of a package (a zip bomb defence the JVM needs; the Dart
-     * side has none). Above it the clean fails, and the caller leaves the file out.
+     * Ceiling on the total INFLATED size of a package: the bytes the entries REALLY inflate to,
+     * counted while they are read — never the sizes the central directory declares (a zip bomb
+     * defence; the Dart side holds the same limit the same way, C120 F1). Above it the clean
+     * fails, and the caller leaves the file out.
      */
     public static final long MAX_UNCOMPRESSED_BYTES = 512L * 1024 * 1024;
 
@@ -162,6 +164,16 @@ public final class OoxmlMetadataCleaner {
      * @throws IOException not a readable zip, an entry above {@link #MAX_UNCOMPRESSED_BYTES}, I/O
      */
     public static OoxmlCleanResult clean(Path source) throws IOException {
+        return clean(source, MAX_UNCOMPRESSED_BYTES);
+    }
+
+    /**
+     * {@link #clean(Path)} with the ceiling given: the package fails when the entries that are
+     * read (every file but the three {@code docProps} parts) inflate to MORE than
+     * {@code maxUncompressedBytes} in total. For the tests and the shared vectors, which cannot
+     * carry half a gigabyte; callers use {@link #clean(Path)}.
+     */
+    static OoxmlCleanResult clean(Path source, long maxUncompressedBytes) throws IOException {
         // name → part, in central-directory order; a repeated name keeps the FIRST entry.
         final Map<String, Part> out = new LinkedHashMap<>();
         final List<String> parts = new ArrayList<>();
@@ -197,7 +209,7 @@ public final class OoxmlMetadataCleaner {
                 }
                 final byte[] data;
                 try (InputStream in = zip.getInputStream(e)) {
-                    data = readCapped(in, MAX_UNCOMPRESSED_BYTES - total);
+                    data = readCapped(in, maxUncompressedBytes - total, maxUncompressedBytes);
                 }
                 total += data.length;
                 if (name.contains("/media/") && data.length > 0 && ImageLocationStripper.isSupported(data)) {
@@ -280,7 +292,7 @@ public final class OoxmlMetadataCleaner {
         return bos.toByteArray();
     }
 
-    private static byte[] readCapped(InputStream in, long budget) throws IOException {
+    private static byte[] readCapped(InputStream in, long budget, long max) throws IOException {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         final byte[] buf = new byte[64 * 1024];
         long left = budget;
@@ -288,7 +300,7 @@ public final class OoxmlMetadataCleaner {
         while ((n = in.read(buf)) > 0) {
             left -= n;
             if (left < 0) {
-                throw new IOException("the package inflates past " + MAX_UNCOMPRESSED_BYTES
+                throw new IOException("the package inflates past " + max
                         + " bytes: refusing to hold it in memory");
             }
             bos.write(buf, 0, n);

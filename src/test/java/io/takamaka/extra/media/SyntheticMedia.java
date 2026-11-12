@@ -537,6 +537,48 @@ final class SyntheticMedia {
         }
         return zip(a.toArray(new Z[0]));
     }
+    private static int le(byte[] b, int at, int n) {
+        int v = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            v = (v << 8) | (b[at + i] & 0xFF);
+        }
+        return v;
+    }
+
+    /**
+     * A copy of {@code zip} whose entry {@code name} DECLARES {@code size} uncompressed bytes,
+     * wherever a reader may look: the central directory, the local header and the data
+     * descriptor. The compressed data is not touched, so the entry still inflates to what it
+     * really holds.
+     */
+    static byte[] withDeclaredSize(byte[] zip, String name, long size) {
+        byte[] out = zip.clone();
+        byte[] n = name.getBytes(StandardCharsets.UTF_8);
+        for (int cen = indexOf(out, bytes(0x50, 0x4B, 0x01, 0x02)); cen >= 0 && le(out, cen, 4) == 0x02014b50;) {
+            int nameLen = le(out, cen + 28, 2);
+            if (nameLen == n.length && java.util.Arrays.equals(java.util.Arrays.copyOfRange(out, cen + 46, cen + 46 + nameLen), n)) {
+                byte[] declared = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt((int) size).array();
+                int flags = le(out, cen + 8, 2);
+                int compressed = le(out, cen + 20, 4);
+                int loc = le(out, cen + 42, 4);
+                System.arraycopy(declared, 0, out, cen + 24, 4);
+                if ((flags & 0x08) != 0) {
+                    // sizes after the data: PK\7\8, crc, compressed size, size
+                    int descriptor = loc + 30 + le(out, loc + 26, 2) + le(out, loc + 28, 2) + compressed;
+                    if (le(out, descriptor, 4) != 0x08074b50) {
+                        throw new IllegalStateException(name + ": no data descriptor where the entry ends");
+                    }
+                    System.arraycopy(declared, 0, out, descriptor + 12, 4);
+                } else {
+                    System.arraycopy(declared, 0, out, loc + 22, 4);
+                }
+                return out;
+            }
+            cen += 46 + nameLen + le(out, cen + 30, 2) + le(out, cen + 32, 2);
+        }
+        throw new IllegalStateException(name + " is not in the zip");
+    }
+
     /** name → uncompressed bytes, in archive order (directories included, empty). */
     static java.util.LinkedHashMap<String, byte[]> unzip(byte[] zip) {
         try {

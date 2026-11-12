@@ -1632,6 +1632,191 @@
     },
     "inputBase64" : "UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbLMJqSxILda3AwBQSwcIxxwXPAoAAAAIAAAAUEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAAKAAAAd29yZC9hLnR4dEvLLCouAQBQSwcIV+5xkgcAAAAFAAAAUEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAAKAAAAd29yZC9hLnR4dCtOTc7PSwEAUEsHCGkRH7YIAAAABgAAAFBLAwQUAAgICAAAACFcAAAAAAAAAAAAAAAAEQAAAGRvY1Byb3BzL2NvcmUueG1sbVHRTsMwDPyVKu9t0g1No2o7GGi8MAmJIRBvUeJ1EW0SJd66/T1p2IomkPJyufP5bJeLY9cmB3BeGV2RPGMkAS2MVLqpyNtmlc5J4pFryVujoSIn8GRRl8IWwjh4ccaCQwU+CT7aF8JWZIdoC0q92EHHfRYUOpBb4zqOAbqGWi6+eAN0wtiMdoBccuR0MEzt6EjOllKMlnbv2mggBYUWOtDoaZ7l9FeL4Dr/b0FkRuXRq1HV933WT6MuJMrpx/r5NYZPlR5mF0DqUooCFbZQL/eyASzp+DFQwgFH4+onZQ5ca5Xca1TaRNWFG5bWco/rsN2tArk81QhidwdH3tkWhv4l/aspz0P9+IBMQvQCTzYc48K8Tx8eNytST9hklrLbNJ9t2LxgLLzPIcJVfczh4KCGk9f5Tew54oiuT1t/A1BLBwi2xloePwEAACUCAABQSwECFAAUAAgICAAAACFcxxwXPAoAAAAIAAAAEwAAAAAAAAAAAAAAAAAAAAAAW0NvbnRlbnRfVHlwZXNdLnhtbFBLAQIUABQACAgIAAAAIVxX7nGSBwAAAAUAAAAKAAAAAAAAAAAAAAAAAEsAAAB3b3JkL2EudHh0UEsBAhQAFAAICAgAAAAhXGkRH7YIAAAABgAAAAoAAAAAAAAAAAAAAAAAigAAAHdvcmQvYS50eHRQSwECFAAUAAgICAAAACFctsZaHj8BAAAlAgAAEQAAAAAAAAAAAAAAAADKAAAAZG9jUHJvcHMvY29yZS54bWxQSwUGAAAAAAQABADwAAAASAIAAAAA"
   }, {
+    "name" : "docx_media_declared_size_zero",
+    "description" : "word/media/image1.jpeg declares 0 uncompressed bytes (central directory and data descriptor) and inflates to a geotagged photo: it is read for what it holds, and stripped",
+    "format" : "ooxml",
+    "fileName" : "zero.docx",
+    "mediaType" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "inputLength" : 1262,
+    "inputSha3" : "e2e485f1a82839aa17766aa61d8a94eb6f456724ab3cd079417b032865d60561",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "parts docProps/core.xml; images 1",
+        "outputName" : "zero_nolocation.docx",
+        "entries" : [ {
+          "name" : "[Content_Types].xml",
+          "length" : 8,
+          "sha3" : "5187b6b0e133a263372e10c0577c1abe81e24162b47cb8e03d0a8620f0b08ca2"
+        }, {
+          "name" : "docProps/core.xml",
+          "length" : 345,
+          "sha3" : "e9a8c4fb9ea4898ff85f8117dde951a17244c423df005b562fddc5cdf2432f8b"
+        }, {
+          "name" : "word/document.xml",
+          "length" : 108,
+          "sha3" : "3dbcc898cee8fc2c1c7f6f62143217496d01d058c2161ec43043d09f206629d1"
+        }, {
+          "name" : "word/media/image1.jpeg",
+          "length" : 183,
+          "sha3" : "db40c6064ae53848919241bf7c0fa542664de6ac27e16338a213dd73f4405e61"
+        } ]
+      },
+      "core" : {
+        "changed" : true,
+        "propertyParts" : [ "docProps/core.xml" ],
+        "imagesStripped" : [ "word/media/image1.jpeg" ],
+        "entries" : [ {
+          "name" : "[Content_Types].xml",
+          "length" : 8,
+          "sha3" : "5187b6b0e133a263372e10c0577c1abe81e24162b47cb8e03d0a8620f0b08ca2"
+        }, {
+          "name" : "docProps/core.xml",
+          "length" : 345,
+          "sha3" : "e9a8c4fb9ea4898ff85f8117dde951a17244c423df005b562fddc5cdf2432f8b"
+        }, {
+          "name" : "word/document.xml",
+          "length" : 108,
+          "sha3" : "3dbcc898cee8fc2c1c7f6f62143217496d01d058c2161ec43043d09f206629d1"
+        }, {
+          "name" : "word/media/image1.jpeg",
+          "length" : 183,
+          "sha3" : "db40c6064ae53848919241bf7c0fa542664de6ac27e16338a213dd73f4405e61"
+        } ]
+      }
+    },
+    "inputBase64" : "UEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbLMJqSxILda3AwBQSwcIxxwXPAoAAAAIAAAAUEsDBBQACAgIAAAAIVwAAAAAAAAAAAAAAAARAAAAZG9jUHJvcHMvY29yZS54bWxtUdFOwzAM/JUq723SDU2jajsYaLwwCYkhEG9R4nURbRIl3rr9PWnYiiaQ8nK58/lsl4tj1yYHcF4ZXZE8YyQBLYxUuqnI22aVzknikWvJW6OhIifwZFGXwhbCOHhxxoJDBT4JPtoXwlZkh2gLSr3YQcd9FhQ6kFvjOo4BuoZaLr54A3TC2Ix2gFxy5HQwTO3oSM6WUoyWdu/aaCAFhRY60OhpnuX0V4vgOv9vQWRG5dGrUdX3fdZPoy4kyunH+vk1hk+VHmYXQOpSigIVtlAv97IBLOn4MVDCAUfj6idlDlxrldxrVNpE1YUbltZyj+uw3a0CuTzVCGJ3B0fe2RaG/iX9qynPQ/34gExC9AJPNhzjwrxPHx43K1JP2GSWsts0n23YvGAsvM8hwlV9zOHgoIaT1/lN7DniiK5PW38DUEsHCLbGWh4/AQAAJQIAAFBLAwQUAAgICAAAACFcAAAAAAAAAAAAAAAAEQAAAHdvcmQvZG9jdW1lbnQueG1ss7GvyM1RKEstKs7Mz7NVMtQzULK3sym3SslPLs1NzSsBsZPyUypBdAGIKAIRJXYeqTk5+QpJpSnpqSU2+iAREFkEJgvAJESXPpJRAFBLBwhQ7daSTAAAAGwAAABQSwMEFAAICAgAAAAhXAAAAAAAAAAAAAAAABYAAAB3b3JkL21lZGlhL2ltYWdlMS5qcGVn+3/j/wMGAS83TzcGRkYGBkYgZPj/kGGaa0VmGgODry+DFgMDAwcDCyM/AxOQxQrEdoxCDMwMILVsQMIILC4CxC4dqgwsYHEGhgggZgjOz6tkYDAyMDKzMrC0MjRTMDSwMgAhBqAeRrA+Jj+QQiawuSAzyxggQBdqjjSU5gHRQHclZ5SUFFjp6+cV6yWm5Cel6iXn5+pXJBboG+oZ6DPYVFhV5BbkppYk2tmkAj1g5R4Q7JNYkllSmpJqZ2KqY2SuZ+Rno48hZaOP0Pj/NoMzAxMzCysbOwcnFzcPLx+/gKCQsIiomLiEpJS0jKycvIKikrKKqpq6hqaWto6unr6BoZGxiamZuYWllbWNrZ29g+P/AwzcHAwCDAKMjIIM/48wCDOgg/+3GDhAAW7PIGTynyHs/4WKWf8Z9vy/CQBQSwcIQpCUpz0BAAAAAAAAUEsBAhQAFAAICAgAAAAhXMccFzwKAAAACAAAABMAAAAAAAAAAAAAAAAAAAAAAFtDb250ZW50X1R5cGVzXS54bWxQSwECFAAUAAgICAAAACFctsZaHj8BAAAlAgAAEQAAAAAAAAAAAAAAAABLAAAAZG9jUHJvcHMvY29yZS54bWxQSwECFAAUAAgICAAAACFcUO3WkkwAAABsAAAAEQAAAAAAAAAAAAAAAADJAQAAd29yZC9kb2N1bWVudC54bWxQSwECFAAUAAgICAAAACFcQpCUpz0BAAAAAAAAFgAAAAAAAAAAAAAAAABUAgAAd29yZC9tZWRpYS9pbWFnZTEuanBlZ1BLBQYAAAAABAAEAAMBAADVAwAAAAA="
+  }, {
+    "name" : "docx_media_inflates_past_declared",
+    "description" : "word/media/blob.bin declares 10 bytes and inflates to 1 MiB: under a ceiling of exactly the bytes read ([Content_Types].xml + word/document.xml + the blob; docProps is not read) the package is cleaned, one byte lower it is unreadable",
+    "format" : "ooxml",
+    "fileName" : "bomb_media.docx",
+    "mediaType" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "inputLength" : 1972,
+    "inputSha3" : "889b5e014bc1a6191e1d3786f3c10653407411bd97432200209ebca32950adab",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "parts docProps/core.xml; images 0",
+        "outputName" : "bomb_media_nolocation.docx",
+        "entries" : [ {
+          "name" : "[Content_Types].xml",
+          "length" : 8,
+          "sha3" : "5187b6b0e133a263372e10c0577c1abe81e24162b47cb8e03d0a8620f0b08ca2"
+        }, {
+          "name" : "docProps/core.xml",
+          "length" : 345,
+          "sha3" : "e9a8c4fb9ea4898ff85f8117dde951a17244c423df005b562fddc5cdf2432f8b"
+        }, {
+          "name" : "word/document.xml",
+          "length" : 108,
+          "sha3" : "3dbcc898cee8fc2c1c7f6f62143217496d01d058c2161ec43043d09f206629d1"
+        }, {
+          "name" : "word/media/blob.bin",
+          "length" : 1048576,
+          "sha3" : "7e1839fd5b1f59802cdf1f098dd5198e49b2a242ec43a5e2f107d2e2e57b0f25"
+        } ]
+      },
+      "core" : {
+        "changed" : true,
+        "propertyParts" : [ "docProps/core.xml" ],
+        "imagesStripped" : [ ],
+        "entries" : [ {
+          "name" : "[Content_Types].xml",
+          "length" : 8,
+          "sha3" : "5187b6b0e133a263372e10c0577c1abe81e24162b47cb8e03d0a8620f0b08ca2"
+        }, {
+          "name" : "docProps/core.xml",
+          "length" : 345,
+          "sha3" : "e9a8c4fb9ea4898ff85f8117dde951a17244c423df005b562fddc5cdf2432f8b"
+        }, {
+          "name" : "word/document.xml",
+          "length" : 108,
+          "sha3" : "3dbcc898cee8fc2c1c7f6f62143217496d01d058c2161ec43043d09f206629d1"
+        }, {
+          "name" : "word/media/blob.bin",
+          "length" : 1048576,
+          "sha3" : "7e1839fd5b1f59802cdf1f098dd5198e49b2a242ec43a5e2f107d2e2e57b0f25"
+        } ]
+      },
+      "coreCapped" : [ {
+        "maxUncompressedBytes" : 1048692,
+        "result" : "read"
+      }, {
+        "maxUncompressedBytes" : 1048691,
+        "result" : "unreadable"
+      }, {
+        "maxUncompressedBytes" : 1000,
+        "result" : "unreadable"
+      } ]
+    },
+    "inputBase64" : "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"
+  }, {
+    "name" : "docx_body_inflates_past_declared",
+    "description" : "the same with a part that is not media: word/big.xml declares 10 bytes and inflates to 1 MiB of spaces — every entry that is read counts, not only the images",
+    "format" : "ooxml",
+    "fileName" : "bomb_body.docx",
+    "mediaType" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "inputLength" : 1959,
+    "inputSha3" : "f5ac726276f77c238e5abd481c459a29a016de7bf71ff20d30896043a90f2fdf",
+    "expected" : {
+      "dispatcher" : {
+        "status" : "cleaned",
+        "detail" : "parts docProps/core.xml; images 0",
+        "outputName" : "bomb_body_nolocation.docx",
+        "entries" : [ {
+          "name" : "[Content_Types].xml",
+          "length" : 8,
+          "sha3" : "5187b6b0e133a263372e10c0577c1abe81e24162b47cb8e03d0a8620f0b08ca2"
+        }, {
+          "name" : "docProps/core.xml",
+          "length" : 345,
+          "sha3" : "e9a8c4fb9ea4898ff85f8117dde951a17244c423df005b562fddc5cdf2432f8b"
+        }, {
+          "name" : "word/document.xml",
+          "length" : 108,
+          "sha3" : "3dbcc898cee8fc2c1c7f6f62143217496d01d058c2161ec43043d09f206629d1"
+        }, {
+          "name" : "word/big.xml",
+          "length" : 1048576,
+          "sha3" : "f9d2d26ff0e9dcb049c921e7e22dd7639ec214f2d0ec15912e2d3518ebf205e8"
+        } ]
+      },
+      "core" : {
+        "changed" : true,
+        "propertyParts" : [ "docProps/core.xml" ],
+        "imagesStripped" : [ ],
+        "entries" : [ {
+          "name" : "[Content_Types].xml",
+          "length" : 8,
+          "sha3" : "5187b6b0e133a263372e10c0577c1abe81e24162b47cb8e03d0a8620f0b08ca2"
+        }, {
+          "name" : "docProps/core.xml",
+          "length" : 345,
+          "sha3" : "e9a8c4fb9ea4898ff85f8117dde951a17244c423df005b562fddc5cdf2432f8b"
+        }, {
+          "name" : "word/document.xml",
+          "length" : 108,
+          "sha3" : "3dbcc898cee8fc2c1c7f6f62143217496d01d058c2161ec43043d09f206629d1"
+        }, {
+          "name" : "word/big.xml",
+          "length" : 1048576,
+          "sha3" : "f9d2d26ff0e9dcb049c921e7e22dd7639ec214f2d0ec15912e2d3518ebf205e8"
+        } ]
+      },
+      "coreCapped" : [ {
+        "maxUncompressedBytes" : 1048692,
+        "result" : "read"
+      }, {
+        "maxUncompressedBytes" : 1048691,
+        "result" : "unreadable"
+      }, {
+        "maxUncompressedBytes" : 1000,
+        "result" : "unreadable"
+      } ]
+    },
+    "inputBase64" : "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"
+  }, {
     "name" : "zip_named_docx",
     "description" : "a zip without [Content_Types].xml under a .docx name: not an Office document",
     "format" : "other",

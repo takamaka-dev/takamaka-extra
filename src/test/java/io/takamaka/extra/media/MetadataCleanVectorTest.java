@@ -56,6 +56,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * ({@link ImageLocationStripper}, {@link Mp4MetadataCleaner}, {@link PdfMetadataCleaner},
  * {@link OoxmlMetadataCleaner}), with its counters; {@code "result": "unreadable"} alone for an
  * Office package whose zip cannot be read (the cleaner throws).</li>
+ * <li>{@code expected.coreCapped} (some Office vectors) — the Office cleaner called with a
+ * ceiling on what the package may inflate to, one node per ceiling:
+ * {@code maxUncompressedBytes} and {@code "result"}: {@code "read"}, or {@code "unreadable"} when
+ * the entries REALLY inflate past it (the cleaner throws), whatever size the zip declares for
+ * them (C120 F1). The production ceiling is 512 MB on both platforms — a vector cannot carry
+ * that, so the limit is a parameter of the two cleaners.</li>
  * </ul>
  *
  * <p>Dart consumers (each reads a byte-identical copy at {@code test/fixtures/}):
@@ -96,6 +102,13 @@ public class MetadataCleanVectorTest {
         final String fileName;
         final byte[] input;
         final String status;
+        /** Ceilings for {@code expected.coreCapped} (Office only); none for most vectors. */
+        long[] caps = new long[0];
+
+        Case capped(long... caps) {
+            this.caps = caps;
+            return this;
+        }
 
         Case(String name, String format, String fileName, String status, String description, byte[] input) {
             this.name = name;
@@ -399,6 +412,30 @@ public class MetadataCleanVectorTest {
         all.add(new Case("docx_repeated_entry_name", ooxml, "twice.docx", CLEANED,
                 "word/a.txt is in the package twice (\"first\", then \"second\"): the first one is kept",
                 repeated));
+        // C120 F1 — the sizes a zip DECLARES are the sender's word. What counts is what an entry
+        // really inflates to: for the content (an entry that declares 0 bytes is still read) and
+        // for the ceiling (an entry that declares 10 bytes still fills the memory it inflates to).
+        all.add(new Case("docx_media_declared_size_zero", ooxml, "zero.docx", CLEANED,
+                "word/media/image1.jpeg declares 0 uncompressed bytes (central directory and data descriptor) "
+                + "and inflates to a geotagged photo: it is read for what it holds, and stripped",
+                withDeclaredSize(zip(z("[Content_Types].xml", "<Types/>"), z("docProps/core.xml", CORE),
+                        z("word/document.xml", DOCUMENT), z("word/media/image1.jpeg", photo)),
+                        "word/media/image1.jpeg", 0)));
+        final int mega = 1024 * 1024;
+        final long read = "<Types/>".length() + DOCUMENT.length() + mega;
+        all.add(new Case("docx_media_inflates_past_declared", ooxml, "bomb_media.docx", CLEANED,
+                "word/media/blob.bin declares 10 bytes and inflates to 1 MiB: under a ceiling of exactly the bytes "
+                + "read ([Content_Types].xml + word/document.xml + the blob; docProps is not read) the package is "
+                + "cleaned, one byte lower it is unreadable",
+                withDeclaredSize(zip(z("[Content_Types].xml", "<Types/>"), z("docProps/core.xml", CORE),
+                        z("word/document.xml", DOCUMENT), z("word/media/blob.bin", filled(mega, 0))),
+                        "word/media/blob.bin", 10)).capped(read, read - 1, 1000));
+        all.add(new Case("docx_body_inflates_past_declared", ooxml, "bomb_body.docx", CLEANED,
+                "the same with a part that is not media: word/big.xml declares 10 bytes and inflates to 1 MiB "
+                + "of spaces — every entry that is read counts, not only the images",
+                withDeclaredSize(zip(z("[Content_Types].xml", "<Types/>"), z("docProps/core.xml", CORE),
+                        z("word/document.xml", DOCUMENT), z("word/big.xml", filled(mega, 0x20))),
+                        "word/big.xml", 10)).capped(read, read - 1, 1000));
         all.add(new Case("zip_named_docx", "other", "fake.docx", PASSTHROUGH,
                 "a zip without [Content_Types].xml under a .docx name: not an Office document",
                 zip(z("readme.txt", "hi"))));
@@ -442,7 +479,7 @@ public class MetadataCleanVectorTest {
     }
 
     /** Run the dispatcher and the format's own cleaner on one input; the result is the expectation. */
-    private static ObjectNode expect(String format, String fileName, byte[] input) throws Exception {
+    private static ObjectNode expect(String format, String fileName, byte[] input, long... caps) throws Exception {
         ObjectNode expected = M.createObjectNode();
         Path tmp = Files.createTempDirectory("c120_vectors_");
         try {
@@ -531,6 +568,24 @@ public class MetadataCleanVectorTest {
                     // not a readable zip (only such a vector carries "result")
                     c.put("result", "unreadable");
                 }
+                if (caps.length > 0) {
+                    ArrayNode capped = expected.putArray("coreCapped");
+                    for (long cap : caps) {
+                        ObjectNode o = capped.addObject();
+                        // an int node when it fits, as Jackson reads the committed file back
+                        if (cap == (int) cap) {
+                            o.put("maxUncompressedBytes", (int) cap);
+                        } else {
+                            o.put("maxUncompressedBytes", cap);
+                        }
+                        try {
+                            OoxmlMetadataCleaner.clean(src, cap);
+                            o.put("result", "read");
+                        } catch (IOException e) {
+                            o.put("result", "unreadable");
+                        }
+                    }
+                }
             }
         } finally {
             deleteTree(tmp);
@@ -558,7 +613,7 @@ public class MetadataCleanVectorTest {
             v.put("mediaType", MediaMetadataCleaner.mediaTypeForName(c.fileName));
             v.put("inputLength", c.input.length);
             v.put("inputSha3", sha3(c.input));
-            v.set("expected", expect(c.format, c.fileName, c.input));
+            v.set("expected", expect(c.format, c.fileName, c.input, c.caps));
             v.put("inputBase64", Base64.getEncoder().encodeToString(c.input));
         }
         return root;
@@ -573,7 +628,14 @@ public class MetadataCleanVectorTest {
         for (int i = 0; i < declared.size(); i++) {
             Case c = declared.get(i);
             assertTrue(names.add(c.name), "duplicate vector name " + c.name);
-            assertEquals(c.status, root.get("vectors").get(i).get("expected").get("dispatcher").get("status").asText(), c.name);
+            JsonNode expected = root.get("vectors").get(i).get("expected");
+            assertEquals(c.status, expected.get("dispatcher").get("status").asText(), c.name);
+            // the ceilings are declared highest first: the first one is what the package really
+            // inflates to (read), every lower one is refused
+            for (int k = 0; k < c.caps.length; k++) {
+                assertEquals(k == 0 ? "read" : "unreadable", expected.get("coreCapped").get(k).get("result").asText(),
+                        c.name + " under " + c.caps[k]);
+            }
         }
         if (Boolean.getBoolean("c120.vectors.write")) {
             Path out = Paths.get("src", "test", "resources", RESOURCE);
@@ -603,7 +665,7 @@ public class MetadataCleanVectorTest {
             assertEquals(v.get("mediaType").asText(), MediaMetadataCleaner.mediaTypeForName(c.fileName), name);
             JsonNode expected = v.get("expected");
             assertEquals(c.status, expected.get("dispatcher").get("status").asText(), name + ": declared outcome");
-            assertEquals(expected, expect(c.format, c.fileName, input), name);
+            assertEquals(expected, expect(c.format, c.fileName, input, c.caps), name);
             statuses.add(c.status);
             formats.add(c.format);
         }
